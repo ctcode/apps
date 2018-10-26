@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ostracker</title>
+<link rel="icon" href="satos.png">
+<link rel="manifest" href="manifest.json">
+
+<style>
+#pastebox {
+	font-family: 'Consolas';
+	font-size: 5vh;
+	width: 60vw;
+	margin-top: 20vh;
+	margin-left: 20vw;
+	height: 50vh;
+	background-color: rgba(255,255,127,0.6);
+}
+#mapbtn {
+	font-family: 'Consolas';
+	font-size: 10vh;
+	width: 60vw;
+	margin-top: 2vh;
+	margin-left: 20vw;
+	height: 20vh;
+}
+</style>
+</head>
+
+<body>
+<div id="pastebox" contenteditable="true"></div>
+<button id="mapbtn" onclick="onclickMap();">Map</button>
+
+<script>
+	function onclickMap() {
+		sms = document.getElementById('pastebox').textContent;
+		window.open("https://ctcode.github.io/apps/ostracker/ostrkmap.htm#" + encodeURI(sms));
+	}
+</script>
+
+</body>
+</html>

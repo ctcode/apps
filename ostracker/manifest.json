@@ -1,0 +1,8 @@
+{
+	"name": "OS Tracker",
+	"icons": [
+		{"src": "satos.png", "sizes": "192x192"}
+	],
+	"start_url": "ostracker.htm",
+	"display": "standalone"
+}
