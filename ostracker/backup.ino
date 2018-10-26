@@ -4,25 +4,34 @@ void led(bool on)
 	digitalWrite(LED_BUILTIN, on ? HIGH : LOW);
 }
 
-void wait(int mins, int blink)
+void wait(int mins, int blink=0)
 {
 	int seconds = (mins*60);
-	int c=0;
-	led(false);
-
-	for (int i=0; i < seconds; i++)
+	
+	if (blink)
 	{
-		c++;
-		if (c > blink)
+		int c=0;
+		led(false);
+
+		for (int i=0; i < seconds; i++)
 		{
-			led(true);
-			delay(100);
-			led(false);
-			delay(900);
-			
-			c = 0;
+			c++;
+			if (c > blink)
+			{
+				led(true);
+				delay(100);
+				led(false);
+				delay(900);
+				
+				c = 0;
+			}
+			else
+				delay(1000);
 		}
-		else
+	}
+	else
+	{
+		for (int i=0; i < seconds; i++)
 			delay(1000);
 	}
 }
@@ -119,9 +128,9 @@ void report()
 	cmd("AT+EMAILCID=1");
 	cmd("AT+EMAILSSL=1");
 	cmd("AT+SMTPSRV=smtp.gmail.com,465");
-	cmd("AT+SMTPAUTH=1,******@gmail.com,,******");
-	cmd("AT+SMTPFROM=,******@gmail.com,trkino-mailer");
-	cmd("AT+SMTPRCPT=0,0,,******@gmail.com,ct");
+	cmd("AT+SMTPAUTH=1,******@gmail.com,******");
+	cmd("AT+SMTPFROM=******@gmail.com,trkino-mailer");
+	cmd("AT+SMTPRCPT=0,0,******@gmail.com,ct");
 	cmd("AT+SMTPSUB=Location report");
 	String cmdtxt = "AT+SMTPBODY=";
 	cmdtxt += body.length();
@@ -139,13 +148,15 @@ void report()
 void setup()
 {
 	pinMode(LED_BUILTIN, OUTPUT);
-	led(false);
+	led(true);
 	
 	Serial.begin(9600);
 	while(!Serial);
 
-	wake();
-	wait(1, 2);
+	cmd("AT+CFUN=1");
+	wait(1);
+
+	led(false);
 }
 
 void loop()
