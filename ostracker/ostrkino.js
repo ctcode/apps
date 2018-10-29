@@ -15,7 +15,7 @@ function init_map()
 		div.style.width = "100%";
 		div.style.height = "100%";
 		document.body.appendChild(div);
-		var osMap = new OpenSpace.Map('map');
+		osMap = new OpenSpace.Map('map');
 
 		var lonlat = new OpenLayers.LonLat(locinfo.lon, locinfo.lat);
 		var gridProjection = new OpenSpace.GridProjection();
