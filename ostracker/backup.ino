@@ -70,52 +70,19 @@ struct hhmm getTime()
 
 int wake()
 {
-	cmd("AT+CGPSPWR=1");
-	cmd("AT+CFUN=1");
-}
-
-int sleep()
-{
-	cmd("AT+CGPSPWR=0");
-	cmd("AT+CFUN=4");
-}
-
-void report()
-{
-	led(true);
-
-	String body;
-
 	// gps
-	if (cmd("AT+CGPSSTATUS?", "Location 3D Fix"))
+	cmd("AT+CGPSPWR=1");
+	for (int c=0; c < 60; c++)
 	{
-		cmd("AT+CGPSINF=2", "+CGPSINF:");
-		String loc = Serial.readStringUntil('\r');
-		loc.trim();
+		if (cmd("AT+CGPSSTATUS?", "3D Fix"))
+			break;
 
-		cmd("AT+CGPSINF=128", "+CGPSINF:");
-		String time = Serial.readStringUntil('\r');
-		time.trim();
-
-		body += "GPS Fix\n\n";
-		body += "https://ctcode.github.io/apps/ostracker/ostrkmap.htm";
-		body += "#trkino,";
-		body += "LOCATION,";
-		body += loc;
-		body += ",";
-		body += "TIME,";
-		body += time;
-		body += "\n\n";
+		wait(1, 1);
 	}
-	else
-	{
-		cmd("AT+CGPSSTATUS?", "+CGPSSTATUS:");
-		String status = Serial.readStringUntil('\r');
-		status.trim();
 
-		body += status;
-		body += "\n\n";
-	}
+	// gsm
+	cmd("AT+CFUN=1");
+	wait(1, 3);
 
 	// gprs
 	cmd("AT+SAPBR=3,1,contype,GPRS");
@@ -123,6 +90,49 @@ void report()
 	cmd("AT+SAPBR=3,1,USER,giffgaff");
 	cmd("AT+SAPBR=1,1");
 	cmd("AT+SAPBR=2,1");
+	wait(1, 5);
+}
+
+int sleep()
+{
+	cmd("AT+CGPSPWR=0");  // gps
+	cmd("AT+SAPBR=0,1");  // gprs
+	cmd("AT+CFUN=4");  // gsm
+}
+
+void report()
+{
+	led(true);
+
+	cmd("AT+CGPSSTATUS?", "+CGPSSTATUS:");
+	String fix = Serial.readStringUntil('\r');
+	fix.trim();
+
+	cmd("AT+CGPSINF=2", "+CGPSINF:");
+	String loc = Serial.readStringUntil('\r');
+	loc.trim();
+
+	//cmd("AT+CGPSINF=128", "+CGPSINF:");
+	//String time = Serial.readStringUntil('\r');
+	//time.trim();
+
+	cmd("AT+CSQ", "+CSQ:");
+	String signal = Serial.readStringUntil(',');
+	signal.trim();
+
+	String body;
+	body += "GPS: ";
+	body += fix;
+	body += "\n\n";
+	body += "https://ctcode.github.io/apps/ostracker/ostrkino.htm#";
+	body += loc;
+	//body += ",";
+	//body += "TIME,";
+	//body += time;
+	body += "\n\n";
+	body += "GSM: ";
+	body += signal;
+	body += "/30\n\n";
 
 	// email
 	cmd("AT+EMAILCID=1");
@@ -131,7 +141,7 @@ void report()
 	cmd("AT+SMTPAUTH=1,******@gmail.com,******");
 	cmd("AT+SMTPFROM=******@gmail.com,trkino-mailer");
 	cmd("AT+SMTPRCPT=0,0,******@gmail.com,ct");
-	cmd("AT+SMTPSUB=Location report");
+	cmd("AT+SMTPSUB=Report");
 	String cmdtxt = "AT+SMTPBODY=";
 	cmdtxt += body.length();
 	cmd(cmdtxt.c_str(), "DOWNLOAD");
@@ -140,7 +150,6 @@ void report()
 	cmd("AT+SMTPSEND");
 	Serial.setTimeout(60000);
 	Serial.find("+SMTPSEND:");
-	cmd("AT+SAPBR=0,1");
 
 	led(false);
 }
@@ -148,15 +157,14 @@ void report()
 void setup()
 {
 	pinMode(LED_BUILTIN, OUTPUT);
-	led(true);
+	led(false);
 	
 	Serial.begin(9600);
 	while(!Serial);
 
-	cmd("AT+CFUN=1");
-	wait(1);
-
-	led(false);
+	wake();
+	report();
+	sleep();
 }
 
 void loop()
@@ -167,7 +175,6 @@ void loop()
 		case 18:
 		{
 			wake();
-			wait(15, 1);
 			report();
 			sleep();
 			break;
