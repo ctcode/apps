@@ -52,6 +52,13 @@ bool cmd(char* pCmd, char* pFind=0)
 		return Serial.find("OK");
 }
 
+String read(char term)
+{
+	String str = Serial.readStringUntil(term);
+	str.trim();
+	return str;
+}
+
 struct hhmm
 {
 	int hour;
@@ -63,8 +70,8 @@ struct hhmm getTime()
 	// +CCLK: "18/10/18,00:34:37+04"
 	cmd("AT+CCLK?", "+CCLK:");
 	Serial.find(",");
-	String h = Serial.readStringUntil(':');
-	String m = Serial.readStringUntil(':');
+	String h = read(':');
+	String m = read(':');
 	return {atoi(h.c_str()), atoi(m.c_str())};
 }
 
@@ -105,20 +112,16 @@ void report()
 	led(true);
 
 	cmd("AT+CGPSSTATUS?", "+CGPSSTATUS:");
-	String fix = Serial.readStringUntil('\r');
-	fix.trim();
+	String fix = read('\r');
 
 	cmd("AT+CGPSINF=2", "+CGPSINF:");
-	String loc = Serial.readStringUntil('\r');
-	loc.trim();
+	String loc = read('\r');
 
 	//cmd("AT+CGPSINF=128", "+CGPSINF:");
-	//String time = Serial.readStringUntil('\r');
-	//time.trim();
+	//String time = read('\r');
 
 	cmd("AT+CSQ", "+CSQ:");
-	String signal = Serial.readStringUntil(',');
-	signal.trim();
+	String signal = read(',');
 
 	String body;
 	body += "GPS: ";
@@ -126,9 +129,6 @@ void report()
 	body += "\n\n";
 	body += "https://ctcode.github.io/apps/ostracker/ostrkino.htm#";
 	body += loc;
-	//body += ",";
-	//body += "TIME,";
-	//body += time;
 	body += "\n\n";
 	body += "GSM: ";
 	body += signal;
@@ -173,12 +173,8 @@ void loop()
 	{
 		case 8:
 		case 18:
-		{
 			wake();
 			report();
-			sleep();
-			break;
-		}
 		default:
 			sleep();
 	}
