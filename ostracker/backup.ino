@@ -1,4 +1,6 @@
 
+enum {rmMonitor, rmLog, rmTrack} repmode;
+
 void led(bool on)
 {
 	digitalWrite(LED_BUILTIN, on ? HIGH : LOW);
@@ -38,13 +40,12 @@ void wait(int mins, int blink=0)
 
 bool cmd(char* pCmd, char* pFind=0)
 {
-	while(Serial.available())
+	while (Serial.available())
 		Serial.read();
 
 	Serial.setTimeout(3000);
 	Serial.write(pCmd);
 	Serial.write("\r\n");
-	delay(1000);
 	
 	if (pFind)
 		return Serial.find(pFind);
@@ -75,21 +76,42 @@ struct hhmm getTime()
 	return {atoi(h.c_str()), atoi(m.c_str())};
 }
 
-int wake()
+void wakeGSM()
 {
-	// gps
-	cmd("AT+CGPSPWR=1");
-	for (int c=0; c < 60; c++)
-	{
-		if (cmd("AT+CGPSSTATUS?", "3D Fix"))
-			break;
+	cmd("AT+CFUN=1");
+	wait(1, 1);
+}
 
-		wait(1, 1);
+void sleep()
+{
+	cmd("AT+CGPSPWR=0");  // gps
+	cmd("AT+SAPBR=0,1");  // gprs
+	cmd("AT+CFUN=4");  // gsm
+}
+
+void setReportModeFromSMS()
+{
+	cmd("AT+CMGF=1");
+	cmd("AT+CSCS=\"GSM\"");
+
+	cmd("AT+CMGL=\"ALL\"", "CMGL:");
+	while (Serial.find("REPMODE:"))
+	{
+		switch (Serial.parseInt())
+		{
+			case 0: repmode = rmMonitor; break;
+			case 1: repmode = rmLog; break;
+			case 2: repmode = rmTrack; break;
+			default: break;
+		}
 	}
 
-	// gsm
-	cmd("AT+CFUN=1");
-	wait(1, 3);
+	cmd("AT+CMGDA=\"DEL ALL\"");
+}
+
+void report()
+{
+	led(true);
 
 	// gprs
 	cmd("AT+SAPBR=3,1,contype,GPRS");
@@ -97,19 +119,16 @@ int wake()
 	cmd("AT+SAPBR=3,1,USER,giffgaff");
 	cmd("AT+SAPBR=1,1");
 	cmd("AT+SAPBR=2,1");
-	wait(1, 5);
-}
 
-int sleep()
-{
-	cmd("AT+CGPSPWR=0");  // gps
-	cmd("AT+SAPBR=0,1");  // gprs
-	cmd("AT+CFUN=4");  // gsm
-}
+	// gps
+	cmd("AT+CGPSPWR=1");
+	for (int c=0; c < 60; c++)
+	{
+		if (cmd("AT+CGPSSTATUS?", "3D Fix"))
+			break;
 
-void report()
-{
-	led(true);
+		wait(1);
+	}
 
 	cmd("AT+CGPSSTATUS?", "+CGPSSTATUS:");
 	String fix = read('\r');
@@ -133,6 +152,9 @@ void report()
 	body += "GSM: ";
 	body += signal;
 	body += "/30\n\n";
+	body += "Report Mode: ";
+	body += repmode;
+	body += "\n\n";
 
 	// email
 	cmd("AT+EMAILCID=1");
@@ -158,26 +180,60 @@ void setup()
 {
 	pinMode(LED_BUILTIN, OUTPUT);
 	led(false);
-	
+
 	Serial.begin(9600);
 	while(!Serial);
 
-	wake();
+	while (true)
+	{
+		if (cmd("AT"))
+			break;
+
+		wait(1);
+	}
+
+	repmode = rmMonitor;
+
+	wakeGSM();
+	setReportModeFromSMS();
 	report();
-	sleep();
 }
 
 void loop()
 {
-	switch (getTime().hour)
-	{
-		case 8:
-		case 18:
-			wake();
-			report();
-		default:
-			sleep();
-	}
-
+	sleep();
 	wait((60 - getTime().minute), 10);
+
+	wakeGSM();
+	setReportModeFromSMS();
+
+	switch (repmode)
+	{
+		case rmMonitor:
+		{
+			switch (getTime().hour)
+			{
+				case 8:
+				case 18:
+					report();
+			}
+			
+			break;
+		}
+		case rmLog:
+		{
+			switch (getTime().hour)
+			{
+				case 0:
+					report();
+			}
+			
+			break;
+		}
+		case rmTrack:
+		{
+			report();
+			break;
+		}
+	}
 }
