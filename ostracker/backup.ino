@@ -1,5 +1,5 @@
 
-enum {rmMonitor, rmLog, rmTrack} repmode;
+int repmode=2;
 
 void led(bool on)
 {
@@ -38,19 +38,15 @@ void wait(int mins, int blink=0)
 	}
 }
 
-bool cmd(char* pCmd, char* pFind=0)
+bool cmd(char* pCmd, int wait_ms=500)
 {
-	while (Serial.available())
+	while(Serial.available())
 		Serial.read();
 
-	Serial.setTimeout(3000);
 	Serial.write(pCmd);
 	Serial.write("\r\n");
-	
-	if (pFind)
-		return Serial.find(pFind);
-	else
-		return Serial.find("OK");
+	Serial.flush();
+	delay(wait_ms);
 }
 
 String read(char term)
@@ -69,7 +65,8 @@ struct hhmm
 struct hhmm getTime()
 {
 	// +CCLK: "18/10/18,00:34:37+04"
-	cmd("AT+CCLK?", "+CCLK:");
+	cmd("AT+CCLK?");
+	Serial.find("CCLK:");
 	Serial.find(",");
 	String h = read(':');
 	String m = read(':');
@@ -79,30 +76,82 @@ struct hhmm getTime()
 void wakeGSM()
 {
 	cmd("AT+CFUN=1");
-	wait(1, 1);
+
+	while(true)
+	{
+		cmd("AT+CFUN?", 3000);
+		if (Serial.find("CFUN: 1"))
+			break;
+	}
+}
+
+void wakeGPRS()
+{
+	cmd("AT+SAPBR=3,1,contype,GPRS");
+	cmd("AT+SAPBR=3,1,APN,giffgaff.com");
+	cmd("AT+SAPBR=3,1,USER,giffgaff");
+	cmd("AT+SAPBR=1,1");
+
+	while(true)
+	{
+		cmd("AT+SAPBR=2,1", 3000);
+		if (Serial.find("SAPBR: 1,1"))
+			break;
+	}
+}
+
+void wakeGPS()
+{
+	while(true)
+	{
+		cmd("AT+CGPSPWR=1", 3000);
+
+		cmd("AT+CGPSPWR?");
+		if (Serial.find("CGPSPWR: 1"))
+			break;
+	}
+
+	for (int c=0; c < 30; c++)
+	{
+		wait(1, 1);
+
+		cmd("AT+CGPSSTATUS?");
+		if (Serial.find("3D Fix"))
+			break;
+	}
 }
 
 void sleep()
 {
+	int min = getTime().minute;
+
 	cmd("AT+CGPSPWR=0");  // gps
 	cmd("AT+SAPBR=0,1");  // gprs
 	cmd("AT+CFUN=4");  // gsm
+
+	wait((60 - min), 10);
 }
 
 void setReportModeFromSMS()
 {
+	wait(1, 3);
+
 	cmd("AT+CMGF=1");
 	cmd("AT+CSCS=\"GSM\"");
+	cmd("AT+CMGL=\"ALL\"", 10);
 
-	cmd("AT+CMGL=\"ALL\"", "CMGL:");
 	while (Serial.find("REPMODE:"))
 	{
-		switch (Serial.parseInt())
+		int rm = Serial.parseInt();
+		switch (rm)
 		{
-			case 0: repmode = rmMonitor; break;
-			case 1: repmode = rmLog; break;
-			case 2: repmode = rmTrack; break;
-			default: break;
+			case 0:
+			case 1:
+			case 2:
+			case 24:
+				repmode = rm;
+			default:
+				break;
 		}
 	}
 
@@ -111,35 +160,21 @@ void setReportModeFromSMS()
 
 void report()
 {
+	wakeGPS();
+	wakeGPRS();
+
 	led(true);
 
-	// gprs
-	cmd("AT+SAPBR=3,1,contype,GPRS");
-	cmd("AT+SAPBR=3,1,APN,giffgaff.com");
-	cmd("AT+SAPBR=3,1,USER,giffgaff");
-	cmd("AT+SAPBR=1,1");
-	cmd("AT+SAPBR=2,1");
-
-	// gps
-	cmd("AT+CGPSPWR=1");
-	for (int c=0; c < 60; c++)
-	{
-		if (cmd("AT+CGPSSTATUS?", "3D Fix"))
-			break;
-
-		wait(1);
-	}
-
-	cmd("AT+CGPSSTATUS?", "+CGPSSTATUS:");
+	cmd("AT+CGPSSTATUS?");
+	Serial.find("CGPSSTATUS:");
 	String fix = read('\r');
 
-	cmd("AT+CGPSINF=2", "+CGPSINF:");
+	cmd("AT+CGPSINF=2");
+	Serial.find("CGPSINF:");
 	String loc = read('\r');
 
-	//cmd("AT+CGPSINF=128", "+CGPSINF:");
-	//String time = read('\r');
-
-	cmd("AT+CSQ", "+CSQ:");
+	cmd("AT+CSQ");
+	Serial.find("CSQ:");
 	String signal = read(',');
 
 	String body;
@@ -166,12 +201,15 @@ void report()
 	cmd("AT+SMTPSUB=Report");
 	String cmdtxt = "AT+SMTPBODY=";
 	cmdtxt += body.length();
-	cmd(cmdtxt.c_str(), "DOWNLOAD");
+	cmd(cmdtxt.c_str());
+	Serial.find("DOWNLOAD");
 	Serial.write(body.c_str());
+	Serial.flush();
 	Serial.find("OK");
 	cmd("AT+SMTPSEND");
 	Serial.setTimeout(60000);
-	Serial.find("+SMTPSEND:");
+	Serial.find("SMTPSEND:");
+	Serial.setTimeout(3000);
 
 	led(false);
 }
@@ -181,18 +219,19 @@ void setup()
 	pinMode(LED_BUILTIN, OUTPUT);
 	led(false);
 
+	Serial.setTimeout(3000);
 	Serial.begin(9600);
 	while(!Serial);
 
 	while (true)
 	{
-		if (cmd("AT"))
+		cmd("AT");
+
+		if (Serial.find("OK"))
 			break;
 
 		wait(1);
 	}
-
-	repmode = rmMonitor;
 
 	wakeGSM();
 	setReportModeFromSMS();
@@ -202,14 +241,22 @@ void setup()
 void loop()
 {
 	sleep();
-	wait((60 - getTime().minute), 10);
-
 	wakeGSM();
 	setReportModeFromSMS();
 
 	switch (repmode)
 	{
-		case rmMonitor:
+		case 1:
+		{
+			switch (getTime().hour)
+			{
+				case 0:
+					report();
+			}
+			
+			break;
+		}
+		case 2:
 		{
 			switch (getTime().hour)
 			{
@@ -220,20 +267,12 @@ void loop()
 			
 			break;
 		}
-		case rmLog:
-		{
-			switch (getTime().hour)
-			{
-				case 0:
-					report();
-			}
-			
-			break;
-		}
-		case rmTrack:
+		case 24:
 		{
 			report();
 			break;
 		}
+		default:
+			break;
 	}
 }
