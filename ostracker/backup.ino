@@ -79,7 +79,9 @@ void wakeGSM()
 
 	while(true)
 	{
-		cmd("AT+CFUN?", 3000);
+		delay(3000);
+
+		cmd("AT+CFUN?");
 		if (Serial.find("CFUN: 1"))
 			break;
 	}
@@ -94,7 +96,9 @@ void wakeGPRS()
 
 	while(true)
 	{
-		cmd("AT+SAPBR=2,1", 3000);
+		delay(3000);
+
+		cmd("AT+SAPBR=2,1");
 		if (Serial.find("SAPBR: 1,1"))
 			break;
 	}
