@@ -36,6 +36,9 @@ td.printcellnum {
 	text-align: center;
 	width: 2em;
 }
+div.printcellevt {
+	word-wrap: break-word;
+}
 </style>
 <head>
 <body>
@@ -76,6 +79,7 @@ td.printcellnum {
 			{
 				var evt = cell.evts[ievt];
 				var printevt = document.createElement("div");
+				printevt.classList.add("printcellevt");
 				printevt.textContent = evt;
 				printcellevts.appendChild(printevt);
 			}
