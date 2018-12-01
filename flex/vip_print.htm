@@ -42,9 +42,13 @@ div.printcellevt {
 </style>
 <head>
 <body>
+</body>
 <script type='text/javascript'>
+function updateUI()
+{
 	var info = window.opener.vipgrid.getPrintViewInfo();
 	document.title = info.title;
+	document.body.innerHTML = "";
 	var t = document.createElement("table");
 	document.body.appendChild(t);
 	var thead = t.createTHead();
@@ -85,6 +89,8 @@ div.printcellevt {
 			}
 		}
 	}
+}
+window.addEventListener('focus', updateUI, false);
+updateUI();
 </script>
-</body>
 </html>
