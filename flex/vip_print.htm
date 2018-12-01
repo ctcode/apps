@@ -11,8 +11,8 @@ body {
 	font-family: Arial;
 }
 table {
-	border-collapse: collapse;
 	width: 100%;
+	border-spacing: 1px;
 	table-layout: fixed;
 }
 td {
@@ -23,9 +23,7 @@ td.printhdr {
 	padding: 1em;
 }
 td.printcell {
-	border-left: 1px solid white;
-	border-top: 1px solid white;
-	padding: 0.25em;
+	padding: 0.2em;
 	background-color: #eeeeee;
 }
 td.printcell.weekend {
@@ -42,13 +40,9 @@ div.printcellevt {
 </style>
 <head>
 <body>
-</body>
 <script type='text/javascript'>
-function updateUI()
-{
 	var info = window.opener.vipgrid.getPrintViewInfo();
 	document.title = info.title;
-	document.body.innerHTML = "";
 	var t = document.createElement("table");
 	document.body.appendChild(t);
 	var thead = t.createTHead();
@@ -89,8 +83,6 @@ function updateUI()
 			}
 		}
 	}
-}
-window.addEventListener('focus', updateUI, false);
-updateUI();
 </script>
+</body>
 </html>
