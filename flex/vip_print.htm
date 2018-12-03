@@ -7,7 +7,6 @@
 <style>
 body {
 	margin: 0;
-	font-size: 0.62em;
 	font-family: Arial;
 }
 table {
@@ -45,6 +44,7 @@ div.printcellevt {
 	document.title = info.title;
 	var t = document.createElement("table");
 	document.body.appendChild(t);
+	t.style.fontSize = info.fontsize;
 	var thead = t.createTHead();
 	thead.insertRow(0);
 	var tbody = t.createTBody();

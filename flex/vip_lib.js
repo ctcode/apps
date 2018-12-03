@@ -828,7 +828,7 @@ VipGrid.prototype.setLocalStorage = function(stg)
 
 VipGrid.prototype.getPrintViewInfo = function()
 {
-	var info = {title: document.title, maxrows: 0, cols: []};
+	var info = {title: document.title, fontsize: this.div.style.fontSize, maxrows: 0, cols: []};
 	
 	var vipcol = this.First();
 	while (vipcol)
