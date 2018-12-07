@@ -140,7 +140,7 @@ void wakeGPS()
 		c++;
 
 		if (c == 30)
-			reperror = "GPS_FIX_FAIL";
+			reperror = "FIX_GPS_FAIL";
 	}
 }
 
