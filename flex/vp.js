@@ -43,12 +43,17 @@ function vp_main($scope, $timeout, $window)
 		alert("Account Error: " + msg);
 	}
 
+	setView('home');
 	gAccount.Connect();
 
 	$scope.onclickPrintView = function() {
 		setView('print');
 		initPrintView();
 		ga_hit("feature", "print_view");
+	}
+
+	$scope.onclickClosePrintView = function() {
+		setView('home');
 	}
 
 	$scope.onclickSettings = function() {

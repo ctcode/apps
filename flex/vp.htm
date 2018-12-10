@@ -56,11 +56,16 @@ body {
 	align-items: center;
 	width: 2em;
 }
-#buttons .toolbtn img {
+.toolbtn img {
 	opacity: 0.5;
 }
-#buttons .toolbtn img:hover {
+.toolbtn img:hover {
 	opacity: 1;
+}
+.staticbtn {
+	position: fixed;
+	top: 0.5em;
+	right: 0.5em;
 }
 #home {
 	flex-grow: 1;
@@ -128,27 +133,32 @@ div.printevt {
 </head>
 <body ng-app="vp" ng-controller="main" ng-cloak>
 
-<div id="account" ng-hide="(view=='print')">{{sign_msg}}</div>
-<div id="banner" ng-hide="(view=='print')">
-	<span id="bantxt">{{settings.banner_text}}</span>
-	<div id="buttons">
-		<button ng-hide="form.$pristine || busy" ng-click="onclickSave()">Save</button>
-		<button ng-show="(view=='settings') && !busy" ng-click="onclickCancel()">Cancel</button>
-		<div class="toolbtn" ng-show="(view=='home') && !busy">
-			<img src="print.png" title="Print View" draggable="false" ng-click="onclickPrintView()">
+<div ng-show="(view=='home') || (view=='settings')">
+	<div id="account">{{sign_msg}}</div>
+	<div id="banner">
+		<span id="bantxt">{{settings.banner_text}}</span>
+		<div id="buttons">
+			<button ng-hide="form.$pristine || busy" ng-click="onclickSave()">Save</button>
+			<button ng-show="(view=='settings') && !busy" ng-click="onclickCancel()">Cancel</button>
+			<div class="toolbtn" ng-show="(view=='home') && !busy">
+				<img src="print.png" title="Print View" draggable="false" ng-click="onclickPrintView()">
+			</div>
+			<div class="toolbtn" ng-show="(view=='home') && !busy">
+				<img src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()">
+			</div>
+			<span ng-show="busy"><i>Saving...</i></span>
 		</div>
-		<div class="toolbtn" ng-show="(view=='home') && !busy">
-			<img src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()">
-		</div>
-		<span ng-show="busy"><i>Saving...</i></span>
 	</div>
 </div>
 <div id="home" ng-show="view=='home'">
 	<div id="grid"></div>
 	<div id="calendarbar"></div>
 </div>
-<div id="printview" ng-show="view=='print'">
-	<table ng-style="{'font-size': printinfo.fontsize}">
+<div id="printview" ng-show="view=='print'" ng-style="{'font-size': printinfo.fontsize}">
+	<div class="toolbtn staticbtn">
+		<img src="close.png" title="Close" draggable="false" ng-click="onclickClosePrintView()">
+	</div>
+	<table>
 		<thead>
 			<tr><td class="printhdr" ng-repeat="hdr in printinfo.cols">{{hdr}}</td></tr>
 		</thead>
