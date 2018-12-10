@@ -62,6 +62,11 @@ body {
 #buttons .toolbtn img:hover {
 	opacity: 1;
 }
+#home {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+}
 #grid {
 	flex-grow: 1;
 }
@@ -69,6 +74,27 @@ body {
 	font-size: 0.6em;
 	min-height: 2.8em;
 	background-color: gainsboro;
+}
+table {
+	width: 100%;
+	border-spacing: 1px;
+	table-layout: fixed;
+}
+td.printhdr {
+	text-align: center;
+	padding: 1em;
+}
+td.printcell {
+	padding: 0.2em;
+}
+td.printcellnum {
+	font-size: 0.8em;
+	text-align: center;
+	width: 2em;
+}
+div.printevt {
+	padding: 0.2em 0;
+	word-wrap: break-word;
 }
 #settings {
 	padding-left: 2em;
@@ -102,23 +128,44 @@ body {
 </head>
 <body ng-app="vp" ng-controller="main" ng-cloak>
 
-<div id="account">{{sign_msg}}</div>
-<div id="banner">
+<div id="account" ng-hide="(view=='print')">{{sign_msg}}</div>
+<div id="banner" ng-hide="(view=='print')">
 	<span id="bantxt">{{settings.banner_text}}</span>
 	<div id="buttons">
 		<button ng-hide="form.$pristine || busy" ng-click="onclickSave()">Save</button>
 		<button ng-show="(view=='settings') && !busy" ng-click="onclickCancel()">Cancel</button>
-		<div class="toolbtn" ng-show="(view=='grid') && !busy">
+		<div class="toolbtn" ng-show="(view=='home') && !busy">
 			<img src="print.png" title="Print View" draggable="false" ng-click="onclickPrintView()">
 		</div>
-		<div class="toolbtn" ng-show="(view=='grid') && !busy">
+		<div class="toolbtn" ng-show="(view=='home') && !busy">
 			<img src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()">
 		</div>
 		<span ng-show="busy"><i>Saving...</i></span>
 	</div>
 </div>
-<div id="grid" ng-show="view=='grid'"></div>
-<div id="calendarbar" ng-show="view=='grid'"></div>
+<div id="home" ng-show="view=='home'">
+	<div id="grid"></div>
+	<div id="calendarbar"></div>
+</div>
+<div id="printview" ng-show="view=='print'">
+	<table ng-style="{'font-size': printinfo.fontsize}">
+		<thead>
+			<tr><td class="printhdr" ng-repeat="hdr in printinfo.cols">{{hdr}}</td></tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="row in printinfo.rows">
+				<td class="printcell" ng-repeat="cell in row.cells" ng-style="{'background-color': cell.colour}">
+					<table ng-repeat="day in cell.days">
+						<tr>
+							<td class="printcellnum">{{day.num}}</td>
+							<td><div class="printevt" ng-repeat="evt in day.evts"><span ng-style="{color: evt.colour}">&#x25fc;</span>{{evt.title}}</div></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 <div id="settings" ng-show="view=='settings'">
 	<div class="sub group"><b>Account</b>
 		<div class="sub">{{sign_msg}}</div>
