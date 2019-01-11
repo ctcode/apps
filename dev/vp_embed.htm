@@ -22,13 +22,33 @@ body {
 <div id="grid"></div>
 </body>
 <script>
+
 	var vg = new VipGrid("grid");
-	var options = {cfg: vg.cfg, cal_id_list: []};
-	var evt = new CustomEvent('vpEmbedInit', {detail: options});
-	window.parent.dispatchEvent(evt);
+	var cal_id_list = [];
+
+	var options = window.location.search.substr(1).split(';');
+	for (var i=0; i < options.length; i++)
+	{
+		var opt = decodeURIComponent(options[i]).split('=');
+
+		if (opt[0] == "src")
+			cal_id_list.push(opt[1]);
+
+		if (opt[0] == "cfg")
+		{
+			var keyval = opt[1].split(':');
+			var property = JSON.parse('{\"value\":' + keyval[1] + '}');
+			vg.cfg[keyval[0]] = property.value;
+		}
+	}
+
 	//var gCal = new AuthCal();
 	//gCal.onError = onCalError;
 	//vg.registerEventSource(gCal);
+
+	console.log(vg.cfg);
+	console.log(cal_id_list);
 	vg.init();
+
 </script>
 </html>
