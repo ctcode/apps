@@ -816,6 +816,7 @@ VipGrid.prototype.ReloadEvents = function()
 VipGrid.prototype.SyncEvents = function()
 {
 	if (this.evtsrc)
+	if (this.evtsrc.syncEvents)
 		this.evtsrc.syncEvents();
 }
 
@@ -1106,7 +1107,9 @@ VipCell.prototype.onclickDayNumber = function(event)
 function VipMultiDayEvent(parent, info, vipcell)
 {
 	this.createChild(parent, "vipmultidayevent");
-	this.addClass(info.calclass);
+
+	if (info.calclass)
+		this.addClass(info.calclass);
 
 	this.info = info;
 	this.div.id = info.id;
@@ -1151,7 +1154,9 @@ VipMultiDayEvent.prototype.edit = function()
 function VipSingleDayEvent(parent, info, cellid)
 {
 	this.createChild(parent, "vipsingledayevent");
-	this.addClass(info.calclass);
+
+	if (info.calclass)
+		this.addClass(info.calclass);
 
 	this.div.id = info.id;
 	this.div.onclick = this.edit.bind(this);
