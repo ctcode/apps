@@ -1,6 +1,6 @@
 
 int repmode=2;
-String reperror="-";
+String lasterr="";
 
 void led(bool on)
 {
@@ -74,74 +74,68 @@ struct hhmm getTime()
 	return {atoi(h.c_str()), atoi(m.c_str())};
 }
 
-void wakeGSM()
+bool wakeGSM()
 {
-	int c=0;
-	while(c < 10)
+	for (int c=0; c < 10; c++)
 	{
 		cmd("AT+CFUN=1", 3000);
 		cmd("AT+CFUN?");
 		if (Serial.find("CFUN: 1"))
-			break;
-
-		c++;
-
-		if (c == 10)
-			reperror = "WAKE_GSM_FAIL";
+			return true;
 	}
+
+	lasterr = "WAKE_GSM_FAIL";
+	return false;
 }
 
-void wakeGPRS()
+bool wakeGPRS()
 {
 	cmd("AT+SAPBR=3,1,contype,GPRS");
 	cmd("AT+SAPBR=3,1,APN,giffgaff.com");
 	cmd("AT+SAPBR=3,1,USER,giffgaff");
 
-	int c=0;
-	while(c < 10)
+	for (int c=0; c < 10; c++)
 	{
 		cmd("AT+SAPBR=1,1", 3000);
 		cmd("AT+SAPBR=2,1");
 		if (Serial.find("SAPBR: 1,1"))
-			break;
-
-		c++;
-
-		if (c == 10)
-			reperror = "WAKE_GPRS_FAIL";
+			return true;
 	}
+
+	lasterr = "WAKE_GPRS_FAIL";
+	return false;
 }
 
-void wakeGPS()
+bool pwrGPS()
 {
-	int c=0;
-	while(c < 10)
+	for (int c=0; c < 10; c++)
 	{
 		cmd("AT+CGPSPWR=1", 3000);
 		cmd("AT+CGPSPWR?");
 		if (Serial.find("CGPSPWR: 1"))
-			break;
-
-		c++;
-
-		if (c == 10)
-			reperror = "WAKE_GPS_FAIL";
+			return true;
 	}
 
-	c=0;
-	while(c < 30)
+	lasterr = "PWR_GPS_FAIL";
+	return false;
+}
+
+bool wakeGPS()
+{
+	if (!pwrGPS())
+		return false;
+
+	for (int c=0; c < 30; c++)
 	{
 		wait(1, 1);
 
 		cmd("AT+CGPSSTATUS?");
 		if (Serial.find("3D Fix"))
-			break;
-
-		c++;
-
-		if (c == 30)
-			reperror = "FIX_GPS_FAIL";
+			return true;
 	}
+
+	lasterr = "FIX_GPS_FAIL";
+	return false;
 }
 
 void sleep()
@@ -183,10 +177,10 @@ void setReportModeFromSMS()
 
 void report()
 {
-	led(true);
-
 	wakeGPS();
 	wakeGPRS();
+
+	led(true);
 
 	cmd("AT+CGPSSTATUS?");
 	Serial.find("CGPSSTATUS:");
@@ -212,11 +206,11 @@ void report()
 	body += "/30\n\n";
 	body += "REPMODE:";
 	body += repmode;
-	body += "\n";
-	body += "REPERROR:";
-	body += reperror;
 	body += "\n\n";
-	reperror = "-";
+	body += "Last error [";
+	body += lasterr;
+	body += "]\n\n";
+	lasterr = "";
 
 	// email
 	cmd("AT+EMAILCID=1");
