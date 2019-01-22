@@ -1,6 +1,13 @@
 
-int repmode=2;
-String lasterr="";
+int repmode;
+int wakestate;
+
+enum {
+	WS_GSM=0x0001,
+	WS_GPRS=0x0002,
+	WS_PWR_GPS=0x0004,
+	WS_FIX_GPS=0x0008
+};
 
 void led(bool on)
 {
@@ -65,6 +72,8 @@ struct hhmm
 
 struct hhmm getTime()
 {
+	// AT+CLTS=1 local time from network
+	// AT&W save setting
 	// +CCLK: "18/10/18,00:34:37+04"
 	cmd("AT+CCLK?");
 	Serial.find("CCLK:");
@@ -74,22 +83,25 @@ struct hhmm getTime()
 	return {atoi(h.c_str()), atoi(m.c_str())};
 }
 
-bool wakeGSM()
+void wakeGSM()
 {
 	for (int c=0; c < 10; c++)
 	{
 		cmd("AT+CFUN=1", 3000);
 		cmd("AT+CFUN?");
 		if (Serial.find("CFUN: 1"))
-			return true;
+		{
+			wakestate |= WS_GSM;
+			break;
+		}
 	}
-
-	lasterr = "WAKE_GSM_FAIL";
-	return false;
 }
 
-bool wakeGPRS()
+void wakeGPRS()
 {
+	if ((wakestate & WS_GSM) == 0)
+		return;
+
 	cmd("AT+SAPBR=3,1,contype,GPRS");
 	cmd("AT+SAPBR=3,1,APN,giffgaff.com");
 	cmd("AT+SAPBR=3,1,USER,giffgaff");
@@ -99,31 +111,28 @@ bool wakeGPRS()
 		cmd("AT+SAPBR=1,1", 3000);
 		cmd("AT+SAPBR=2,1");
 		if (Serial.find("SAPBR: 1,1"))
-			return true;
+		{
+			wakestate |= WS_GPRS;
+			break;
+		}
 	}
-
-	lasterr = "WAKE_GPRS_FAIL";
-	return false;
 }
 
-bool pwrGPS()
+void wakeGPS()
 {
 	for (int c=0; c < 10; c++)
 	{
 		cmd("AT+CGPSPWR=1", 3000);
 		cmd("AT+CGPSPWR?");
 		if (Serial.find("CGPSPWR: 1"))
-			return true;
+		{
+			wakestate |= WS_PWR_GPS;
+			break;
+		}
 	}
 
-	lasterr = "PWR_GPS_FAIL";
-	return false;
-}
-
-bool wakeGPS()
-{
-	if (!pwrGPS())
-		return false;
+	if ((wakestate & WS_PWR_GPS) == 0)
+		return;
 
 	for (int c=0; c < 30; c++)
 	{
@@ -131,11 +140,11 @@ bool wakeGPS()
 
 		cmd("AT+CGPSSTATUS?");
 		if (Serial.find("3D Fix"))
-			return true;
+		{
+			wakestate |= WS_FIX_GPS;
+			break;
+		}
 	}
-
-	lasterr = "FIX_GPS_FAIL";
-	return false;
 }
 
 void sleep()
@@ -145,13 +154,14 @@ void sleep()
 	cmd("AT+CGPSPWR=0");  // gps
 	cmd("AT+SAPBR=0,1");  // gprs
 	cmd("AT+CFUN=4");  // gsm
+	wakestate=0;
 
 	wait((60 - min), 10);
 }
 
 void setReportModeFromSMS()
 {
-	wait(1, 3);
+	wait(1, 5);
 
 	cmd("AT+CMGF=1");
 	cmd("AT+CSCS=\"GSM\"");
@@ -180,6 +190,9 @@ void report()
 	wakeGPS();
 	wakeGPRS();
 
+	if ((wakestate & WS_GPRS) == 0)
+		return;
+
 	led(true);
 
 	cmd("AT+CGPSSTATUS?");
@@ -207,10 +220,9 @@ void report()
 	body += "REPMODE:";
 	body += repmode;
 	body += "\n\n";
-	body += "Last error [";
-	body += lasterr;
-	body += "]\n\n";
-	lasterr = "";
+	body += "Status: ";
+	body += wakestate;
+	body += "\n\n";
 
 	// email
 	cmd("AT+EMAILCID=1");
@@ -253,6 +265,9 @@ void setup()
 
 		wait(1);
 	}
+
+	repmode=2;
+	wakestate=0;
 
 	wakeGSM();
 	setReportModeFromSMS();
