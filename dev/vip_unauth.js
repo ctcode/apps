@@ -9,27 +9,19 @@ function UnAuthCal()
 
 	// private
 	this.calendars = {};
-	this.xhttp = new XMLHttpRequest();
+	this.last_cal_id = null;
 }
 
 UnAuthCal.prototype.addCal = function(id)
 {
-	this.calendars[id] = {clr: "#2b67cf", set_clr: true};
+	this.calendars[id] = {clr: "#2b67cf"};
+	this.last_cal_id = id;
 }
 
 UnAuthCal.prototype.setClr = function(clr)
 {
-	for (id in this.calendars)
-	{
-		var cal = this.calendars[id];
-
-		if (cal.set_clr)
-		{
-			cal.clr = clr;
-			cal.set_clr = false;
-			break;
-		}
-	}
+	if (this.last_cal_id)
+		this.calendars[this.last_cal_id].clr = clr;
 }
 
 UnAuthCal.prototype.loadEvents = function()
@@ -38,25 +30,32 @@ UnAuthCal.prototype.loadEvents = function()
 	this.isoEnd = this.datespan.dtEnd.toISOString();
 
 	for (id in this.calendars)
-	{
-		var path =
-			"https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events" +
-			"?timeMin=" + this.isoStart +
-			"&timeMax=" + this.isoEnd +
-			"&key=" + this.api_key
-		;
-
-		this.xhttp.onreadystatechange = this.rcvEvents.bind(this, id);
-		this.xhttp.open("GET", path);
-		this.xhttp.send();
-	}
+		this.reqEvents(id);
 }
 
-UnAuthCal.prototype.rcvEvents = function(callsign)
+UnAuthCal.prototype.reqEvents = function(id, tok)
 {
-	if (this.xhttp.readyState == 4 && this.xhttp.status == 200)
+	var path =
+		"https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events" +
+		"?timeMin=" + this.isoStart +
+		"&timeMax=" + this.isoEnd +
+		"&key=" + this.api_key
+	;
+	
+	if (tok)
+		path += ("&pageToken=" + tok);
+
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = this.rcvEvents.bind(this, xhttp, id);
+	xhttp.open("GET", path);
+	xhttp.send();
+}
+
+UnAuthCal.prototype.rcvEvents = function(xhttp, callsign)
+{
+	if (xhttp.readyState == 4 && xhttp.status == 200)
 	{
-		var response = JSON.parse(this.xhttp.responseText);
+		var response = JSON.parse(xhttp.responseText);
 		var cal = this.calendars[callsign];
 		
 		for (var i in response.items)
@@ -90,10 +89,8 @@ UnAuthCal.prototype.rcvEvents = function(callsign)
 
 			this.forwardEvent(evt);
 		}
-	}
 
-/*
-	if (response.nextPageToken)
-		this.reqEvents({pageToken: response.result.nextPageToken, timeMin: this.isoStart, timeMax: this.isoEnd}, this.rcvLoadEvents, callsign);
-*/
+		if (response.nextPageToken)
+			this.reqEvents(callsign, response.nextPageToken);
+	}
 }

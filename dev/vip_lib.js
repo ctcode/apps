@@ -164,6 +164,7 @@ function VipGrid(gid, cbid)
 	this.touch = {id: null, start: {x:0, y:0}};
 	this.priority = null;
 	this.lastWheelEvent = 0;
+	this.enable_links = true;
 
 	if (cbid)
 		this.calbar = new VipCalendarBar(cbid);
@@ -896,7 +897,12 @@ function VipCol(parent, ymd)
 	{
 		this.viphdr = new VipDiv(this.vipcolcontent, "vipmonthhdr");
 		this.viphdr.setText(vdt.MonthTitle());
-		this.viphdr.div.onclick = this.onclickMonthHeader.bind(this);
+
+		if (vipgrid.enable_links)
+		{
+			this.viphdr.div.onclick = this.onclickMonthHeader.bind(this);
+			this.viphdr.addClass("viplink");
+		}
 
 		if (vdt.isPastMonth())
 			this.div.style.opacity = vipgrid.cfg.past_opacity;
@@ -1041,9 +1047,14 @@ function VipCell(parent, vipcol, ymd)
 
 	this.vipnum = new VipDiv(this, "vipcellnum");
 	this.vipnum.setText(vdt.DayOfMonth());
-	this.vipnum.div.onclick = this.onclickDayNumber.bind(this);
 	if (VipDate.isToday(ymd))
 		this.vipnum.addClass("today");
+
+	if (vipgrid.enable_links)
+	{
+		this.vipnum.div.onclick = this.onclickDayNumber.bind(this);
+		this.vipnum.addClass("viplink");
+	}
 	
 	this.vipevts = new VipDiv(this, "vipcellevts");
 }
@@ -1111,10 +1122,15 @@ function VipMultiDayEvent(parent, info, vipcell)
 	if (info.calclass)
 		this.addClass(info.calclass);
 
+	if (vipgrid.enable_links)
+	{
+		this.div.onclick = this.edit.bind(this);
+		this.addClass("viplink");
+	}
+
 	this.info = info;
 	this.div.id = info.id;
 	this.div.title = fmt("^ - ^", this.info.calendar, this.info.title);
-	this.div.onclick = this.edit.bind(this);
 	this.div.style.backgroundColor = this.info.colour;
 	this.div.style.setProperty('--start', vipcell.cellindex);
 	this.div.style.opacity = vipgrid.cfg.multi_day_opacity;
@@ -1158,8 +1174,13 @@ function VipSingleDayEvent(parent, info, cellid)
 	if (info.calclass)
 		this.addClass(info.calclass);
 
+	if (vipgrid.enable_links)
+	{
+		this.div.onclick = this.edit.bind(this);
+		this.addClass("viplink");
+	}
+
 	this.div.id = info.id;
-	this.div.onclick = this.edit.bind(this);
 	
 	this.info = info;
 	this.cellid = cellid;

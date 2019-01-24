@@ -1,7 +1,7 @@
 function vp_main($scope, $timeout, $window)
 {
 	var gAccount = new AuthAccount();
-	gAccount.authClientID = '1030417719465-259jp66au97si84mj76pso7ujvuo1lnf.apps.googleusercontent.com';  // apps
+	gAccount.authClientID = vp_oauthClientID;
 	gAccount.authScope = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/drive.appdata';
 
 	var gAppData = new AuthAppData();
