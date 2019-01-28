@@ -9,6 +9,11 @@ enum {
 	WS_FIX_GPS=0x0008
 };
 
+bool checkstate(int ws)
+{
+	return (wakestate & ws) > 0;
+}
+
 void led(bool on)
 {
 	digitalWrite(LED_BUILTIN, on ? HIGH : LOW);
@@ -99,7 +104,7 @@ void wakeGSM()
 
 void wakeGPRS()
 {
-	if ((wakestate & WS_GSM) == 0)
+	if (!checkstate(WS_GSM))
 		return;
 
 	cmd("AT+SAPBR=3,1,contype,GPRS");
@@ -131,7 +136,7 @@ void wakeGPS()
 		}
 	}
 
-	if ((wakestate & WS_PWR_GPS) == 0)
+	if (!checkstate(WS_PWR_GPS))
 		return;
 
 	for (int c=0; c < 30; c++)
@@ -190,7 +195,7 @@ void report()
 	wakeGPS();
 	wakeGPRS();
 
-	if ((wakestate & WS_GPRS) == 0)
+	if (!checkstate(WS_GPRS))
 		return;
 
 	led(true);
@@ -199,20 +204,17 @@ void report()
 	Serial.find("CGPSSTATUS:");
 	String fix = read('\r');
 
-	cmd("AT+CGPSINF=2");
-	Serial.find("CGPSINF:");
-	String loc = read('\r');
-
 	cmd("AT+CSQ");
 	Serial.find("CSQ:");
 	String signal = read(',');
 
+	cmd("AT+CGPSINF=2");
+	Serial.find("CGPSINF:");
+	String loc = read('\r');
+
 	String body;
 	body += "GPS: ";
 	body += fix;
-	body += "\n\n";
-	body += "https://ctcode.github.io/apps/ostracker/ostrkino.htm#";
-	body += loc;
 	body += "\n\n";
 	body += "GSM: ";
 	body += signal;
@@ -220,9 +222,13 @@ void report()
 	body += "REPMODE:";
 	body += repmode;
 	body += "\n\n";
-	body += "Status: ";
-	body += wakestate;
-	body += "\n\n";
+
+	if (checkstate(WS_FIX_GPS))
+	{
+		body += "https://ctcode.github.io/apps/ostracker/ostrkino.htm#";
+		body += loc;
+		body += "\n\n";
+	}
 
 	// email
 	cmd("AT+EMAILCID=1");
