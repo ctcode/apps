@@ -70,7 +70,6 @@ UnAuthCal.prototype.rcvEvents = function(xhttp, callsign)
 				var evt = {
 					id: item.id,
 					title: item.summary,
-					htmlLink: item.htmlLink,
 					colour: cal.clr,
 					calendar: response.summary
 				};
