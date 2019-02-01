@@ -88,12 +88,12 @@ table {
 table.listtable {
 	height: 100vh;
 	padding: 2vh 4vw 2vh 0;
-	font-size: 0.75em;
+	font-size: 1.3vh;
 }
 td.listhdr {
 	text-align: center;
 	width: 10vw;
-	font-size: 1.2em;
+	font-size: 1.7vh;
 	font-weight: bold;
 }
 td.listcell {
@@ -174,7 +174,7 @@ div.printevt {
 	<table class="listtable">
 		<tr ng-repeat="row in listinfo.rows">
 			<td class="listhdr">{{row.hdr}}</td>
-			<td class="listcell" ng-repeat="cell in row.cells" ng-style="{'background-color': cell.colour}">{{cell.num}}</td>
+			<td class="listcell" ng-repeat="cell in row.cells" ng-class="cell.classlist">{{cell.num}}</td>
 		</tr>
 	</table>
 </div>
@@ -185,7 +185,7 @@ div.printevt {
 		</thead>
 		<tbody>
 			<tr ng-repeat="row in printinfo.rows">
-				<td class="printcell" ng-repeat="cell in row.cells" ng-style="{'background-color': cell.colour}">
+				<td class="printcell" ng-repeat="cell in row.cells" ng-class="cell.classlist">
 					<table ng-repeat="day in cell.days">
 						<tr>
 							<td class="printcellnum">{{day.num}}</td>

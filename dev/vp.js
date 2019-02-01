@@ -165,17 +165,19 @@ function vp_main($scope, $timeout, $window)
 			var row = {hdr:vipcol.hdr, cells: []};
 			for (var i=0; i < vipinfo.maxrows; i++)
 				row.cells.push({});
-			
-			$scope.listinfo.rows.push(row);
 
 			for (var icell=0; icell < vipcol.cells.length; icell++)
 			{
 				var vipcell = vipcol.cells[icell];
 
 				var listcell = row.cells[icell + vipcol.offset];
-				listcell.colour = vipcell.colour;
 				listcell.num = vipcell.num;
+				listcell.classlist = ["vipday"];
+				if (vipcell.weekend) listcell.classlist.push("weekend");
+				if (vipcell.evts.length > 0) listcell.classlist.push("eventday");
 			}
+
+			$scope.listinfo.rows.push(row);
 		}
 	}
 
@@ -203,7 +205,8 @@ function vp_main($scope, $timeout, $window)
 				var vipcell = vipcol.cells[icell];
 
 				var printcell = $scope.printinfo.rows[icell + vipcol.offset].cells[icol];
-				printcell.colour = vipcell.colour;
+				printcell.classlist = ["vipday"];
+				if (vipcell.weekend) printcell.classlist.push("weekend");
 
 				var day = {num: vipcell.num, evts: []};
 

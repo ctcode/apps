@@ -858,7 +858,7 @@ VipGrid.prototype.getViewInfo = function()
 			{
 				var cell = {
 					num: vipcell.vipnum.div.textContent,
-					colour: getComputedStyle(vipcell.div)['background-color'],
+					weekend: vipcell.hasClass("weekend"),
 					evts: []
 				};
 			
@@ -1044,6 +1044,7 @@ function VipCell(parent, vipcol, ymd)
 
 	var vdt = new VipDate(ymd);
 
+	this.addClass("vipday");
 	if (vdt.isWeekend())
 		this.addClass("weekend");
 

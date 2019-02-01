@@ -61,18 +61,25 @@
 	right: calc((var(--slot) * (var(--markerwidth) + 2px)) + 3px);
 	width: var(--markerwidth);
 }
-
 .vipcell {
 	height: calc(var(--celloffset) - 1px);
 	margin-left: 1px;
 	margin-bottom: 1px;
-	background-color: #eaeaea;
 	display: flex;
 	overflow: hidden;
 	pointer-events: none;
 }
-.vipcell.weekend {
+.vipday {
+	background-color: #eaeaea;
+}
+.vipday.weekend {
 	background-color: #d8d8d8;
+}
+.vipday.eventday {
+	background-color: #eaeab0;
+}
+.vipday.eventday.weekend {
+	background-color: #d8d877;
 }
 .vipcellnum {
 	margin: 0.2em;
