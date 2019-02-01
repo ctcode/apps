@@ -45,13 +45,19 @@ function vp_main($scope, $timeout, $window)
 
 	gAccount.Connect();
 
+	$scope.onclickListView = function() {
+		setView('list');
+		initListView();
+		ga_hit("feature", "list_view");
+	}
+
 	$scope.onclickPrintView = function() {
 		setView('print');
 		initPrintView();
 		ga_hit("feature", "print_view");
 	}
 
-	$scope.onclickClosePrintView = function() {
+	$scope.onclickCloseView = function() {
 		setView('home');
 	}
 
@@ -142,14 +148,39 @@ function vp_main($scope, $timeout, $window)
 		if (cal_error_notified)
 			return;
 
-		alert("Error loading calendar events.\n\nPlease reload the page.\n\n" + msg);
+		alert("Error loading calendar events.\n\n" + msg);
 		ga_hit("calendar_error", msg);
 
 		cal_error_notified = true;
 	}
 
+	function initListView() {
+		var vipinfo = $window.vipgrid.getViewInfo();
+		$scope.listinfo = {rows: []};
+
+		for (var icol=0; icol < vipinfo.cols.length; icol++)
+		{
+			var vipcol = vipinfo.cols[icol];
+			
+			var row = {hdr:vipcol.hdr, cells: []};
+			for (var i=0; i < vipinfo.maxrows; i++)
+				row.cells.push({});
+			
+			$scope.listinfo.rows.push(row);
+
+			for (var icell=0; icell < vipcol.cells.length; icell++)
+			{
+				var vipcell = vipcol.cells[icell];
+
+				var listcell = row.cells[icell + vipcol.offset];
+				listcell.colour = vipcell.colour;
+				listcell.num = vipcell.num;
+			}
+		}
+	}
+
 	function initPrintView() {
-		var vipinfo = $window.vipgrid.getPrintViewInfo();
+		var vipinfo = $window.vipgrid.getViewInfo();
 		$scope.printinfo = {cols: [], rows: [], fontsize: vipinfo.fontsize};
 
 		for (var i=0; i < vipinfo.maxrows; i++)

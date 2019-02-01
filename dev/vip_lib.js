@@ -838,7 +838,7 @@ VipGrid.prototype.setLocalStorage = function(stg)
 		window.localStorage.vip = JSON.stringify(stg);
 }
 
-VipGrid.prototype.getPrintViewInfo = function()
+VipGrid.prototype.getViewInfo = function()
 {
 	var info = {fontsize: this.div.style.fontSize, maxrows: 0, cols: []};
 	

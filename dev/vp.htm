@@ -85,6 +85,22 @@ table {
 	border-spacing: 1px;
 	table-layout: fixed;
 }
+table.listtable {
+	height: 100vh;
+	padding: 2vh 4vw 2vh 0;
+	font-size: 0.75em;
+}
+td.listhdr {
+	text-align: center;
+	width: 10vw;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+td.listcell {
+	padding: 0.2em;
+	vertical-align: top;
+	text-align: center;
+}
 td.printhdr {
 	text-align: center;
 	padding: 1em;
@@ -138,6 +154,9 @@ div.printevt {
 			<button ng-hide="form.$pristine || busy" ng-click="onclickSave()">Save</button>
 			<button ng-show="(view=='settings') && !busy" ng-click="onclickCancel()">Cancel</button>
 			<div class="toolbtn" ng-show="(view=='home') && !busy">
+				<img src="list.png" title="List View" draggable="false" ng-click="onclickListView()">
+			</div>
+			<div class="toolbtn" ng-show="(view=='home') && !busy">
 				<img src="print.png" title="Print View" draggable="false" ng-click="onclickPrintView()">
 			</div>
 			<div class="toolbtn" ng-show="(view=='home') && !busy">
@@ -151,10 +170,15 @@ div.printevt {
 	<div id="grid"></div>
 	<div id="calendarbar"></div>
 </div>
+<div id="listview" ng-show="view=='list'">
+	<table class="listtable">
+		<tr ng-repeat="row in listinfo.rows">
+			<td class="listhdr">{{row.hdr}}</td>
+			<td class="listcell" ng-repeat="cell in row.cells" ng-style="{'background-color': cell.colour}">{{cell.num}}</td>
+		</tr>
+	</table>
+</div>
 <div id="printview" ng-show="view=='print'" ng-style="{'font-size': printinfo.fontsize}">
-	<div class="toolbtn staticbtn noprint">
-		<img src="close.png" title="Close" draggable="false" ng-click="onclickClosePrintView()">
-	</div>
 	<table>
 		<thead>
 			<tr><td class="printhdr" ng-repeat="hdr in printinfo.cols">{{hdr}}</td></tr>
@@ -172,6 +196,9 @@ div.printevt {
 			</tr>
 		</tbody>
 	</table>
+</div>
+<div class="toolbtn staticbtn noprint" ng-show="view=='list' || view=='print'">
+	<img src="close.png" title="Close" draggable="false" ng-click="onclickCloseView()">
 </div>
 <div id="settings" ng-show="view=='settings'">
 	<div class="sub group"><b>Account</b>
