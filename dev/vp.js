@@ -122,7 +122,8 @@ function vp_main($scope, $timeout, $window)
 	function initGrid() {
 		document.title = $scope.settings.banner_text;
 
-		var vg = new VipGrid("grid", "calendarbar");
+		var vg = new VipGrid("grid");
+		var cb = new VipCalendarBar("calendarbar");
 
 		if ($scope.signed_in)
 		{
@@ -130,6 +131,7 @@ function vp_main($scope, $timeout, $window)
 			gCal.onError = onCalError;
 
 			vg.registerEventSource(gCal);
+			cb.registerCalendarSource(gCal);
 		}
 
 		vg.cfg = $scope.settings.vipconfig;

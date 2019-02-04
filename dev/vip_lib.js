@@ -145,7 +145,7 @@ function VipGridConfig()
 
 var vipgrid;
 
-function VipGrid(gid, cbid)
+function VipGrid(gid)
 {
 	vipgrid = this;
 
@@ -165,9 +165,6 @@ function VipGrid(gid, cbid)
 	this.priority = null;
 	this.lastWheelEvent = 0;
 	this.enable_links = true;
-
-	if (cbid)
-		this.calbar = new VipCalendarBar(cbid);
 
 	this.div.onmousedown = this.onmousedown.bind(this);
 	this.div.onmousemove = this.onmousemove.bind(this);
@@ -677,9 +674,6 @@ VipGrid.prototype.registerEventSource = function(src)
 	src.forwardEvent = this.rcvCalEvent.bind(this);
 	src.forwardEventReloadReq = this.ReloadEvents.bind(this);
 	this.evtsrc = src;
-	
-	if (this.calbar)
-		this.calbar.registerCalendarSource(src);
 }
 
 VipGrid.prototype.rcvCalSetting = function(setting, value)
