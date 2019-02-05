@@ -174,9 +174,9 @@ function vp_main($scope, $timeout, $window)
 
 				var listcell = row.cells[icell + vipcol.offset];
 				listcell.num = vipcell.num;
+				listcell.evts = [];
 				listcell.classlist = ["vipday"];
 				if (vipcell.weekend) listcell.classlist.push("weekend");
-				if (vipcell.evts.length > 0) listcell.classlist.push("eventday");
 			}
 
 			$scope.listinfo.rows.push(row);

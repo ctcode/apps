@@ -75,12 +75,6 @@
 .vipday.weekend {
 	background-color: #d8d8d8;
 }
-.vipday.eventday {
-	background-color: #eaeab0;
-}
-.vipday.eventday.weekend {
-	background-color: #d8d877;
-}
 .vipcellnum {
 	margin: 0.2em;
 	width: 1.6em;
