@@ -859,9 +859,7 @@ VipGrid.prototype.getViewInfo = function()
 				var vipevt = vipcell.vipevts.First();
 				while (vipevt)
 				{
-					if (getComputedStyle(vipevt.div).display != "none")
-						cell.evts.push({title: vipevt.div.title, colour: vipevt.info.colour});
-
+					cell.evts.push({title: vipevt.div.title, info: vipevt.info});
 					vipevt = vipevt.Next();
 				}
 

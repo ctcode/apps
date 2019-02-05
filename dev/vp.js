@@ -215,7 +215,7 @@ function vp_main($scope, $timeout, $window)
 				for (var ievt=0; ievt < vipcell.evts.length; ievt++)
 				{
 					var vipevt = vipcell.evts[ievt];
-					day.evts.push({title: vipevt.title, colour: vipevt.colour});
+					day.evts.push({title: vipevt.title, colour: vipevt.info.colour, calclass: vipevt.info.calclass});
 				}
 
 				printcell.days.push(day);
