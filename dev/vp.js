@@ -15,6 +15,7 @@ function vp_main($scope, $timeout, $window)
 			appdata.vipconfig.weekends = "6,0";
 	}
 
+	setView('init');
 	$scope.multi_col_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 	$scope.settings = gAppData.getAppData();
 	$scope.signed_in = false;

@@ -26,7 +26,7 @@ body {
 }
 #account {
 	font-family: Roboto;
-	font-size: 0.8em;
+	font-size: 0.7em;
 	line-height: 2em;
 	margin-right: 1em;
 	text-align: right;
@@ -157,20 +157,20 @@ div.printevt {
 </head>
 <body ng-app="vp" ng-controller="main" ng-cloak>
 
-<div ng-show="view=='home' || view=='settings'">
+<div ng-show="view=='init' || view=='home' || view=='settings'">
 	<div id="account" class="noprint">{{sign_msg}}</div>
 	<div id="banner">
 		<span id="bantxt">{{settings.banner_text}}</span>
 		<div id="buttons" class="noprint">
 			<button ng-hide="form.$pristine || busy" ng-click="onclickSave()">Save</button>
 			<button ng-show="(view=='settings') && !busy" ng-click="onclickCancel()">Cancel</button>
-			<div class="toolbtn" ng-show="(view=='home') && !busy">
+			<div class="toolbtn" ng-show="view=='init' || view=='home'">
 				<img src="list.png" title="List View" draggable="false" ng-click="onclickListView()">
 			</div>
-			<div class="toolbtn" ng-show="(view=='home') && !busy">
+			<div class="toolbtn" ng-show="view=='init' || view=='home'">
 				<img src="print.png" title="Print View" draggable="false" ng-click="onclickPrintView()">
 			</div>
-			<div class="toolbtn" ng-show="(view=='home') && !busy">
+			<div class="toolbtn" ng-show="view=='init' || view=='home'">
 				<img src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()">
 			</div>
 			<span ng-show="busy"><i>Saving...</i></span>
@@ -179,7 +179,6 @@ div.printevt {
 </div>
 <div id="home" ng-show="view=='home'">
 	<div id="grid"></div>
-	<div id="calendarbar"></div>
 </div>
 <div id="listview" ng-show="view=='list'">
 	<table class="listtable">
@@ -211,6 +210,7 @@ div.printevt {
 		</tbody>
 	</table>
 </div>
+<div id="calendarbar" ng-show="view=='home' || view=='list' || view=='print'"></div>
 <div class="toolbtn staticbtn noprint" ng-show="view=='list' || view=='print'">
 	<img src="close.png" title="Close" draggable="false" ng-click="onclickCloseView()">
 </div>
