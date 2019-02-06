@@ -157,26 +157,28 @@ function vp_main($scope, $timeout, $window)
 	}
 
 	function initListView() {
-		var vipinfo = $window.vipgrid.getViewInfo();
+		var viewcols = $window.vipgrid.getViewCols();
 		$scope.listinfo = {rows: []};
 
-		for (var icol=0; icol < vipinfo.cols.length; icol++)
+		for (var icol=0; icol < viewcols.length; icol++)
 		{
-			var vipcol = vipinfo.cols[icol];
+			var vipcol = viewcols[icol];
 			
-			var row = {hdr:vipcol.hdr, cells: []};
-			for (var i=0; i < vipinfo.maxrows; i++)
+			var row = {hdr:vipcol.viphdr.getText(), cells: []};
+			for (var i=0; i < (31+6); i++)
 				row.cells.push({});
 
-			for (var icell=0; icell < vipcol.cells.length; icell++)
+			var vipcell = vipcol.vipcells.First();
+			while (vipcell)
 			{
-				var vipcell = vipcol.cells[icell];
-
-				var listcell = row.cells[icell + vipcol.offset];
-				listcell.num = vipcell.num;
+				var listcell = row.cells[vipcell.cellindex + vipcol.offsetday];
+				listcell.num = vipcell.vipnum.getText();
 				listcell.evts = [];
 				listcell.classlist = ["vipday"];
-				if (vipcell.weekend) listcell.classlist.push("weekend");
+				if (vipcell.hasClass("weekend"))
+					listcell.classlist.push("weekend");
+
+				vipcell = vipcell.Next();
 			}
 
 			$scope.listinfo.rows.push(row);
