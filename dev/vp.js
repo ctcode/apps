@@ -140,6 +140,8 @@ function vp_main($scope, $timeout, $window)
 
 	function setView(view) {
 		$scope.view = view;
+		$scope.listinfo = {};
+		$scope.printinfo = {};
 		
 		if (view == 'home')
 			$timeout(function(){$window.onresize();}, 100);
@@ -177,6 +179,13 @@ function vp_main($scope, $timeout, $window)
 				listcell.classlist = ["vipday"];
 				if (vipcell.hasClass("weekend"))
 					listcell.classlist.push("weekend");
+
+				var vipevt = vipcell.vipevts.First();
+				while (vipevt)
+				{
+					listcell.evts.push({info: vipevt.info});
+					vipevt = vipevt.Next();
+				}
 
 				vipcell = vipcell.Next();
 			}

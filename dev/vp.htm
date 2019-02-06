@@ -97,9 +97,20 @@ td.listhdr {
 	font-weight: bold;
 }
 td.listcell {
-	padding: 0.2em;
+	position: relative;
+	padding: 0.4em;
 	vertical-align: top;
 	text-align: center;
+	z-index: 0;
+}
+div.listevt {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	opacity: 0.4;
 }
 td.printhdr {
 	text-align: center;
@@ -174,7 +185,10 @@ div.printevt {
 	<table class="listtable">
 		<tr ng-repeat="row in listinfo.rows">
 			<td class="listhdr">{{row.hdr}}</td>
-			<td class="listcell" ng-repeat="cell in row.cells" ng-class="cell.classlist">{{cell.num}}</td>
+			<td class="listcell" ng-repeat="cell in row.cells" ng-class="cell.classlist">
+				<span>{{cell.num}}</span>
+				<div class="listevt" ng-repeat="evt in cell.evts" ng-class="evt.info.calclass" ng-style="{backgroundColor: evt.info.colour}"></div>
+			</td>
 		</tr>
 	</table>
 </div>
