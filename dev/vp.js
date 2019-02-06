@@ -222,5 +222,7 @@ function vp_main($scope, $timeout, $window)
 				vipcell = vipcell.Next();
 			}
 		}
+		
+		document.getElementById("printview").style.fontSize = $window.vipgrid.div.style.fontSize;
 	}
 }
