@@ -187,7 +187,7 @@ div.printevt {
 			<td class="listhdr">{{row.hdr}}</td>
 			<td class="listcell" ng-repeat="cell in row.cells" ng-class="cell.classlist">
 				<span>{{cell.num}}</span>
-				<div class="listevt" ng-repeat="evt in cell.evts" ng-class="evt.info.calclass" ng-style="{backgroundColor: evt.info.colour}"></div>
+				<div class="listevt" ng-repeat="evt in cell.evts" ng-class="evt.calclass" ng-style="{backgroundColor: evt.colour}"></div>
 			</td>
 		</tr>
 	</table>
@@ -199,11 +199,11 @@ div.printevt {
 		</thead>
 		<tbody>
 			<tr ng-repeat="row in printinfo.rows">
-				<td class="printcell" ng-repeat="cell in row.cells" ng-class="cell.classlist">
+				<td class="printcell" ng-repeat="cell in row.cells" ng-class="cell.day.classlist">
 					<table ng-repeat="day in cell">
 						<tr>
 							<td class="printcellnum">{{day.num}}</td>
-							<td><div class="printevt" ng-repeat="evt in day.evts" ng-class="evt.info.calclass"><span ng-style="{color: evt.info.colour}">&#x25fc;</span>{{evt.title}}</div></td>
+							<td><div class="printevt" ng-repeat="evt in day.evts" ng-class="evt.calclass"><span ng-style="{color: evt.colour}">&#x25fc;</span>{{evt.title}}</div></td>
 						</tr>
 					</table>
 				</td>

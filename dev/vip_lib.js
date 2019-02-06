@@ -1020,6 +1020,7 @@ function VipCell(parent, vipcol, ymd)
 	this.vipcol = vipcol;
 	this.ymd = ymd;
 	this.div.id = ymd;
+	this.cellindex = null;
 
 	var vdt = new VipDate(ymd);
 
@@ -1083,14 +1084,37 @@ VipCell.prototype.addEvent = function(info)
 	this.vipevts.MoveLastBefore(vipsib);  // sort in time order
 }
 
+VipCell.prototype.getEventInfo = function(get_multi)
+{
+	var info = {};
+
+	var vipevt = this.vipevts.First();
+	while (vipevt)
+	{
+		info[vipevt.info.id] = vipevt.info;
+		vipevt = vipevt.Next();
+	}
+
+	if (get_multi)
+	{
+		var vipevt = this.vipcol.vipevts.First();
+		while (vipevt)
+		{
+			if (this.cellindex >= vipevt.index)
+			if (this.cellindex < (vipevt.index + vipevt.extent))
+				info[vipevt.info.id] = vipevt.info;
+
+			vipevt = vipevt.Next();
+		}
+	}
+
+	return info;
+}
+
 VipCell.prototype.onclickDayNumber = function(event)
 {
 	var vdt = new VipDate(this.ymd);
-	
-	//if (event.ctrlKey)
-		//window.open("https://www.google.com/calendar/r/day/" + vdt.GCalURL());
-	//else
-		window.open("https://www.google.com/calendar/r/week/" + vdt.GCalURL());
+	window.open("https://www.google.com/calendar/r/week/" + vdt.GCalURL());
 }
 
 
