@@ -184,41 +184,42 @@ function vp_main($scope, $timeout, $window)
 	}
 
 	function initPrintView() {
-		var vipinfo = $window.vipgrid.getViewInfo();
-		$scope.printinfo = {cols: [], rows: [], fontsize: vipinfo.fontsize};
+		var viewcols = $window.vipgrid.getViewCols();
+		$scope.printinfo = {cols: [], rows: []};
 
-		for (var i=0; i < vipinfo.maxrows; i++)
+		for (var i=0; i < (31+6); i++)
 		{
 			var row = {cells: []};
 
-			for (var j=0; j < vipinfo.cols.length; j++)
-				row.cells.push({days: []});
+			for (var j=0; j < viewcols.length; j++)
+				row.cells.push({});
 
 			$scope.printinfo.rows.push(row);
 		}
 
-		for (var icol=0; icol < vipinfo.cols.length; icol++)
+		for (var icol=0; icol < viewcols.length; icol++)
 		{
-			var vipcol = vipinfo.cols[icol];
-			$scope.printinfo.cols.push(vipcol.hdr);
+			var vipcol = viewcols[icol];
+			$scope.printinfo.cols.push(vipcol.viphdr.getText());
 
-			for (var icell=0; icell < vipcol.cells.length; icell++)
+			var vipcell = vipcol.vipcells.First();
+			while (vipcell)
 			{
-				var vipcell = vipcol.cells[icell];
-
-				var printcell = $scope.printinfo.rows[icell + vipcol.offset].cells[icol];
+				var printcell = $scope.printinfo.rows[vipcell.cellindex + vipcol.offsetday].cells[icol];
 				printcell.classlist = ["vipday"];
-				if (vipcell.weekend) printcell.classlist.push("weekend");
+				if (vipcell.hasClass("weekend"))
+					printcell.classlist.push("weekend");
 
-				var day = {num: vipcell.num, evts: []};
+				printcell.day = {num: vipcell.vipnum.getText(), evts: []};
 
-				for (var ievt=0; ievt < vipcell.evts.length; ievt++)
+				var vipevt = vipcell.vipevts.First();
+				while (vipevt)
 				{
-					var vipevt = vipcell.evts[ievt];
-					day.evts.push({title: vipevt.title, colour: vipevt.info.colour, calclass: vipevt.info.calclass});
+					printcell.day.evts.push({title: vipevt.div.title, info: vipevt.info});
+					vipevt = vipevt.Next();
 				}
 
-				printcell.days.push(day);
+				vipcell = vipcell.Next();
 			}
 		}
 	}

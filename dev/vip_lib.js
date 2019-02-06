@@ -23,6 +23,11 @@ VipObject.prototype.addClass = function(cls)
 	this.div.classList.add(cls);
 }
 
+VipObject.prototype.removeClass = function(cls)
+{
+	return this.div.classList.remove(cls);
+}
+
 VipObject.prototype.hasClass = function(cls)
 {
 	return this.div.classList.contains(cls);
@@ -78,6 +83,11 @@ VipObject.prototype.Prev = function()
 		return sib.vipobj;
 	
 	return null;
+}
+
+VipObject.prototype.getText = function()
+{
+	return this.div.textContent;
 }
 
 VipObject.prototype.setText = function(txt)
@@ -262,15 +272,36 @@ VipGrid.prototype.updateLayout = function()
 
 VipGrid.prototype.updateViewport = function()
 {
-	for (var i=0; i < this.div.childElementCount; i++)
+	var i=0;
+	var vipcol = this.First();
+	while (vipcol)
 	{
 		if (i < this.cache.viewport.start)
-			this.div.children[i].classList.add("buffer");
+			vipcol.addClass("buffer");
 		else if (i >= (this.cache.viewport.start + this.cache.viewport.len))
-			this.div.children[i].classList.add("buffer");
+			vipcol.addClass("buffer");
 		else
-			this.div.children[i].classList.remove("buffer");
+			vipcol.removeClass("buffer");
+
+		i++;
+		vipcol = vipcol.Next();
 	}
+}
+
+VipGrid.prototype.getViewCols = function()
+{
+	var cols = [];
+	
+	var vipcol = this.First();
+	while (vipcol)
+	{
+		if (!vipcol.hasClass("buffer"))
+			cols.push(vipcol);
+
+		vipcol = vipcol.Next();
+	}
+	
+	return cols;
 }
 
 VipGrid.prototype.scroll = function(forward)
@@ -830,50 +861,6 @@ VipGrid.prototype.setLocalStorage = function(stg)
 {
 	if (window.localStorage)
 		window.localStorage.vip = JSON.stringify(stg);
-}
-
-VipGrid.prototype.getViewInfo = function()
-{
-	var info = {fontsize: this.div.style.fontSize, maxrows: 0, cols: []};
-	
-	var vipcol = this.First();
-	while (vipcol)
-	{
-		if (!vipcol.hasClass("buffer"))
-		{
-			var col = {hdr: vipcol.viphdr.div.textContent, offset: vipcol.offsetday, cells: []};
-			
-			var rowcount = (vipcol.vipcells.div.childElementCount + col.offset);
-			if (rowcount > info.maxrows)
-				info.maxrows = rowcount;
-			
-			var vipcell = vipcol.vipcells.First();
-			while (vipcell)
-			{
-				var cell = {
-					num: vipcell.vipnum.div.textContent,
-					weekend: vipcell.hasClass("weekend"),
-					evts: []
-				};
-			
-				var vipevt = vipcell.vipevts.First();
-				while (vipevt)
-				{
-					cell.evts.push({title: vipevt.div.title, info: vipevt.info});
-					vipevt = vipevt.Next();
-				}
-
-				col.cells.push(cell);
-				vipcell = vipcell.Next();
-			}
-
-			info.cols.push(col);
-		}
-
-		vipcol = vipcol.Next();
-	}
-	
-	return info;
 }
 
 
