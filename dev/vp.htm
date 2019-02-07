@@ -78,17 +78,15 @@ body {
 	min-height: 2.8em;
 	background-color: gainsboro;
 }
-.gridtable {
-	width: 100%;
-	height: 100%;
-	border-spacing: 1px;
-	table-layout: fixed;
-}
 #listview {
 	display: flex;
 	height: 100%;
 }
 #listview table {
+	width: 100%;
+	height: 100%;
+	border-spacing: 1px;
+	table-layout: fixed;
 	padding: 2vh 3vw 2vh 0;
 	font-size: 1.3vh;
 }
@@ -113,6 +111,11 @@ div.listevt {
 	height: 100%;
 	z-index: -1;
 	opacity: 0.4;
+}
+#printview table {
+	width: 100%;
+	border-spacing: 1px;
+	table-layout: fixed;
 }
 td.printhdr {
 	text-align: center;
@@ -184,7 +187,7 @@ div.printevt {
 	<div id="grid"></div>
 </div>
 <div id="listview" ng-show="view=='list'">
-	<table class="gridtable">
+	<table>
 		<tr ng-repeat="row in listinfo.rows">
 			<td class="listhdr">{{row.hdr}}</td>
 			<td class="listcell" ng-repeat="cell in row.cells" ng-class="cell.classlist">
@@ -195,7 +198,7 @@ div.printevt {
 	</table>
 </div>
 <div id="printview" ng-show="view=='print'">
-	<table class="gridtable">
+	<table>
 		<thead>
 			<tr><td class="printhdr" ng-repeat="hdr in printinfo.cols">{{hdr}}</td></tr>
 		</thead>
@@ -213,7 +216,7 @@ div.printevt {
 		</tbody>
 	</table>
 </div>
-<div id="calendarbar" ng-show="view=='home' || view=='list' || view=='print'"></div>
+<div id="calendarbar" ng-show="view=='home' || view=='list'"></div>
 <div class="toolbtn staticbtn noprint" ng-show="view=='list' || view=='print'">
 	<img src="close.png" title="Close" draggable="false" ng-click="onclickCloseView()">
 </div>
