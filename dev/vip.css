@@ -106,7 +106,7 @@
 }
 .vipeventmarker {
 	width: var(--markerwidth);
-	height: 1em;
+	height: calc(1em - 1px);
 	flex-shrink: 0;
 }
 .vipeventmarker.proportional {
