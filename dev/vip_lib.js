@@ -130,7 +130,7 @@ function VipGridConfig()
 	this.first_month = 1;
 	this.weekends = "6,0";
 	this.align_weekends = true;
-	this.font_scale = 0.6;
+	this.font_scale = 0.46;
 	this.past_opacity = 0.7;
 	this.month_names = "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec";
 	this.show_event_time = true;
@@ -145,7 +145,7 @@ function VipGridConfig()
 	this.show_timed_events = true;
 	this.multi_day_as_single_day = false;
 	this.first_day_only = false;
-	this.marker_width = 0.8;
+	this.marker_width = 0.85;
 	this.multi_day_opacity = 0.8;
 }
 
