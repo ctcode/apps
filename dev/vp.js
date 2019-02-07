@@ -175,7 +175,7 @@ function vp_main($scope, $timeout, $window)
 			while (vipcell)
 			{
 				var listcell = row.cells[vipcell.cellindex + vipcol.offsetday];
-				listcell.num = vipcell.vipnum.getText();
+				listcell.num = vipcell.vipnumtext.getText();
 				listcell.evts = vipcell.getEventInfo(true);
 				listcell.classlist = ["vipday"];
 				if (vipcell.hasClass("weekend"))
@@ -211,7 +211,7 @@ function vp_main($scope, $timeout, $window)
 			while (vipcell)
 			{
 				var printcell = $scope.printinfo.rows[vipcell.cellindex + vipcol.offsetday].cells[icol];
-				printcell.day = {classlist: ["vipday"], num: vipcell.vipnum.getText(), evts: vipcell.getEventInfo(false)};
+				printcell.day = {classlist: ["vipday"], num: vipcell.vipnumtext.getText(), evts: vipcell.getEventInfo(false)};
 				if (vipcell.hasClass("weekend"))
 					printcell.day.classlist.push("weekend");
 

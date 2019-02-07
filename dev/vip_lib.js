@@ -1029,9 +1029,10 @@ function VipCell(parent, vipcol, ymd)
 		this.addClass("weekend");
 
 	this.vipnum = new VipDiv(this, "vipcellnum");
-	this.vipnum.setText(vdt.DayOfMonth());
+	this.vipnumtext = new VipDiv(this.vipnum);
+	this.vipnumtext.setText(vdt.DayOfMonth());
 	if (VipDate.isToday(ymd))
-		this.vipnum.addClass("today");
+		this.vipnumtext.addClass("vipcellnumtoday");
 
 	if (vipgrid.enable_links)
 	{
