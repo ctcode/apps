@@ -24,42 +24,41 @@ body {
 	display: flex;
 	flex-direction: column;
 }
-#account {
-	font-family: Roboto;
-	font-size: 0.7em;
-	line-height: 2em;
-	margin-right: 1em;
-	text-align: right;
-}
 #banner {
 	font-family: Roboto;
-	font-size: 0.8em;
-	text-align: center;
-	line-height: 3em;
-	min-height: 3em;
-	background-color: #DAE4EB;
+	background-color: gainsboro;
+	padding: 0.3em 1em;
 	position: relative;
 }
 #banner #bantxt {
 	font-weight: 800;
+	font-size: 0.9em;
 	opacity: 0.6;
-}
-#buttons {
-	top: 0;
-	right: 1em;
-	height: 100%;
 	position: absolute;
-}
-#buttons .toolbtn {
+	left: 0;
+	top: 0;
 	height: 100%;
-	display: inline-flex;
-	align-items: center;
-	width: 2em;
+	width: 100%;
+	display: flex;
+	pointer-events: none;
 }
-.toolbtn img {
+#banner #bantxt div {
+	margin: auto;
+}
+#banner #tools div {
+	font-size: 0.7em;
+	text-align: right;
+}
+#banner #tools img {
+	display: inline;
+	float: right;
+	margin-top: 0.3em;
+	margin-left: 1em;
+}
+.toolbtn {
 	opacity: 0.5;
 }
-.toolbtn img:hover {
+.toolbtn:hover {
 	opacity: 1;
 }
 .staticbtn {
@@ -129,8 +128,20 @@ div.printevt {
 	word-wrap: break-word;
 }
 #settings {
-	padding-left: 2em;
+	padding-top: 1em;
 	padding-bottom: 4em;
+	padding-left: 2em;
+	padding-right: 2em;
+}
+#settings #savebtns {
+	min-height: 2em;
+}
+#settings #savebtns div {
+	text-align: right;
+}
+#settings #savebtns button {
+	float: right;
+	margin-left: 1em;
 }
 #settings .sub {
 	min-width: 50vw;
@@ -157,24 +168,13 @@ div.printevt {
 </head>
 <body ng-app="vp" ng-controller="main" ng-cloak>
 
-<div ng-show="view=='init' || view=='home' || view=='settings'">
-	<div id="account" class="noprint">{{sign_msg}}</div>
-	<div id="banner">
-		<span id="bantxt">{{settings.banner_text}}</span>
-		<div id="buttons" class="noprint">
-			<button ng-hide="form.$pristine || busy" ng-click="onclickSave()">Save</button>
-			<button ng-show="(view=='settings') && !busy" ng-click="onclickCancel()">Cancel</button>
-			<div class="toolbtn" ng-show="view=='init' || view=='home'">
-				<img src="list.png" title="List View" draggable="false" ng-click="onclickListView()">
-			</div>
-			<div class="toolbtn" ng-show="view=='init' || view=='home'">
-				<img src="print.png" title="Print View" draggable="false" ng-click="onclickPrintView()">
-			</div>
-			<div class="toolbtn" ng-show="view=='init' || view=='home'">
-				<img src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()">
-			</div>
-			<span ng-show="busy"><i>Saving...</i></span>
-		</div>
+<div id="banner" ng-show="view=='init' || view=='home' || view=='settings'">
+	<div id="bantxt"><div>{{settings.banner_text}}</div></div>
+	<div id="tools" class="noprint">
+		<div>{{sign_msg}}</div>
+		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()">
+		<img class="toolbtn" src="print.png" title="Print View" draggable="false" ng-click="onclickPrintView()">
+		<img class="toolbtn" src="list.png" title="List View" draggable="false" ng-click="onclickListView()">
 	</div>
 </div>
 <div id="home" ng-show="view=='home'">
@@ -215,6 +215,11 @@ div.printevt {
 	<img src="close.png" title="Close" draggable="false" ng-click="onclickCloseView()">
 </div>
 <div id="settings" ng-show="view=='settings'">
+	<div id="savebtns">
+		<button ng-hide="busy" ng-click="onclickCancel()">Cancel</button>
+		<button ng-hide="form.$pristine || busy" ng-click="onclickSave()">Save</button>
+		<div ng-show="busy"><i>Saving...</i></div>
+	</div>
 	<div class="sub group"><b>Account</b>
 		<div class="sub">{{sign_msg}}</div>
 		<div class="sub" ng-show="g_signbtn_ok"><div id="g_signbtn" class="g-signin2" data-width="300" data-height="60" data-longtitle="true"></div></div>
