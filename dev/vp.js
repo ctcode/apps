@@ -175,11 +175,15 @@ function vp_main($scope, $timeout, $window)
 			while (vipcell)
 			{
 				var listcell = row.cells[vipcell.cellindex + vipcol.offsetday];
-				listcell.num = vipcell.vipnumtext.getText();
-				listcell.evts = vipcell.getEventInfo(true);
 				listcell.classlist = ["vipday"];
 				if (vipcell.hasClass("weekend"))
 					listcell.classlist.push("weekend");
+
+				listcell.num = vipcell.vipnumtext.getText();
+				if (vipcell.vipnumtext.hasClass("today"))
+					listcell.numclass = "today";
+
+				listcell.evts = vipcell.getEventInfo(true);
 
 				vipcell = vipcell.Next();
 			}

@@ -98,10 +98,17 @@ td.listhdr {
 }
 td.listcell {
 	position: relative;
-	padding: 0.4em;
 	vertical-align: top;
 	text-align: center;
 	z-index: 0;
+}
+div.listcellnum {
+	padding: 0.4em 0;
+}
+div.listcellnum.today {
+	font-weight: bold;
+	color: white;
+	background-color: red;
 }
 div.listevt {
 	position: absolute;
@@ -191,7 +198,7 @@ div.printevt {
 		<tr ng-repeat="row in listinfo.rows">
 			<td class="listhdr">{{row.hdr}}</td>
 			<td class="listcell" ng-repeat="cell in row.cells" ng-class="cell.classlist">
-				<span>{{cell.num}}</span>
+				<div class="listcellnum" ng-class="cell.numclass">{{cell.num}}</div>
 				<div class="listevt" ng-repeat="evt in cell.evts" ng-class="evt.calclass" ng-style="{backgroundColor: evt.colour}"></div>
 			</td>
 		</tr>

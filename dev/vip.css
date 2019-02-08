@@ -83,14 +83,16 @@
 	align-items: center;
 	flex-shrink: 0;
 }
-.vipcellnumtoday {
-	font-weight: bold;
-	color: white;
-	background-color: red;
+.vipcellnumtext {
 	width: 2em;
 	padding-top: 0.3em;
 	padding-bottom: 0.25em;
 	text-align: center;
+}
+.vipcellnumtext.today {
+	font-weight: bold;
+	color: white;
+	background-color: red;
 }
 .vipcellevts {
 	flex-grow: 1;
