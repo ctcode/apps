@@ -1,0 +1,51 @@
+/* ----------------- grid ------------------- */
+.vpgrid {
+	height: 100%;
+	outline: none;
+	font-family: arial;
+	font-size: 1.2vh;
+	user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+}
+.vpgrid.vpexpandview {
+	font-size: 3vh;
+	overflow: auto;
+}
+
+/* ----------------- table ------------------- */
+.vptable {
+	width: 100%;
+	height: 100%;
+	border-spacing: 1px;
+	table-layout: fixed;
+}
+.vptable td {
+}
+.vptable td:empty::after{
+  content: '\a0';  /* &nbsp; */
+}
+.vplistview .vptable {
+	padding: 2vh 2vw;
+}
+.vpexpandview .vptable {
+	height: 0;
+}
+
+/* ----------------- cell ------------------- */
+.vpcell {
+	background-color: #eaeaea;
+}
+.vpcell.weekend {
+	background-color: #d8d8d8;
+}
+
+/* ----------------- event ------------------- */
+
+/* ----------------- print ------------------- */
+@media only print
+{
+	.vpgrid.vpexpandview {
+		overflow: initial;
+	}
+}
