@@ -57,6 +57,9 @@ body {
 #banner .toolbtn:hover {
 	opacity: 1;
 }
+#banner .toolbtn.checked {
+	opacity: 1;
+}
 #grid {
 	display: flex;
 }
@@ -111,10 +114,10 @@ body {
 	<div id="bantxt">{{settings.banner_text}}</div>
 	<div id="tools">
 		<div>{{sign_msg}}</div>
-		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()">
-		<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="onclickExpand()">
-		<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="onclickList()">
-		<img class="toolbtn" src="column.png" title="Columns" draggable="false" ng-click="onclickColumns()">
+		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()"/>
+		<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="onclickExpand()" ng-class="toolbtnclass.expand"/>
+		<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="onclickList()" ng-class="toolbtnclass.list"/>
+		<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="onclickColumn()" ng-class="toolbtnclass.column"/>
 	</div>
 </div>
 

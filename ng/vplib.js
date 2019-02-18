@@ -39,6 +39,7 @@ function VpGrid()
 	this.view = {};
 	this.viewclass = {};
 
+	VpCell.vpgrid = this;
 	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
 	VpDate.localemonth = this.cfg.month_names.split('-');
 }
@@ -108,12 +109,10 @@ VpGrid.prototype.initVpCells = function()
 			c++;
 		}
 
-		var vpcell = {
-			cls: {vpcell: true},
-			id: vdt.ymd(),
-			num: vdt.DayOfMonth(),
-			month: month
-		};
+		var vpcell = new VpCell();
+		vpcell.id = vdt.ymd();
+		vpcell.num = vdt.DayOfMonth();
+		vpcell.month = month;
 
 		if (vdt.isWeekend())
 			vpcell.cls.weekend = true;
@@ -196,6 +195,16 @@ VpGrid.prototype.scroll = function(forward)
 	else
 	{
 	}
+}
+
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+function VpCell()
+{
+	this.cls = {vpcell: true};
 }
 
 
