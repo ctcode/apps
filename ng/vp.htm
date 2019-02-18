@@ -125,9 +125,9 @@ body {
 	<table ng-if="vpgrid.layout.column" class="vptable">
 		<tr><th ng-repeat="hdr in vpgrid.layout.hdrs">{{hdr}}</th></tr>
 		<tr ng-repeat="row in vpgrid.layout.rows">
-			<td ng-repeat="vpcell in row.cells" ng-class="vpcell.cls">
-				<table>
-					<tr><td class="vpnum">{{vpcell.num}}</td></tr>
+			<td ng-repeat="cell in row.cells" ng-class="cell.cls">
+				<table ng-if="cell.cls.vpcell">
+					<tr><td class="vpnum">{{cell.num}}</td></tr>
 				</table>
 			</td>
 		</tr>
@@ -135,8 +135,8 @@ body {
 	<table ng-if="vpgrid.layout.list" class="vptable">
 		<tr ng-repeat="row in vpgrid.layout.rows">
 			<th class="vphdr">{{row.hdr}}</th>
-			<td ng-repeat="vpcell in row.cells" ng-class="vpcell.cls">
-				<div class="vpnum">{{vpcell.num}}</div>
+			<td ng-repeat="cell in row.cells" ng-class="cell.cls">
+				<div ng-if="cell.cls.vpcell" class="vpnum">{{cell.num}}</div>
 			</td>
 		</tr>
 	</table>
