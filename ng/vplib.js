@@ -117,6 +117,9 @@ VpGrid.prototype.initVpCells = function()
 		if (vdt.isWeekend())
 			vpcell.cls.weekend = true;
 
+		if (VpDate.isToday(vpcell.id))
+			vpcell.cls.today = true;
+
 		this.vpcells.push(vpcell);
 
 		vdt.offsetDay(1);

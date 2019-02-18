@@ -25,8 +25,11 @@
 .vptable td:empty::after{
   content: '\a0';  /* &nbsp; */
 }
+.vpcolview .vptable {
+	padding: 2vh 0;
+}
 .vplistview .vptable {
-	padding: 2vh 2vw;
+	padding: 2vh 1vw;
 }
 .vpexpandview .vptable {
 	height: 0;
@@ -38,6 +41,30 @@
 }
 .vpcell.weekend {
 	background-color: #d8d8d8;
+}
+.vplistview .vpcell {
+	position: relative;
+	vertical-align: top;
+	text-align: center;
+	z-index: 0;
+}
+.vplistview .vphdr {
+	width: 6vw;
+}
+.vpnum {
+	width: 1.6em;
+	font-size: 0.8em;
+	padding-top: 0.3em;
+	padding-bottom: 0.25em;
+	text-align: center;
+}
+.vplistview .vpnum {
+	width: 2em;
+}
+.vpcell.today .vpnum {
+	font-weight: bold;
+	color: white;
+	background-color: red;
 }
 
 /* ----------------- event ------------------- */

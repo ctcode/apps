@@ -125,13 +125,19 @@ body {
 	<table ng-if="vpgrid.layout.column" class="vptable">
 		<tr><th ng-repeat="hdr in vpgrid.layout.hdrs">{{hdr}}</th></tr>
 		<tr ng-repeat="row in vpgrid.layout.rows">
-			<td ng-repeat="vpcell in row.cells" ng-class="vpcell.cls">{{vpcell.num}}</td>
+			<td ng-repeat="vpcell in row.cells" ng-class="vpcell.cls">
+				<table>
+					<tr><td class="vpnum">{{vpcell.num}}</td></tr>
+				</table>
+			</td>
 		</tr>
 	</table>
 	<table ng-if="vpgrid.layout.list" class="vptable">
 		<tr ng-repeat="row in vpgrid.layout.rows">
-			<th>{{row.hdr}}</th>
-			<td ng-repeat="vpcell in row.cells" ng-class="vpcell.cls">{{vpcell.num}}</td>
+			<th class="vphdr">{{row.hdr}}</th>
+			<td ng-repeat="vpcell in row.cells" ng-class="vpcell.cls">
+				<div class="vpnum">{{vpcell.num}}</div>
+			</td>
 		</tr>
 	</table>
 </div>
