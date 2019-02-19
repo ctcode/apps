@@ -42,35 +42,32 @@ function VpGrid()
 	VpCell.vpgrid = this;
 	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
 	VpDate.localemonth = this.cfg.month_names.split('-');
+
+	this.initVpCells();
 }
 
 VpGrid.prototype.setView = function(view)
 {
-	this.initVpCells();
-
 	if (view.column)
 	{
-		this.layout = this.getColLayoutInfo();
 		this.viewclass = {vpcolview: true};
+		this.initColLayout();
 	}
 
 	if (view.list)
 	{
-		this.layout = this.getListLayoutInfo();
 		this.viewclass = {vplistview: true};
+		this.initListLayout();
 	}
 
 	if (view.expand)
 	{
-		this.layout = this.getColLayoutInfo();
 		this.viewclass = {vpexpandview: true};
+		this.initColLayout();
 	}
 
+	this.applyVpCells();
 	this.view = view;
-}
-
-VpGrid.prototype.initLayout = function()
-{
 }
 
 VpGrid.prototype.initVpCells = function()
@@ -126,13 +123,9 @@ VpGrid.prototype.initVpCells = function()
 	}
 }
 
-VpGrid.prototype.applyVpCells = function()
+VpGrid.prototype.initColLayout = function()
 {
-}
-
-VpGrid.prototype.getColLayoutInfo = function()
-{
-	info = {column: true, hdrs: [], rows: []};
+	this.layout = {column: true, hdrs: [], rows: []};
 
 	for (var y=0; y < (31+6); y++)
 	{
@@ -141,50 +134,45 @@ VpGrid.prototype.getColLayoutInfo = function()
 		for (var x=0; x < this.cfg.multi_col_count; x++)
 		{
 			if (y == 0)
-				info.hdrs.push(this.months[x].hdr);
+				this.layout.hdrs.push(this.months[x].hdr);
 
 			row.cells.push({empty: true});
 		}
 
-		info.rows.push(row);
+		this.layout.rows.push(row);
 	}
-
-	for (var i=0; i < this.vpcells.length; i++)
-	{
-		var vpcell = this.vpcells[i];
-
-		var y = (vpcell.num-1) + vpcell.month.offset;
-		var x = vpcell.month.seq;
-		info.rows[y].cells[x] = vpcell;
-	}
-
-	return info;
 }
 
-VpGrid.prototype.getListLayoutInfo = function()
+VpGrid.prototype.initListLayout = function()
 {
-	info = {list: true, rows: []};
+	this.layout = {list: true, rows: []};
 
 	for (var y=0; y < this.months.length; y++)
 	{
 		var row = {hdr: this.months[y].hdr, cells: []};
 
 		for (var x=0; x < (31+6); x++)
-			row.cells.push({});
+			row.cells.push({empty: true});
 
-		info.rows.push(row);
+		this.layout.rows.push(row);
 	}
+}
 
+VpGrid.prototype.applyVpCells = function()
+{
 	for (var i=0; i < this.vpcells.length; i++)
 	{
 		var vpcell = this.vpcells[i];
 
-		var y = vpcell.month.seq;
-		var x = (vpcell.num-1) + vpcell.month.offset;
-		info.rows[y].cells[x] = vpcell;
+		var day_axis = (vpcell.num-1) + vpcell.month.offset;
+		var month_axis = vpcell.month.seq;
+
+		if (this.layout.column)
+			this.layout.rows[day_axis].cells[month_axis] = vpcell;
+
+		if (this.layout.list)
+			this.layout.rows[month_axis].cells[day_axis] = vpcell;
 	}
-	
-	return info;
 }
 
 VpGrid.prototype.scroll = function(forward)
