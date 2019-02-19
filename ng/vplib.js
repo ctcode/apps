@@ -143,7 +143,7 @@ VpGrid.prototype.getColLayoutInfo = function()
 			if (y == 0)
 				info.hdrs.push(this.months[x].hdr);
 
-			row.cells.push({});
+			row.cells.push({empty: true});
 		}
 
 		info.rows.push(row);

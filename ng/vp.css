@@ -20,11 +20,6 @@
 	border-spacing: 1px;
 	table-layout: fixed;
 }
-.vptable td {
-}
-.vptable td:empty::after{
-  content: '\a0';  /* &nbsp; */
-}
 .vpcolview .vptable {
 	padding: 2vh 0;
 }
@@ -52,14 +47,11 @@
 	z-index: 0;
 }
 .vpnum {
-	width: 1.6em;
+	width: 2em;
 	font-size: 0.8em;
 	padding-top: 0.3em;
 	padding-bottom: 0.25em;
 	text-align: center;
-}
-.vplistview .vpnum {
-	width: 2em;
 }
 .vpcell.today .vpnum {
 	font-weight: bold;
