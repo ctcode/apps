@@ -9,7 +9,7 @@ function VpGridConfig()
 	this.first_month = 1;
 	this.weekends = "6,0";
 	this.align_weekends = true;
-	this.font_scale = 0.46;
+	this.font_scale_pc = 80;
 	this.past_opacity = 0.7;
 	this.month_names = "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec";
 	this.show_event_time = true;
@@ -50,32 +50,32 @@ VpGrid.prototype.setView = function(view)
 {
 	if (view.column)
 	{
-		this.viewclass = {vpcolview: true};
-		this.viewstyle = this.getFont(1.2);
+		this.view.cls = {vpcolview: true};
+		this.view.style = this.getFontSize(1.4);
 		this.initColLayout();
 	}
 
 	if (view.list)
 	{
-		this.viewclass = {vplistview: true};
-		this.viewstyle = this.getFont(1.4);
+		this.view.cls = {vplistview: true};
+		this.view.style = this.getFontSize(1.8);
 		this.initListLayout();
 	}
 
 	if (view.expand)
 	{
-		this.viewclass = {vpexpandview: true};
-		this.viewstyle = this.getFont(3);
+		this.view.cls = {vpexpandview: true};
+		this.view.style = this.getFontSize(3);
 		this.initColLayout();
 	}
 
 	this.applyVpCells();
-	this.view = view;
 }
 
-VpGrid.prototype.getFont = function(max)
+VpGrid.prototype.getFontSize = function(max)
 {
-	return {'font-size': fmt("^vh", max)};
+	var sz = ((this.cfg.font_scale_pc * max)/100);
+	return {'font-size': fmt("^vh", sz)};
 }
 
 VpGrid.prototype.initVpCells = function()

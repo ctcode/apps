@@ -32,9 +32,6 @@
 .vplistview .vphdr {
 	width: 6vw;
 }
-.vptable td {
-	line-height: 0;
-}
 
 /* ----------------- cell ------------------- */
 .vpcell {
@@ -52,10 +49,8 @@
 .vpnum {
 	font-size: 0.8em;
 	width: 2em;
-	height: 1em;
-	line-height: 1em;
-	padding-top: 0.3em;
-	padding-bottom: 0.25em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
 	text-align: center;
 }
 .vpcell.today .vpnum {
