@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+	font-family: Arial;
+	height: 100vh;
+	margin: 0;
+	min-width: 600px;
+	min-height: 400px;
+	display: flex;
+	flex-direction: column;
+}
+#banner {
+	height: 3em;
+	background-color: gainsboro;
+}
+#grid {
+	display: flex;
+	height: 100%;
+	overflow: hidden;
+	font-size: 2vh;
+}
+#calendarbar {
+	font-size: 0.6em;
+	height: 2.8em;
+	background-color: gainsboro;
+}
+.vptable {
+	height: 100%;
+	width: 100%;
+	border-spacing: 1px;
+	table-layout: fixed;
+}
+.vptable td {
+	background-color: gold;
+}
+.vptable td div {
+	background-color: coral;
+}
+</style>
+</head>
+<body>
+
+<div id="banner"></div>
+
+<div id="grid">
+	<table class="vptable">
+		<tr>
+			<td><div>cell</div></td>
+			<td><div>cell</div></td>
+			<td><div>cell</div></td>
+		</tr>
+		<tr>
+			<td><div>cell</div></td>
+			<td><div>&nbsp;</div></td>
+			<td><div>cell</div></td>
+		</tr>
+		<tr>
+			<td><div>cell</div></td>
+			<td><div>cell</div></td>
+			<td><div>cell</div></td>
+		</tr>
+	</table>
+</div>
+
+<div id="calendarbar"></div>
+
+</body>
+</html>

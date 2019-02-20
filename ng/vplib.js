@@ -51,23 +51,31 @@ VpGrid.prototype.setView = function(view)
 	if (view.column)
 	{
 		this.viewclass = {vpcolview: true};
+		this.viewstyle = this.getFont(1.2);
 		this.initColLayout();
 	}
 
 	if (view.list)
 	{
 		this.viewclass = {vplistview: true};
+		this.viewstyle = this.getFont(1.4);
 		this.initListLayout();
 	}
 
 	if (view.expand)
 	{
 		this.viewclass = {vpexpandview: true};
+		this.viewstyle = this.getFont(3);
 		this.initColLayout();
 	}
 
 	this.applyVpCells();
 	this.view = view;
+}
+
+VpGrid.prototype.getFont = function(max)
+{
+	return {'font-size': fmt("^vh", max)};
 }
 
 VpGrid.prototype.initVpCells = function()
@@ -106,17 +114,7 @@ VpGrid.prototype.initVpCells = function()
 			c++;
 		}
 
-		var vpcell = new VpCell();
-		vpcell.id = vdt.ymd();
-		vpcell.num = vdt.DayOfMonth();
-		vpcell.month = month;
-
-		if (vdt.isWeekend())
-			vpcell.cls.weekend = true;
-
-		if (VpDate.isToday(vpcell.id))
-			vpcell.cls.today = true;
-
+		var vpcell = new VpCell(vdt.ymd(), month);
 		this.vpcells.push(vpcell);
 
 		vdt.offsetDay(1);
@@ -193,9 +191,20 @@ VpGrid.prototype.scroll = function(forward)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpCell()
+function VpCell(ymd, month)
 {
+	var vdt = new VpDate(ymd);
+
 	this.cls = {vpcell: true};
+	this.id = ymd;
+	this.month = month;
+	this.num = vdt.DayOfMonth();
+
+	if (vdt.isWeekend())
+		this.cls.weekend = true;
+
+	if (VpDate.isToday(ymd))
+		this.cls.today = true;
 }
 
 
