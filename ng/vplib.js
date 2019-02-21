@@ -13,6 +13,8 @@ function VpGrid()
 	this.scrollinfo = {offset: 0, extent: this.cfg.multi_col_count};
 	if (this.cfg.auto_scroll)
 		this.scrollinfo.offset = this.cfg.auto_scroll_offset;
+
+	this.lastWheelEvent = 0;
 	
 	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
 	VpDate.localemonth = this.cfg.month_names.split('-');
@@ -115,6 +117,19 @@ VpGrid.prototype.updateListLayout = function()
 
 		this.layout.rows.push(row);
 	}
+}
+
+VpGrid.prototype.onwheel = function(event)
+{
+	var t = Math.floor(event.timeStamp);
+
+	if ((t - this.lastWheelEvent) > 150)
+	{
+		this.scroll(event.deltaY > 0);
+		this.lastWheelEvent = t;
+	}
+
+	event.preventDefault();
 }
 
 VpGrid.prototype.scroll = function(forward)

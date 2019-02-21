@@ -1,4 +1,4 @@
-function vp_main($scope, $timeout)
+function vp_main($scope, $document, $timeout)
 {
 	$scope.toolbtnclass = {};
 	$scope.show = {banner: true, grid: false, settings: false};
@@ -11,6 +11,7 @@ function vp_main($scope, $timeout)
 		$scope.settings = {banner_text: "vpng", vipconfig: new VpGridConfig()};
 		$scope.vpgrid = new VpGrid();
 		$scope.onclickColumn();
+		$document[0].getElementById("grid").onwheel = $scope.vpgrid.onwheel.bind($scope.vpgrid);
 		console.log($scope.vpgrid);
 	}, 3000);
 
