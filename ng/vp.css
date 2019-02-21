@@ -34,13 +34,13 @@
 }
 
 /* ----------------- cell ------------------- */
-.vpcell {
+.vpday {
 	background-color: #eaeaea;
 }
-.vpcell.weekend {
+.vpday.weekend {
 	background-color: #d8d8d8;
 }
-.vplistview .vpcell {
+.vplistview .vpday {
 	position: relative;
 	vertical-align: top;
 	text-align: center;
@@ -53,10 +53,13 @@
 	padding-bottom: 0.2em;
 	text-align: center;
 }
-.vpcell.today .vpnum {
+.vpday.today .vpnum {
 	font-weight: bold;
 	color: white;
 	background-color: red;
+}
+.vplistview .vpnum {
+	width: auto;
 }
 
 /* ----------------- event ------------------- */
