@@ -10,9 +10,14 @@ function VpGrid()
 	this.view = {cls: {}, style: {}};
 	this.layout = {};
 
-	this.scrollinfo = {offset: 0, extent: this.cfg.multi_col_count};
+	this.scrollinfo = {
+		offset: -3,
+		length: (this.cfg.multi_col_count + 3 + 6),
+		viewport: {start: 3, extent: this.cfg.multi_col_count}
+	};
+
 	if (this.cfg.auto_scroll)
-		this.scrollinfo.offset = this.cfg.auto_scroll_offset;
+		this.scrollinfo.offset += this.cfg.auto_scroll_offset;
 
 	this.lastWheelEvent = 0;
 	
@@ -60,7 +65,7 @@ VpGrid.prototype.initVpMonths = function()
 	vdt.toStartOfMonth();
 	vdt.offsetMonth(this.scrollinfo.offset);
 
-	for (var i=0; i < this.scrollinfo.extent; i++)
+	for (var i=0; i < this.scrollinfo.length; i++)
 	{
 		var vpmonth = new VpMonth(vdt.ymd());
 		this.vpmonths.push(vpmonth);
@@ -72,14 +77,17 @@ VpGrid.prototype.initVpMonths = function()
 VpGrid.prototype.updateColLayout = function()
 {
 	this.layout = {column: true, hdrs: [], rows: []};
+
+	var start = this.scrollinfo.viewport.start;
+	var ext = this.scrollinfo.viewport.extent;
 	
-	for (var m=0; m < this.vpmonths.length; m++)
+	for (var m = start; m < (start + ext); m++)
 	{
 		var vpmonth = this.vpmonths[m];
 		
 		this.layout.hdrs.push(vpmonth.hdr);
 
-		if (m == 0)
+		if (m == start)
 		{
 			for (var d=0; d < (31+6); d++)
 				this.layout.rows.push({cells: []});
@@ -100,7 +108,10 @@ VpGrid.prototype.updateListLayout = function()
 {
 	this.layout = {list: true, rows: []};
 	
-	for (var m=0; m < this.vpmonths.length; m++)
+	var start = this.scrollinfo.viewport.start;
+	var ext = this.scrollinfo.viewport.extent;
+	
+	for (var m = start; m < (start + ext); m++)
 	{
 		var vpmonth = this.vpmonths[m];
 
