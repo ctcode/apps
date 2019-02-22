@@ -11,7 +11,7 @@ function vp_main($scope, $document, $timeout)
 		$scope.settings = {banner_text: "vpng", vipconfig: new VpGridConfig()};
 		$scope.vpgrid = new VpGrid();
 		$scope.onclickColumn();
-		$document[0].getElementById("grid").onwheel = $scope.vpgrid.onwheel.bind($scope.vpgrid);
+		$document[0].getElementById("grid").onwheel = $scope.onwheel;
 		console.log($scope.vpgrid);
 	}, 3000);
 
@@ -42,8 +42,9 @@ function vp_main($scope, $document, $timeout)
 		$scope.show = {banner: true, grid: true, settings: false};
 	}
 
-	$scope.scroll = function() {
-		//$scope.$apply();
+	$scope.onwheel = function(evt) {
+		$scope.vpgrid.onwheel(evt);
+		$scope.$apply();
 	}
 }
 

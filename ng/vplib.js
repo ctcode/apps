@@ -10,10 +10,12 @@ function VpGrid()
 	this.view = {cls: {}, style: {}};
 	this.layout = {};
 
+	var buf=6;
 	this.scrollinfo = {
-		offset: -3,
-		length: (this.cfg.multi_col_count + 3 + 6),
-		viewport: {start: 3, extent: this.cfg.multi_col_count}
+		buffer: buf,
+		offset: -buf,
+		length: (this.cfg.multi_col_count + buf + buf),
+		viewport: {start: buf, extent: this.cfg.multi_col_count}
 	};
 
 	if (this.cfg.auto_scroll)
@@ -132,6 +134,9 @@ VpGrid.prototype.updateListLayout = function()
 
 VpGrid.prototype.onwheel = function(event)
 {
+	if (this.view.cls.vpexpandview)
+		return;
+	
 	var t = Math.floor(event.timeStamp);
 
 	if ((t - this.lastWheelEvent) > 150)
@@ -150,10 +155,33 @@ VpGrid.prototype.scroll = function(forward)
 
 	if (forward)
 	{
+		this.scrollinfo.viewport.start++;
+
+		if ((this.scrollinfo.viewport.start + this.scrollinfo.viewport.extent) > this.scrollinfo.length)
+		{
+			this.scrollinfo.offset += (this.scrollinfo.length - this.scrollinfo.viewport.extent - this.scrollinfo.buffer + 1);
+			this.scrollinfo.viewport.start = this.scrollinfo.buffer;
+			this.initVpMonths();
+
+			//this.ReloadEvents();
+		}
 	}
 	else
 	{
+		this.scrollinfo.viewport.start--;
+
+		if (this.scrollinfo.viewport.start < 0)
+		{
+			this.scrollinfo.offset -= (this.scrollinfo.length - this.scrollinfo.viewport.extent - this.scrollinfo.buffer + 1);
+			this.scrollinfo.viewport.start = this.scrollinfo.buffer;
+			this.initVpMonths();
+
+			//this.ReloadEvents();
+		}
 	}
+	
+	if (this.layout.column) this.updateColLayout();
+	if (this.layout.list) this.updateListLayout();
 }
 
 
