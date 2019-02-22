@@ -153,13 +153,15 @@ VpGrid.prototype.scroll = function(forward)
 	if (this.scrolling_disabled)
 		return;
 
+	var scroll_months = 1;
+	
 	if (forward)
 	{
 		this.scrollinfo.viewport.start++;
 
 		if ((this.scrollinfo.viewport.start + this.scrollinfo.viewport.extent) > this.scrollinfo.length)
 		{
-			this.scrollinfo.offset += (this.scrollinfo.length - this.scrollinfo.viewport.extent - this.scrollinfo.buffer + 1);
+			this.scrollinfo.offset += (this.scrollinfo.length - this.scrollinfo.viewport.extent - this.scrollinfo.buffer + scroll_months);
 			this.scrollinfo.viewport.start = this.scrollinfo.buffer;
 			this.initVpMonths();
 
@@ -172,7 +174,7 @@ VpGrid.prototype.scroll = function(forward)
 
 		if (this.scrollinfo.viewport.start < 0)
 		{
-			this.scrollinfo.offset -= (this.scrollinfo.length - this.scrollinfo.viewport.extent - this.scrollinfo.buffer + 1);
+			this.scrollinfo.offset -= (this.scrollinfo.length - this.scrollinfo.viewport.extent - this.scrollinfo.buffer + scroll_months);
 			this.scrollinfo.viewport.start = this.scrollinfo.buffer;
 			this.initVpMonths();
 

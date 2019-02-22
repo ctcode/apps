@@ -19,6 +19,7 @@
 	height: 100%;
 	border-spacing: 1px;
 	table-layout: fixed;
+	padding-bottom: 1em;
 }
 .vplistview .vptable {
 	padding: 2vh 1vw;
