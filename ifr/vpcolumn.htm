@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="vp.css" type="text/css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="vplib.js" type='text/javascript'></script>
+</head>
+<body ng-app="vpcolumn" ng-controller="main" ng-cloak>
+
+<table class="vpcolview vptable" ng-style="tablestyle">
+	<tr><th ng-repeat="hdr in vpgrid.layout.hdrs" class="vphdr">{{hdr}}</th></tr>
+	<tr ng-repeat="row in vpgrid.layout.rows">
+		<td ng-repeat="cell in row.cells" ng-class="cell.cls">
+			<div ng-if="cell.empty">&nbsp;</div>
+			<div ng-if="cell.cls.vpday" class="vpnum">{{cell.num}}</div>
+		</td>
+	</tr>
+</table>
+
+<script>
+var app = angular.module("vpcolumn", []);
+app.controller("main", vpcolumn_main);
+
+function vpcolumn_main($scope, $document)
+{
+	$scope.vpgrid = new VpGrid();
+	$scope.vpgrid.updateColLayout();
+	$scope.tablestyle = {'font-size': "1.2vh"};
+	console.log($scope.vpgrid);
+}
+
+</script>
+
+</body>
+</html>
