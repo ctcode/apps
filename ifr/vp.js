@@ -2,13 +2,13 @@ function vp_main($scope, $document, $timeout)
 {
 	$scope.toolbtnclass = {};
 	$scope.gridurl = "";
-	$scope.show = {banner: true, grid: false, settings: false};
+	$scope.show = {banner: true};
 	$scope.settings = {banner_text: "visual-planner", vipconfig: {}};
 	$scope.sign_msg = "Signing In...";
 
 	$timeout(function(){
 		$scope.sign_msg = "Signed Out";
-		$scope.show = {banner: true, grid: true, settings: false};
+		$scope.show = {banner: true, grid: true};
 		$scope.settings = {banner_text: "vp/ifr", vipconfig: {}};
 		$scope.onclickColumn();
 	}, 3000);
@@ -31,13 +31,13 @@ function vp_main($scope, $document, $timeout)
 	}
 
 	$scope.onclickSettings = function() {
-		$scope.show = {banner: false, grid: false, settings: true};
+		$scope.show = {settings: true};
 	}
 
 	$scope.onclickCancel = function() {
 		//$scope.settings = gAppData.getAppData();
 		$scope.form.$setPristine(true);
-		$scope.show = {banner: true, grid: true, settings: false};
+		$scope.show = {banner: true, grid: true};
 	}
 }
 
