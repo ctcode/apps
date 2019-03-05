@@ -1,44 +1,47 @@
-function vp_main($scope, $document, $timeout)
+var app = angular.module("MainApp", []);
+app.controller("VpMainCtrl", VpMainCtrl);
+app.service("VpSettings", VpSettings);
+
+function VpMainCtrl(VpSettings, $timeout)
 {
-	$scope.toolbtnclass = {};
-	$scope.gridurl = "";
-	$scope.show = {banner: true};
-	$scope.settings = {banner_text: "visual-planner", vipconfig: {}};
-	$scope.sign_msg = "Signing In...";
+	this.toolbtnclass = {};
+	this.gridurl = "";
+	this.show = {banner: true};
+	this.settings = VpSettings;
+	this.sign_msg = "Signing In...";
+	this.multi_col_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 
 	$timeout(function(){
-		$scope.sign_msg = "Signed Out";
-		$scope.show = {banner: true, grid: true};
-		$scope.settings = {banner_text: "vp/ifr", vipconfig: {}};
-		$scope.onclickColumn();
-	}, 3000);
+		this.sign_msg = "Signed Out";
+		this.show = {banner: true, grid: true};
+		this.settings.banner_text = "vp-ifr";
+		this.onclickColumn();
+	}.bind(this), 3000);
 
-	//this.div.focus();
-
-	$scope.onclickColumn = function() {
-		$scope.toolbtnclass = {column: {checked: true}};
-		$scope.gridurl = "vpcolumn.htm";
+	this.onclickColumn = function() {
+		this.toolbtnclass = {column: {checked: true}};
+		this.gridurl = "vpcolumn.htm";
 	}
 
-	$scope.onclickList = function() {
-		$scope.toolbtnclass = {list: {checked: true}};
-		$scope.gridurl = "vplist.htm";
+	this.onclickList = function() {
+		this.toolbtnclass = {list: {checked: true}};
+		this.gridurl = "vplist.htm";
 	}
 
-	$scope.onclickExpand = function() {
-		$scope.toolbtnclass = {expand: {checked: true}};
-		$scope.gridurl = "vpexpand.htm";
+	this.onclickExpand = function() {
+		this.toolbtnclass = {expand: {checked: true}};
+		this.gridurl = "vpexpand.htm";
 	}
 
-	$scope.onclickSettings = function() {
-		$scope.show = {settings: true};
+	this.onclickSettings = function() {
+		this.show = {settings: true};
 	}
 
-	$scope.onclickCancel = function() {
-		//$scope.settings = gAppData.getAppData();
-		$scope.form.$setPristine(true);
-		$scope.show = {banner: true, grid: true};
+	this.onclickCancel = function() {
+		this.form.$setPristine(true);
+		this.show = {banner: true, grid: true};
 	}
 }
 
 // s = angular.element($0).scope()
+// angular.element($0).injector().get("VpSettings")

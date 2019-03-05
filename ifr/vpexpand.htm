@@ -3,15 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="vp.css" type="text/css"/>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
+<link rel="stylesheet" href="vplib.css" type="text/css"/>
 <script src="vplib.js" type='text/javascript'></script>
+<style>
+.vptable {
+	font-size: 2vh
+	height: 0;
+};
+</style>
 </head>
-<body ng-app="vpexpand" ng-controller="main" ng-cloak>
+<body ng-app="ViewApp" ng-cloak>
 
-<table class="vpexpandview vptable" ng-style="tablestyle">
-	<tr><th ng-repeat="hdr in vpgrid.layout.hdrs" class="vphdr">{{hdr}}</th></tr>
-	<tr ng-repeat="row in vpgrid.layout.rows">
+<table class="vptable" ng-controller="TableLayout as table">
+	<tr><th ng-repeat="hdr in table.hdrs" class="vphdr">{{hdr}}</th></tr>
+	<tr ng-repeat="row in table.rows">
 		<td ng-repeat="cell in row.cells" ng-class="cell.cls">
 			<div ng-if="cell.empty">&nbsp;</div>
 			<div ng-if="cell.cls.vpday" class="vpnum">{{cell.num}}</div>
@@ -19,18 +25,11 @@
 	</tr>
 </table>
 
-<script>
-var app = angular.module("vpexpand", []);
-app.controller("main", vpexpand_main);
-
-function vpexpand_main($scope, $document)
-{
-	$scope.vpgrid = new VpGrid();
-	$scope.vpgrid.updateColLayout();
-	$scope.tablestyle = {'font-size': "2.5vh"};
-	console.log($scope.vpgrid);
-}
-
+<script type='text/javascript'>
+var app = angular.module("ViewApp", []);
+app.controller("TableLayout", VpColumnLayout);
+app.service("VpSettings", VpSettings);
+app.service("VpMonthsDays", VpMonthsDays);
 </script>
 
 </body>

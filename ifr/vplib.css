@@ -12,17 +12,8 @@ body {
 	table-layout: fixed;
 	padding-bottom: 1em;
 }
-.vptable.vplistview {
-	padding: 2vh 1vw;
-}
-.vptable.vpexpandview {
-	height: 0;
-}
 .vphdr {
 	padding: 1em;
-}
-.vplistview .vphdr {
-	width: 6vw;
 }
 
 /* ----------------- cell ------------------- */
@@ -31,12 +22,6 @@ body {
 }
 .vpday.weekend {
 	background-color: #d8d8d8;
-}
-.vplistview .vpday {
-	position: relative;
-	vertical-align: top;
-	text-align: center;
-	z-index: 0;
 }
 .vpnum {
 	font-size: 0.8em;
@@ -50,16 +35,5 @@ body {
 	color: white;
 	background-color: red;
 }
-.vplistview .vpnum {
-	width: auto;
-}
 
 /* ----------------- event ------------------- */
-
-/* ----------------- print ------------------- */
-@media only print
-{
-	.vpgrid.vpexpandview {
-		overflow: initial;
-	}
-}

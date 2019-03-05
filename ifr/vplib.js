@@ -1,121 +1,67 @@
 //////////////////////////////////////////////////////////////////////
 
-var vpgrid;
 
-function VpGrid()
+
+function VpMonthsDays(VpSettings)
 {
-	vpgrid = this;
-
-	this.cfg = new VpGridConfig();
-	this.view = {cls: {}, style: {}};
-	this.layout = {};
-
-	var buf=6;
-	this.scrollinfo = {
-		buffer: buf,
-		offset: -buf,
-		length: (this.cfg.multi_col_count + buf + buf),
-		viewport: {start: buf, extent: this.cfg.multi_col_count}
-	};
-
-	if (this.cfg.auto_scroll)
-		this.scrollinfo.offset += this.cfg.auto_scroll_offset;
-
-	this.lastWheelEvent = 0;
+	var cfg = VpSettings.vpconfig;
 	
-	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
-	VpDate.localemonth = this.cfg.month_names.split('-');
+	VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
+	VpDate.localemonth = cfg.month_names.split('-');
 
-	this.initVpMonths();
-}
-
-VpGrid.prototype.setView = function(view)
-{
-	if (view.column)
-	{
-		this.view.cls = {vpcolview: true};
-		this.setFontSizeStyle(1.4);
-		this.updateColLayout();
-	}
-
-	if (view.list)
-	{
-		this.view.cls = {vplistview: true};
-		this.setFontSizeStyle(1.8);
-		this.updateListLayout();
-	}
-
-	if (view.expand)
-	{
-		this.view.cls = {vpexpandview: true};
-		this.setFontSizeStyle(3);
-		this.updateColLayout();
-	}
-}
-
-VpGrid.prototype.setFontSizeStyle = function(max)
-{
-	var sz = ((max * this.cfg.font_scale_pc)/100);
-	this.view.style['font-size'] = fmt("^vh", sz);
-}
-
-VpGrid.prototype.initVpMonths = function()
-{
 	this.vpmonths = [];
 
 	var vdt = new VpDate();
 	vdt.toStartOfMonth();
-	vdt.offsetMonth(this.scrollinfo.offset);
-
-	for (var i=0; i < this.scrollinfo.length; i++)
+	vdt.offsetMonth(-1);
+	for (var i=0; i < 6; i++)
 	{
-		var vpmonth = new VpMonth(vdt.ymd());
+		var vpmonth = new VpMonth(vdt.ymd(), cfg);
 		this.vpmonths.push(vpmonth);
 
 		vdt.offsetMonth(1);
 	}
 }
 
-VpGrid.prototype.updateColLayout = function()
+
+
+function VpColumnLayout(VpMonthsDays)
 {
-	this.layout = {column: true, hdrs: [], rows: []};
-
-	var start = this.scrollinfo.viewport.start;
-	var ext = this.scrollinfo.viewport.extent;
+	this.hdrs = [];
+	this.rows = [];
 	
-	for (var m = start; m < (start + ext); m++)
+	for (var m=0; m < VpMonthsDays.vpmonths.length; m++)
 	{
-		var vpmonth = this.vpmonths[m];
+		var vpmonth = VpMonthsDays.vpmonths[m];
 		
-		this.layout.hdrs.push(vpmonth.hdr);
+		this.hdrs.push(vpmonth.hdr);
 
-		if (m == start)
+		if (m == 0)
 		{
 			for (var d=0; d < (31+6); d++)
-				this.layout.rows.push({cells: []});
+				this.rows.push({cells: []});
 		}
 
 		for (var e=0; e < vpmonth.offset; e++)
-			this.layout.rows[e].cells.push({empty: true});
+			this.rows[e].cells.push({empty: true});
 
 		for (var d=0; d < vpmonth.vpdays.length; d++)
-			this.layout.rows[d + vpmonth.offset].cells.push(vpmonth.vpdays[d]);
+			this.rows[d + vpmonth.offset].cells.push(vpmonth.vpdays[d]);
 
 		for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
-			this.layout.rows[e].cells.push({empty: true});
+			this.rows[e].cells.push({empty: true});
 	}
 }
 
-VpGrid.prototype.updateListLayout = function()
+
+
+function VpListLayout(VpMonthsDays)
 {
-	this.layout = {list: true, rows: []};
+	this.rows = [];
 	
-	var start = this.scrollinfo.viewport.start;
-	var ext = this.scrollinfo.viewport.extent;
-	
-	for (var m = start; m < (start + ext); m++)
+	for (var m=0; m < VpMonthsDays.vpmonths.length; m++)
 	{
-		var vpmonth = this.vpmonths[m];
+		var vpmonth = VpMonthsDays.vpmonths[m];
 
 		var row = {hdr: vpmonth.hdr, cells: []};
 
@@ -128,75 +74,21 @@ VpGrid.prototype.updateListLayout = function()
 		for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
 			row.cells.push({empty: true});
 
-		this.layout.rows.push(row);
+		this.rows.push(row);
 	}
-}
-
-VpGrid.prototype.onwheel = function(event)
-{
-	if (this.view.cls.vpexpandview)
-		return;
-	
-	var t = Math.floor(event.timeStamp);
-
-	if ((t - this.lastWheelEvent) > 150)
-	{
-		this.scroll(event.deltaY > 0);
-		this.lastWheelEvent = t;
-	}
-
-	event.preventDefault();
-}
-
-VpGrid.prototype.scroll = function(forward)
-{
-	if (this.scrolling_disabled)
-		return;
-
-	var scroll_months = 1;
-	
-	if (forward)
-	{
-		this.scrollinfo.viewport.start++;
-
-		if ((this.scrollinfo.viewport.start + this.scrollinfo.viewport.extent) > this.scrollinfo.length)
-		{
-			this.scrollinfo.offset += (this.scrollinfo.length - this.scrollinfo.viewport.extent - this.scrollinfo.buffer + scroll_months);
-			this.scrollinfo.viewport.start = this.scrollinfo.buffer;
-			this.initVpMonths();
-
-			//this.ReloadEvents();
-		}
-	}
-	else
-	{
-		this.scrollinfo.viewport.start--;
-
-		if (this.scrollinfo.viewport.start < 0)
-		{
-			this.scrollinfo.offset -= (this.scrollinfo.length - this.scrollinfo.viewport.extent - this.scrollinfo.buffer + scroll_months);
-			this.scrollinfo.viewport.start = this.scrollinfo.buffer;
-			this.initVpMonths();
-
-			//this.ReloadEvents();
-		}
-	}
-	
-	if (this.layout.column) this.updateColLayout();
-	if (this.layout.list) this.updateListLayout();
 }
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-function VpMonth(ymd)
+function VpMonth(ymd, cfg)
 {
 	var vdt = new VpDate(ymd);
 	
 	this.hdr = vdt.MonthTitle();
 	this.offset = 0;
-	if (vpgrid.cfg.align_weekends)
+	if (cfg.align_weekends)
 		this.offset = vdt.DayOfWeek();
 
 	this.vpdays = [];
@@ -204,7 +96,7 @@ function VpMonth(ymd)
 	var m = vdt.getMonth();
 	while (m == vdt.getMonth())
 	{
-		var vpday = new VpDay(vdt.ymd());
+		var vpday = new VpDay(vdt.ymd(), cfg);
 		this.vpdays.push(vpday);
 
 		vdt.offsetDay(1);
@@ -215,7 +107,7 @@ function VpMonth(ymd)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpDay(ymd)
+function VpDay(ymd, cfg)
 {
 	var vdt = new VpDate(ymd);
 
@@ -234,32 +126,36 @@ function VpDay(ymd)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpGridConfig()
+function VpSettings()
 {
-	this.multi_col_count = 6;
-	this.multi_col_count_portrait = 3;
-	this.auto_scroll = true;
-	this.auto_scroll_offset = -1;
-	this.first_month = 1;
-	this.weekends = "6,0";
-	this.align_weekends = true;
-	this.font_scale_pc = 80;
-	this.past_opacity = 0.7;
-	this.month_names = "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec";
-	this.show_event_time = true;
-	this.show_event_title = true;
-	this.show_event_marker = true;
-	this.colour_event_title = false;
-	this.proportional_events = false;
-	this.proportional_start_hour = 8;
-	this.proportional_end_hour = 20;
-	this.show_all_day_events = true;
-	this.single_day_as_multi_day = false;
-	this.show_timed_events = true;
-	this.multi_day_as_single_day = false;
-	this.first_day_only = false;
-	this.marker_width = 0.85;
-	this.multi_day_opacity = 0.8;
+	this.banner_text = "visual-planner";
+
+	this.vpconfig = {
+		multi_col_count: 6,
+		multi_col_count_portrait: 3,
+		auto_scroll: true,
+		auto_scroll_offset: -1,
+		first_month: 1,
+		weekends: "6,0",
+		align_weekends: true,
+		font_scale_pc: 80,
+		past_opacity: 0.7,
+		month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
+		show_event_time: true,
+		show_event_title: true,
+		show_event_marker: true,
+		colour_event_title: false,
+		proportional_events: false,
+		proportional_start_hour: 8,
+		proportional_end_hour: 20,
+		show_all_day_events: true,
+		single_day_as_multi_day: false,
+		show_timed_events: true,
+		multi_day_as_single_day: false,
+		first_day_only: false,
+		marker_width: 0.85,
+		multi_day_opacity: 0.8
+	};
 }
 
 

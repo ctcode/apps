@@ -3,14 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="vp.css" type="text/css"/>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
+<link rel="stylesheet" href="vplib.css" type="text/css"/>
 <script src="vplib.js" type='text/javascript'></script>
+<style>
+.vptable {
+	font-size: 1.4vh
+	padding: 2vh 1vw;
+};
+.vphdr {
+	width: 6vw;
+}
+.vpday {
+	position: relative;
+	vertical-align: top;
+	text-align: center;
+	z-index: 0;
+}
+.vpnum {
+	width: auto;
+}
+</style>
 </head>
-<body ng-app="vplist" ng-controller="main" ng-cloak>
+<body ng-app="ViewApp" ng-cloak>
 
-<table class="vplistview vptable" ng-style="tablestyle">
-	<tr ng-repeat="row in vpgrid.layout.rows">
+<table class="vptable" ng-controller="TableLayout as table">
+	<tr ng-repeat="row in table.rows">
 		<th class="vphdr">{{row.hdr}}</th>
 		<td ng-repeat="cell in row.cells" ng-class="cell.cls">
 			<div ng-if="cell.cls.vpday" class="vpnum">{{cell.num}}</div>
@@ -18,18 +36,11 @@
 	</tr>
 </table>
 
-<script>
-var app = angular.module("vplist", []);
-app.controller("main", vplist_main);
-
-function vplist_main($scope, $document)
-{
-	$scope.vpgrid = new VpGrid();
-	$scope.vpgrid.updateListLayout();
-	$scope.tablestyle = {'font-size': "1.4vh"};
-	console.log($scope.vpgrid);
-}
-
+<script type='text/javascript'>
+var app = angular.module("ViewApp", []);
+app.controller("TableLayout", VpListLayout);
+app.service("VpSettings", VpSettings);
+app.service("VpMonthsDays", VpMonthsDays);
 </script>
 
 </body>
