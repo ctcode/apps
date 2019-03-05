@@ -10,6 +10,7 @@ body {
 	height: 100%;
 	border-spacing: 1px;
 	table-layout: fixed;
+	padding-bottom: 2em;
 }
 .vphdr {
 	padding: 1em;
