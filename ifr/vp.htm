@@ -114,7 +114,7 @@ body {
 	<div id="tools">
 		<div>{{vp.sign_msg}}</div>
 		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
-		<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
+		<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()" ng-show="vp.toolbtnclass.expand.checked"/>
 		<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.onclickExpand()" ng-class="vp.toolbtnclass.expand"/>
 		<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vp.onclickList()" ng-class="vp.toolbtnclass.list"/>
 		<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vp.onclickColumn()" ng-class="vp.toolbtnclass.column"/>
