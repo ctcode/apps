@@ -53,6 +53,7 @@ function VpAlmanac(VpSettingsSvc)
 			this.cls.weekend = true;
 
 		if (VpDate.isToday(ymd))
+		if (!cfg.print)
 			this.cls.today = true;
 	}
 }
@@ -148,7 +149,8 @@ function VpSettings()
 		multi_day_as_single_day: false,
 		first_day_only: false,
 		marker_width: 0.85,
-		multi_day_opacity: 0.8
+		multi_day_opacity: 0.8,
+		print: false
 	};
 	
 	this.load = function() {

@@ -31,7 +31,7 @@ app.controller("LayoutController", VpColLayout);
 app.service("VpSettingsSvc", VpSettings);
 app.service("VpAlmanacSvc", VpAlmanac);
 app.controller("PrintController", function(VpSettingsSvc) {
-	VpSettingsSvc.vpconfig.multi_col_count = 8;
+	VpSettingsSvc.vpconfig.print = true;
 });
 </script>
 
