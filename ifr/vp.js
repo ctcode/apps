@@ -1,20 +1,20 @@
-var app = angular.module("MainApp", []);
-app.controller("VpMainCtrl", VpMainCtrl);
-app.service("VpSettings", VpSettings);
+var app = angular.module("vpapp", []);
+app.controller("VpController", VpCtrl);
+app.service("VpSettingsSvc", VpSettings);
 
-function VpMainCtrl(VpSettings, $timeout)
+function VpCtrl(VpSettingsSvc, $timeout)
 {
 	this.toolbtnclass = {};
 	this.gridurl = "";
 	this.show = {banner: true};
-	this.settings = VpSettings;
+	this.settings = VpSettingsSvc;
 	this.sign_msg = "Signing In...";
 	this.multi_col_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 
 	$timeout(function(){
+		VpSettingsSvc.load();
 		this.sign_msg = "Signed Out";
 		this.show = {banner: true, grid: true};
-		this.settings.banner_text = "vp-ifr";
 		this.onclickColumn();
 	}.bind(this), 3000);
 
@@ -44,4 +44,4 @@ function VpMainCtrl(VpSettings, $timeout)
 }
 
 // s = angular.element($0).scope()
-// angular.element($0).injector().get("VpSettings")
+// angular.element($0).injector().get("VpSettingsSvc")

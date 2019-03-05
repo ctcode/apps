@@ -25,9 +25,9 @@
 }
 </style>
 </head>
-<body ng-app="ViewApp" ng-cloak>
+<body ng-app="vpview" ng-cloak>
 
-<table class="vptable" ng-controller="TableLayout as table">
+<table class="vptable" ng-controller="LayoutController as table">
 	<tr ng-repeat="row in table.rows">
 		<th class="vphdr">{{row.hdr}}</th>
 		<td ng-repeat="cell in row.cells" ng-class="cell.cls">
@@ -37,10 +37,10 @@
 </table>
 
 <script type='text/javascript'>
-var app = angular.module("ViewApp", []);
-app.controller("TableLayout", VpListLayout);
-app.service("VpSettings", VpSettings);
-app.service("VpMonthsDays", VpMonthsDays);
+var app = angular.module("vpview", []);
+app.controller("LayoutController", VpRowLayout);
+app.service("VpSettingsSvc", VpSettings);
+app.service("VpAlmanacSvc", VpAlmanac);
 </script>
 
 </body>
