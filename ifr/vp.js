@@ -2,7 +2,7 @@ var app = angular.module("vpapp", []);
 app.controller("VpController", VpCtrl);
 app.service("VpSettingsSvc", VpSettings);
 
-function VpCtrl(VpSettingsSvc, $timeout)
+function VpCtrl(VpSettingsSvc, $window, $timeout)
 {
 	this.toolbtnclass = {};
 	this.gridurl = "";
@@ -31,6 +31,10 @@ function VpCtrl(VpSettingsSvc, $timeout)
 	this.onclickExpand = function() {
 		this.toolbtnclass = {expand: {checked: true}};
 		this.gridurl = "vpexpand.htm";
+	}
+
+	this.onclickPrint = function() {
+		$window.open("vpprint.htm");
 	}
 
 	this.onclickSettings = function() {
