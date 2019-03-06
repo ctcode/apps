@@ -108,6 +108,7 @@ body {
 </style>
 </head>
 <body ng-app="vpapp" ng-controller="VpController as vp" ng-cloak>
+<title ng-bind="vp.settings.banner_text">Loading...</title>
 
 <div id="banner" ng-show="vp.show.banner">
 	<div id="bantxt">{{vp.settings.banner_text}}</div>

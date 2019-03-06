@@ -154,7 +154,7 @@ function VpSettings()
 	};
 	
 	this.load = function() {
-		this.banner_text = "vp-irf";
+		this.banner_text = "vp-ifr";
 	}
 }
 
