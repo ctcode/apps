@@ -2,8 +2,6 @@ body {
 	font-family: Arial;
 	height: 100vh;
 	margin: 0;
-	scrollbar-width: none;  /* ff */
-	-ms-overflow-style: none;  /* IE 10+ */
 }
 
 /* ----------------- table ------------------- */
@@ -12,7 +10,6 @@ body {
 	height: 100%;
 	border-spacing: 1px;
 	table-layout: fixed;
-	padding-bottom: 2em;
 }
 .vphdr {
 	padding: 1em;
