@@ -61,7 +61,7 @@ function VpRowLayout(VpAlmanacSvc)
 
 function VpSettings()
 {
-	this.banner_text = "visual-planner";
+	this.planner_title = "visual-planner";
 
 	this.vpconfig = {
 		multi_col_count: 6,
@@ -92,7 +92,7 @@ function VpSettings()
 	};
 	
 	this.load = function() {
-		this.banner_text = "vp-scr";
+		this.planner_title = "vp-scr";
 	}
 }
 

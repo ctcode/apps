@@ -19,7 +19,6 @@ body {
 	min-height: 400px;
 	display: flex;
 	flex-direction: column;
-	overflow: hidden;
 }
 #banner {
 	font-family: Roboto;
@@ -116,10 +115,10 @@ body {
 </style>
 </head>
 <body ng-app="vpapp" ng-controller="VpAppController as vp" ng-cloak>
-<title ng-bind="vp.settings.banner_text">Loading...</title>
+<title ng-bind="vp.settings.planner_title">Loading...</title>
 
 <div id="banner" ng-show="vp.show.banner">
-	<div id="bantxt">{{vp.settings.banner_text}}</div>
+	<div id="bantxt">{{vp.settings.planner_title}}</div>
 	<div id="tools">
 		<div>{{vp.sign_msg}}</div>
 		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
@@ -215,6 +214,9 @@ body {
 	</div>
 	<form name="vp.form">
 	<div class="sub group"><b>View</b>
+		<div class="sub"><input ng-model="vp.settings.planner_title">
+			Planner title.
+		</div>
 		<div class="sub"><select ng-model="vp.settings.vpconfig.multi_col_count"  ng-options="x for (x, y) in vp.multi_col_count_options"></select>
 			Number of columns to display.  More columns can be scrolled into view using the mouse wheel or cursor keys.
 		</div>
@@ -241,9 +243,6 @@ body {
 		</div>
 		<div class="sub"><input ng-model="vp.settings.vpconfig.past_opacity" type="number" min="0" max="1">
 			Opacity of past months.  (1 = opaque)
-		</div>
-		<div class="sub"><input ng-model="vp.settings.banner_text">
-			Banner text.
 		</div>
 		<div class="sub"><input class="monthnames" ng-model="vp.settings.vpconfig.month_names">
 			Month names.
