@@ -1,65 +1,5 @@
 //////////////////////////////////////////////////////////////////////
 
-
-
-function VpAlmanac(VpSettingsSvc)
-{
-	var cfg = VpSettingsSvc.vpconfig;
-	
-	VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
-	VpDate.localemonth = cfg.month_names.split('-');
-
-	this.vpmonths = [];
-
-	var vdt = new VpDate();
-	vdt.toStartOfMonth();
-	vdt.offsetMonth(cfg.auto_scroll_offset);
-	for (var i=0; i < cfg.multi_col_count; i++)
-	{
-		var vpmonth = new VpMonth(vdt.ymd());
-		this.vpmonths.push(vpmonth);
-
-		vdt.offsetMonth(1);
-	}
-
-	function VpMonth(ymd) {
-		var vdt = new VpDate(ymd);
-		
-		this.hdr = vdt.MonthTitle();
-		this.offset = 0;
-		if (cfg.align_weekends)
-			this.offset = vdt.DayOfWeek();
-
-		this.vpdays = [];
-
-		var m = vdt.getMonth();
-		while (m == vdt.getMonth())
-		{
-			var vpday = new VpDay(vdt.ymd());
-			this.vpdays.push(vpday);
-
-			vdt.offsetDay(1);
-		}
-	}
-
-	function VpDay(ymd) {
-		var vdt = new VpDate(ymd);
-
-		this.cls = {vpday: true};
-		this.id = ymd;
-		this.num = vdt.DayOfMonth();
-
-		if (vdt.isWeekend())
-			this.cls.weekend = true;
-
-		if (VpDate.isToday(ymd))
-		if (!cfg.print)
-			this.cls.today = true;
-	}
-}
-
-
-
 function VpColLayout(VpAlmanacSvc)
 {
 	var months = VpAlmanacSvc.vpmonths;
@@ -89,8 +29,6 @@ function VpColLayout(VpAlmanacSvc)
 			this.rows[e].cells.push({empty: true});
 	}
 }
-
-
 
 function VpRowLayout(VpAlmanacSvc)
 {
@@ -155,6 +93,66 @@ function VpSettings()
 	
 	this.load = function() {
 		this.banner_text = "vp-scr";
+	}
+}
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+function VpAlmanac(VpSettingsSvc)
+{
+	var cfg = VpSettingsSvc.vpconfig;
+	
+	VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
+	VpDate.localemonth = cfg.month_names.split('-');
+
+	this.vpmonths = [];
+
+	var vdt = new VpDate();
+	vdt.toStartOfMonth();
+	vdt.offsetMonth(cfg.auto_scroll_offset);
+	for (var i=0; i < cfg.multi_col_count; i++)
+	{
+		var vpmonth = new VpMonth(vdt.ymd());
+		this.vpmonths.push(vpmonth);
+
+		vdt.offsetMonth(1);
+	}
+
+	function VpMonth(ymd) {
+		var vdt = new VpDate(ymd);
+		
+		this.hdr = vdt.MonthTitle();
+		this.offset = 0;
+		if (cfg.align_weekends)
+			this.offset = vdt.DayOfWeek();
+
+		this.vpdays = [];
+
+		var m = vdt.getMonth();
+		while (m == vdt.getMonth())
+		{
+			var vpday = new VpDay(vdt.ymd());
+			this.vpdays.push(vpday);
+
+			vdt.offsetDay(1);
+		}
+	}
+
+	function VpDay(ymd) {
+		var vdt = new VpDate(ymd);
+
+		this.cls = {vpday: true};
+		this.id = ymd;
+		this.num = vdt.DayOfMonth();
+
+		if (vdt.isWeekend())
+			this.cls.weekend = true;
+
+		if (VpDate.isToday(ymd))
+		if (!cfg.print)
+			this.cls.today = true;
 	}
 }
 

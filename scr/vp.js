@@ -1,5 +1,5 @@
 var app = angular.module("vpapp", []);
-app.controller("VpController", VpCtrl);
+app.controller("VpAppController", VpApp);
 app.controller("VpColLayoutController", VpColLayout);
 app.controller("VpRowLayoutController", VpRowLayout);
 app.service("VpSettingsSvc", VpSettings);
@@ -7,13 +7,12 @@ app.service("VpAlmanacSvc", VpAlmanac);
 
 myonwheel = function(event)
 {
-	//console.log(event);
 	document.getElementById("grid").scrollBy(event.deltaY, 0);
 	event.preventDefault();
 }
 document.onwheel = myonwheel;
 
-function VpCtrl(VpSettingsSvc, $window, $timeout)
+function VpApp(VpSettingsSvc, $window, $timeout)
 {
 	this.show = {banner: true};
 	this.toolbtnclass = {};

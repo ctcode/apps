@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="vp.png">
-<link rel="manifest" href="vp_manifest.json">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto" type="text/css"/>
-<link rel="stylesheet" href="vplib.css" type="text/css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
+<link href="vp_manifest.json" rel="manifest">
+<link href="vp.png" rel="icon">
+<link href="vplib.css" rel="stylesheet" type="text/css"/>
 <script src="vplib.js" type='text/javascript'></script>
 <script src="vp.js" type='text/javascript'></script>
 <style>
@@ -115,7 +115,7 @@ body {
 }
 </style>
 </head>
-<body ng-app="vpapp" ng-controller="VpController as vp" ng-cloak>
+<body ng-app="vpapp" ng-controller="VpAppController as vp" ng-cloak>
 <title ng-bind="vp.settings.banner_text">Loading...</title>
 
 <div id="banner" ng-show="vp.show.banner">
@@ -170,7 +170,7 @@ body {
 			width: 300%;
 		}
 		.vptable {
-			font-size: 30px;
+			font-size: 1em;
 			height: initial;
 		}
 	</style>
