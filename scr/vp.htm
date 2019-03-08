@@ -59,19 +59,6 @@ body {
 #banner .toolbtn.checked {
 	opacity: 1;
 }
-#grid {
-	display: flex;
-	height: 100%;
-	border: none;
-	outline: none;
-	position: relative;
-	overflow: auto;
-}
-#gridcontent {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-}
 #calendarbar {
 	font-size: 0.6em;
 	height: 2.8em;
@@ -129,7 +116,22 @@ body {
 	</div>
 </div>
 
-<div id="grid" ng-if="vp.show.grid" ng-class="vp.view.cls" tabIndex="1">
+<div id="grid" ng-if="vp.show.grid" tabIndex="1">
+	<style>
+		#grid {
+			display: flex;
+			height: 100%;
+			border: none;
+			outline: none;
+			position: relative;
+			overflow: auto;
+		}
+		#gridcontent {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+		}
+	</style>
 	<style ng-if="vp.view.column">
 		#grid::-webkit-scrollbar {
 			height: 0;
@@ -174,7 +176,7 @@ body {
 		}
 	</style>
 	<div id="gridcontent" ng-if="vp.layout.col">
-		<table class="vptable" ng-controller="VpColLayoutController as table">
+		<table class="vptable" ng-controller="VpLayoutController as table">
 			<tr><th ng-repeat="hdr in table.hdrs" class="vphdr">{{hdr}}</th></tr>
 			<tr ng-repeat="row in table.rows">
 				<td ng-repeat="cell in row.cells" ng-class="cell.cls">
@@ -185,7 +187,7 @@ body {
 		</table>
 	</div>
 	<div id="gridcontent" ng-if="vp.layout.row">
-		<table class="vptable" ng-controller="VpRowLayoutController as table">
+		<table class="vptable" ng-controller="VpLayoutController as table">
 			<tr ng-repeat="row in table.rows">
 				<th class="vphdr">{{row.hdr}}</th>
 				<td ng-repeat="cell in row.cells" ng-class="cell.cls">

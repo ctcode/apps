@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpColLayout(VpAlmanacSvc)
+function VpLayout(VpAlmanacSvc, $scope)
 {
 	var months = VpAlmanacSvc.vpmonths;
 
@@ -10,48 +10,42 @@ function VpColLayout(VpAlmanacSvc)
 	for (var m=0; m < months.length; m++)
 	{
 		var vpmonth = months[m];
-		
-		this.hdrs.push(vpmonth.hdr);
 
-		if (m == 0)
+		if ($scope.vp.layout.col)
 		{
-			for (var d=0; d < (31+6); d++)
-				this.rows.push({cells: []});
+			this.hdrs.push(vpmonth.hdr);
+
+			if (m == 0)
+			{
+				for (var d=0; d < (31+6); d++)
+					this.rows.push({cells: []});
+			}
+
+			for (var e=0; e < vpmonth.offset; e++)
+				this.rows[e].cells.push({empty: true});
+
+			for (var d=0; d < vpmonth.vpdays.length; d++)
+				this.rows[d + vpmonth.offset].cells.push(vpmonth.vpdays[d]);
+
+			for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
+				this.rows[e].cells.push({empty: true});
 		}
 
-		for (var e=0; e < vpmonth.offset; e++)
-			this.rows[e].cells.push({empty: true});
+		if ($scope.vp.layout.row)
+		{
+			var row = {hdr: vpmonth.hdr, cells: []};
 
-		for (var d=0; d < vpmonth.vpdays.length; d++)
-			this.rows[d + vpmonth.offset].cells.push(vpmonth.vpdays[d]);
+			for (var e=0; e < vpmonth.offset; e++)
+				row.cells.push({empty: true});
 
-		for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
-			this.rows[e].cells.push({empty: true});
-	}
-}
+			for (var d=0; d < vpmonth.vpdays.length; d++)
+				row.cells.push(vpmonth.vpdays[d]);
 
-function VpRowLayout(VpAlmanacSvc)
-{
-	var months = VpAlmanacSvc.vpmonths;
+			for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
+				row.cells.push({empty: true});
 
-	this.rows = [];
-	
-	for (var m=0; m < months.length; m++)
-	{
-		var vpmonth = months[m];
-
-		var row = {hdr: vpmonth.hdr, cells: []};
-
-		for (var e=0; e < vpmonth.offset; e++)
-			row.cells.push({empty: true});
-
-		for (var d=0; d < vpmonth.vpdays.length; d++)
-			row.cells.push(vpmonth.vpdays[d]);
-
-		for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
-			row.cells.push({empty: true});
-
-		this.rows.push(row);
+			this.rows.push(row);
+		}
 	}
 }
 
@@ -102,17 +96,25 @@ function VpSettings()
 
 function VpAlmanac(VpSettingsSvc)
 {
-	var cfg = VpSettingsSvc.vpconfig;
+	this.cfg = VpSettingsSvc.vpconfig;
 	
-	VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
-	VpDate.localemonth = cfg.month_names.split('-');
+	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
+	VpDate.localemonth = this.cfg.month_names.split('-');
 
-	this.vpmonths = [];
+	this.offset = this.cfg.auto_scroll ? this.cfg.auto_scroll_offset : 0;
+	this.init_months();
+}
 
+VpAlmanac.prototype.init_months = function()
+{
+	var cfg = this.cfg;
+	
 	var vdt = new VpDate();
 	vdt.toStartOfMonth();
-	vdt.offsetMonth(cfg.auto_scroll_offset);
-	for (var i=0; i < cfg.multi_col_count; i++)
+	vdt.offsetMonth(this.offset - cfg.multi_col_count);
+
+	this.vpmonths = [];
+	for (var i=0; i < (cfg.multi_col_count*3); i++)
 	{
 		var vpmonth = new VpMonth(vdt.ymd());
 		this.vpmonths.push(vpmonth);
@@ -154,6 +156,12 @@ function VpAlmanac(VpSettingsSvc)
 		if (!cfg.print)
 			this.cls.today = true;
 	}
+}
+
+VpAlmanac.prototype.scroll = function(delta)
+{
+	this.offset += (this.cfg.multi_col_count * delta);
+	this.init_months();
 }
 
 

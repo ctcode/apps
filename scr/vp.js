@@ -1,16 +1,8 @@
 var app = angular.module("vpapp", []);
 app.controller("VpAppController", VpApp);
-app.controller("VpColLayoutController", VpColLayout);
-app.controller("VpRowLayoutController", VpRowLayout);
+app.controller("VpLayoutController", VpLayout);
 app.service("VpSettingsSvc", VpSettings);
 app.service("VpAlmanacSvc", VpAlmanac);
-
-myonwheel = function(event)
-{
-	document.getElementById("grid").scrollBy(event.deltaY, 0);
-	event.preventDefault();
-}
-document.onwheel = myonwheel;
 
 function VpApp(VpSettingsSvc, $window, $timeout)
 {
