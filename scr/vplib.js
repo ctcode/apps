@@ -1,5 +1,33 @@
 //////////////////////////////////////////////////////////////////////
 
+function VpGrid(VpAlmanacSvc)
+{
+	function fLink(scope) {
+		scope.$watch("view", scope.setView);
+	}
+	
+	this.hdrs = ["arse"];
+
+	function fCtl($scope) {
+		$scope.setView = function(view) {
+			console.log(this.hdrs);
+			VpAlmanacSvc.scroll();
+		}
+	}
+
+	return {
+		scope: {view: "="},
+		controller: ['$scope', fCtl],
+		link: fLink,
+		templateUrl: "vpgrid.htm",
+		restrict: 'E'
+	};
+}
+
+
+
+//////////////////////////////////////////////////////////////////////
+
 function VpLayout(VpAlmanacSvc, $scope)
 {
 	var months = VpAlmanacSvc.vpmonths;
@@ -160,6 +188,8 @@ VpAlmanac.prototype.init_months = function()
 
 VpAlmanac.prototype.scroll = function(delta)
 {
+console.log("scroll me");
+return;
 	this.offset += (this.cfg.multi_col_count * delta);
 	this.init_months();
 }

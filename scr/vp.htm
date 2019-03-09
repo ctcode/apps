@@ -59,6 +59,12 @@ body {
 #banner .toolbtn.checked {
 	opacity: 1;
 }
+#grid {
+	display: flex;
+	height: 100%;
+	border: none;
+	outline: none;
+}
 #calendarbar {
 	font-size: 0.6em;
 	height: 2.8em;
@@ -110,13 +116,17 @@ body {
 		<div>{{vp.sign_msg}}</div>
 		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
 		<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
-		<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.onclickExpand()" ng-class="vp.toolbtnclass.expand"/>
-		<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vp.onclickList()" ng-class="vp.toolbtnclass.list"/>
-		<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vp.onclickColumn()" ng-class="vp.toolbtnclass.column"/>
+		<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.viewinfo=vp.expandinfo" ng-class="vp.viewinfo.btnclass.expand"/>
+		<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vp.viewinfo=vp.listinfo" ng-class="vp.viewinfo.btnclass.list"/>
+		<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vp.viewinfo=vp.columninfo" ng-class="vp.viewinfo.btnclass.column"/>
 	</div>
 </div>
 
 <div id="grid" ng-if="vp.show.grid" tabIndex="1">
+	<vp-grid view="vp.viewinfo.view"></vp-grid>
+</div>
+
+<div ng-if="vp.show.nogrid">
 	<style>
 		#grid {
 			display: flex;

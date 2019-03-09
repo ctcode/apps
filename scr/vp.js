@@ -3,13 +3,15 @@ app.controller("VpAppController", VpApp);
 app.controller("VpLayoutController", VpLayout);
 app.service("VpSettingsSvc", VpSettings);
 app.service("VpAlmanacSvc", VpAlmanac);
+app.directive("vpGrid", VpGrid);
 
 function VpApp(VpSettingsSvc, $window, $timeout)
 {
 	this.show = {banner: true};
-	this.toolbtnclass = {};
-	this.view = {};
-	this.layout = {};
+	this.viewinfo = {};
+	this.columninfo = {view: {column: true}, btnclass: {column: {checked: true}}};
+	this.listinfo = {view: {list: true}, btnclass: {list: {checked: true}}};
+	this.expandinfo = {view: {expand: true}, btnclass: {expand: {checked: true}}};
 	this.settings = VpSettingsSvc;
 	this.sign_msg = "Signing In...";
 	this.multi_col_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
@@ -18,29 +20,8 @@ function VpApp(VpSettingsSvc, $window, $timeout)
 		VpSettingsSvc.load();
 		this.sign_msg = "Signed Out";
 		this.show = {banner: true, grid: true};
-		this.onclickColumn();
+		this.viewinfo = this.columninfo;
 	}.bind(this), 3000);
-
-	this.onclickColumn = function() {
-		this.toolbtnclass = {column: {checked: true}};
-		this.view = {column: true};
-		this.layout = {col: true};
-		this.redrawGrid();
-	}
-
-	this.onclickList = function() {
-		this.toolbtnclass = {list: {checked: true}};
-		this.view = {list: true};
-		this.layout = {row: true};
-		this.redrawGrid();
-	}
-
-	this.onclickExpand = function() {
-		this.toolbtnclass = {expand: {checked: true}};
-		this.view = {expand: true};
-		this.layout = {col: true};
-		this.redrawGrid();
-	}
 
 	this.onclickPrint = function() {
 		$window.open("vpprint.htm");
