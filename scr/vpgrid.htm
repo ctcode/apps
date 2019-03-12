@@ -1,5 +1,93 @@
-<div>
-	<h3 ng-if="view.column">this is column view</h3>
-	<h3 ng-if="view.list">this is list view</h3>
-	<h3 ng-if="view.expand">this is expand view</h3>
+<style>
+.vpgrid {
+	width: 100%;
+	position: relative;
+	overflow: auto;
+}
+.vpgridcontent {
+	position: absolute;
+}
+.vptable {
+	height: 100%;
+	width: 100%;
+	border-spacing: 1px;
+	table-layout: fixed;
+}
+.vphdr {
+	text-align: center;
+	font-weight: bold;
+	padding: 1em;
+}
+.vpday {
+	background-color: #eaeaea;
+}
+.vpday.weekend {
+	background-color: #d8d8d8;
+}
+.vpnum {
+	font-size: 0.8em;
+	width: 2em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	text-align: center;
+}
+.vpnum.today {
+	font-weight: bold;
+	color: white;
+	background-color: red;
+}
+</style>
+<style ng-if="view.column">
+	.vpgrid::-webkit-scrollbar {
+		height: 0;
+	}
+	.vpgridcontent {
+		width: 300%;
+	}
+	.vptable {
+		font-size: 1.2vh;
+	}
+</style>
+<style ng-if="view.list">
+	.vpgrid::-webkit-scrollbar {
+		width: 0;
+	}
+	.vpgridcontent {
+		height: 300%;
+	}
+	.vptable {
+		font-size: 1.4vh;
+	}
+	.vphdr {
+		width: 10em;
+	}
+	.vpday {
+		position: relative;
+		vertical-align: top;
+		text-align: center;
+		z-index: 0;
+	}
+	.vpnum {
+		width: auto;
+	}
+</style>
+<style ng-if="view.expand">
+	.vpgridcontent {
+		width: 300%;
+	}
+	.vptable {
+		font-size: 1em;
+		height: initial;
+	}
+</style>
+<div class="vpgridcontent">
+	<table class="vptable">
+		<tr ng-repeat="row in vg.rows">
+			<td ng-repeat="cell in row.cells" ng-class="cell.cls">
+				<div ng-if="cell.hdr">{{cell.hdr}}</div>
+				<div ng-if="cell.day" ng-class="cell.day.cls">{{cell.day.num}}</div>
+				<div ng-if="cell.empty">&nbsp;</div>
+			</td>
+		</tr>
+	</table>
 </div>

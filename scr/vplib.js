@@ -2,22 +2,82 @@
 
 function VpGrid(VpAlmanacSvc)
 {
-	function fLink(scope) {
-		scope.$watch("view", scope.setView);
+	function fLink(scope, element) {
+
+		element.addClass("vpgrid");
+		element.on("scroll", onScroll);
+
+		function onView(view) {
+			if (view.column && !view.print)
+				element.on("wheel", onWheel);
+			else
+				element.off("wheel", onWheel);
+		}
+
+		function onWheel(evt) {
+			//console.log(evt);
+			evt.target.scrollBy(100,0);
+		}
+
+		function onScroll(evt) {
+			//console.log(evt);
+			scope.reset();
+		}
+
+		scope.$watch("view", onView, true);
+		scope.$watch("view", scope.setView, true);
 	}
-	
-	this.hdrs = ["arse"];
 
 	function fCtl($scope) {
+
+		this.rows = [];
+		var months = VpAlmanacSvc.vpmonths;
+		
+		for (var m=0; m < months.length; m++)
+		{
+			var vpmonth = months[m];
+
+			var row = {cells: []};
+			row.cells.push({hdr: vpmonth.hdr, cls: {vphdr: true}});
+
+			for (var e=0; e < vpmonth.offset; e++)
+				row.cells.push({empty: true});
+
+			for (var d=0; d < vpmonth.vpdays.length; d++)
+			{
+				var vpday = vpmonth.vpdays[d];
+
+				cell = {};
+				cell.cls = {vpday: true};
+				cell.day = {num: vpday.num, cls: {vpnum: true}};
+
+				if (vpday.weekend)
+					cell.cls.weekend = true;
+
+				if (vpday.today)
+					cell.day.cls.today = true;
+
+				row.cells.push(cell);
+			}
+
+			for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
+				row.cells.push({empty: true});
+
+			this.rows.push(row);
+		}
+
 		$scope.setView = function(view) {
-			console.log(this.hdrs);
+		}
+
+		$scope.reset = function() {
 			VpAlmanacSvc.scroll();
 		}
 	}
 
 	return {
 		scope: {view: "="},
-		controller: ['$scope', fCtl],
+		controller: fCtl,
+		controllerAs: "vg",
 		link: fLink,
 		templateUrl: "vpgrid.htm",
 		restrict: 'E'
@@ -109,8 +169,7 @@ function VpSettings()
 		multi_day_as_single_day: false,
 		first_day_only: false,
 		marker_width: 0.85,
-		multi_day_opacity: 0.8,
-		print: false
+		multi_day_opacity: 0.8
 	};
 	
 	this.load = function() {
@@ -173,16 +232,14 @@ VpAlmanac.prototype.init_months = function()
 	function VpDay(ymd) {
 		var vdt = new VpDate(ymd);
 
-		this.cls = {vpday: true};
 		this.id = ymd;
 		this.num = vdt.DayOfMonth();
 
 		if (vdt.isWeekend())
-			this.cls.weekend = true;
+			this.weekend = true;
 
 		if (VpDate.isToday(ymd))
-		if (!cfg.print)
-			this.cls.today = true;
+			this.today = true;
 	}
 }
 
