@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpGrid(VpAlmanacSvc)
+function VpGridDtv(vpAlmanac)
 {
 	function fCtl($scope, $timeout) {
 
@@ -16,7 +16,7 @@ function VpGrid(VpAlmanacSvc)
 		$scope.setView = function(view) {
 			$scope.vg.rows = [];
 			var rows = $scope.vg.rows;
-			var months = VpAlmanacSvc.vpmonths;
+			var months = vpAlmanac.vpmonths;
 
 			var sz = cellPos(view, months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
@@ -57,7 +57,7 @@ function VpGrid(VpAlmanacSvc)
 		}
 
 		$scope.reset = function() {
-			VpAlmanacSvc.scroll();
+			vpAlmanac.scroll();
 		}
 
 		function redraw() {
@@ -81,7 +81,12 @@ function VpGrid(VpAlmanacSvc)
 		}
 
 		function onWheel(evt) {
-			evt.target.scrollBy(evt.deltaY,0);
+			var dy = evt.deltaY;
+			if (evt.deltaMode == 1) dy = (dy*30);
+			if (evt.deltaMode == 2) dy = (dy*300);
+
+			evt.target.scrollBy(dy,0);
+			evt.preventDefault();
 		}
 
 		function onScroll(evt) {
@@ -107,7 +112,7 @@ function VpGrid(VpAlmanacSvc)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpSettings()
+function VpSettingsSvc()
 {
 	this.planner_title = "visual-planner";
 
@@ -147,9 +152,9 @@ function VpSettings()
 
 //////////////////////////////////////////////////////////////////////
 
-function VpAlmanac(VpSettingsSvc)
+function VpAlmanacSvc(vpSettings)
 {
-	this.cfg = VpSettingsSvc.vpconfig;
+	this.cfg = vpSettings.vpconfig;
 	
 	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
 	VpDate.localemonth = this.cfg.month_names.split('-');
@@ -158,7 +163,7 @@ function VpAlmanac(VpSettingsSvc)
 	this.init_months();
 }
 
-VpAlmanac.prototype.init_months = function()
+VpAlmanacSvc.prototype.init_months = function()
 {
 	var cfg = this.cfg;
 	
@@ -209,7 +214,7 @@ VpAlmanac.prototype.init_months = function()
 	}
 }
 
-VpAlmanac.prototype.scroll = function(delta)
+VpAlmanacSvc.prototype.scroll = function(delta)
 {
 console.log("scroll me");
 return;
