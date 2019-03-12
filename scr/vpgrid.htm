@@ -1,11 +1,13 @@
 <style>
 .vpgrid {
-	width: 100%;
+	height: 100%;
 	position: relative;
 	overflow: auto;
 }
 .vpgridcontent {
+	height: 100%;
 	position: absolute;
+	pointer-events: none;
 }
 .vptable {
 	height: 100%;
@@ -29,9 +31,10 @@
 	width: 2em;
 	padding-top: 0.2em;
 	padding-bottom: 0.2em;
+	margin: 0.2em;
 	text-align: center;
 }
-.vpnum.today {
+.vpday.today .vpnum {
 	font-weight: bold;
 	color: white;
 	background-color: red;
@@ -40,6 +43,9 @@
 <style ng-if="view.column">
 	.vpgrid::-webkit-scrollbar {
 		height: 0;
+	}
+	.vpgrid {
+		overflow-y: hidden;
 	}
 	.vpgridcontent {
 		width: 300%;
@@ -51,6 +57,9 @@
 <style ng-if="view.list">
 	.vpgrid::-webkit-scrollbar {
 		width: 0;
+	}
+	.vpgrid {
+		overflow-x: hidden;
 	}
 	.vpgridcontent {
 		height: 300%;
@@ -80,14 +89,20 @@
 		height: initial;
 	}
 </style>
-<div class="vpgridcontent">
-	<table class="vptable">
-		<tr ng-repeat="row in vg.rows">
-			<td ng-repeat="cell in row.cells" ng-class="cell.cls">
-				<div ng-if="cell.hdr">{{cell.hdr}}</div>
-				<div ng-if="cell.day" ng-class="cell.day.cls">{{cell.day.num}}</div>
-				<div ng-if="cell.empty">&nbsp;</div>
-			</td>
-		</tr>
-	</table>
+<div class="vpgrid" ng-hide="vg.redraw">
+	<div class="vpgridcontent">
+		<table class="vptable">
+			<tr ng-repeat="row in vg.rows">
+				<td ng-if="cell.hdr" class="vphdr" ng-repeat-start="cell in row.cells">{{cell.hdr}}</td>
+				<td ng-if="cell.day" class="vpday" ng-class="cell.cls">
+					<div class="vpnum">{{cell.day.num}}</div>
+					<div ng-repeat="evt in cell.day.evts" class="vpevt">
+						<div ng-if="evt.marker" class="vpevtmarker">&nbsp;</div>
+						<div ng-if="evt.title" class="vpevttitle">{{evt.title}}</div>
+					</div>
+				</td>
+				<td ng-if="cell.empty" ng-repeat-end>&nbsp;</td>
+			</tr>
+		</table>
+	</div>
 </div>

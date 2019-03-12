@@ -1,6 +1,5 @@
 var app = angular.module("vpapp", []);
 app.controller("VpAppController", VpApp);
-app.controller("VpLayoutController", VpLayout);
 app.service("VpSettingsSvc", VpSettings);
 app.service("VpAlmanacSvc", VpAlmanac);
 app.directive("vpGrid", VpGrid);

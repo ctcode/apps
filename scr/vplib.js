@@ -2,10 +2,76 @@
 
 function VpGrid(VpAlmanacSvc)
 {
+	function fCtl($scope, $timeout) {
+
+		function cellPos(view, xpos, ypos) {
+			var pos = {x: xpos, y: ypos};
+
+			if (view.list)
+				return {x: pos.y, y: pos.x};
+
+			return pos;
+		}
+
+		$scope.setView = function(view) {
+			$scope.vg.rows = [];
+			var rows = $scope.vg.rows;
+			var months = VpAlmanacSvc.vpmonths;
+
+			var sz = cellPos(view, months.length, 31+6+1);
+			for (var y=0; y < sz.y; y++)
+			{
+				var row = {cells: []};
+
+				for (var x=0; x < sz.x; x++)
+					row.cells.push({empty: true})
+
+				rows.push(row);
+			}
+
+			for (var m=0; m < months.length; m++)
+			{
+				var vpmonth = months[m];
+
+				var pos = cellPos(view, m, 0);
+				rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
+
+				for (var d=0; d < vpmonth.vpdays.length; d++)
+				{
+					var vpday = vpmonth.vpdays[d];
+
+					cell = {day: vpday, cls: {}};
+
+					if (vpday.weekend)
+						cell.cls.weekend = true;
+
+					if (vpday.today)
+						cell.cls.today = true;
+
+					var pos = cellPos(view, m, (d+1) + vpmonth.offset);
+					rows[pos.y].cells[pos.x] = cell;
+				}
+			}
+			
+			redraw();
+		}
+
+		$scope.reset = function() {
+			VpAlmanacSvc.scroll();
+		}
+
+		function redraw() {
+			$scope.vg.redraw = true;
+			$timeout(function(){
+				$scope.vg.redraw = false;
+			}, 100);
+		}
+	}
+
 	function fLink(scope, element) {
 
-		element.addClass("vpgrid");
 		element.on("scroll", onScroll);
+		element.css("width", "100%");
 
 		function onView(view) {
 			if (view.column && !view.print)
@@ -15,8 +81,7 @@ function VpGrid(VpAlmanacSvc)
 		}
 
 		function onWheel(evt) {
-			//console.log(evt);
-			evt.target.scrollBy(100,0);
+			evt.target.scrollBy(evt.deltaY,0);
 		}
 
 		function onScroll(evt) {
@@ -28,52 +93,6 @@ function VpGrid(VpAlmanacSvc)
 		scope.$watch("view", scope.setView, true);
 	}
 
-	function fCtl($scope) {
-
-		this.rows = [];
-		var months = VpAlmanacSvc.vpmonths;
-		
-		for (var m=0; m < months.length; m++)
-		{
-			var vpmonth = months[m];
-
-			var row = {cells: []};
-			row.cells.push({hdr: vpmonth.hdr, cls: {vphdr: true}});
-
-			for (var e=0; e < vpmonth.offset; e++)
-				row.cells.push({empty: true});
-
-			for (var d=0; d < vpmonth.vpdays.length; d++)
-			{
-				var vpday = vpmonth.vpdays[d];
-
-				cell = {};
-				cell.cls = {vpday: true};
-				cell.day = {num: vpday.num, cls: {vpnum: true}};
-
-				if (vpday.weekend)
-					cell.cls.weekend = true;
-
-				if (vpday.today)
-					cell.day.cls.today = true;
-
-				row.cells.push(cell);
-			}
-
-			for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
-				row.cells.push({empty: true});
-
-			this.rows.push(row);
-		}
-
-		$scope.setView = function(view) {
-		}
-
-		$scope.reset = function() {
-			VpAlmanacSvc.scroll();
-		}
-	}
-
 	return {
 		scope: {view: "="},
 		controller: fCtl,
@@ -82,59 +101,6 @@ function VpGrid(VpAlmanacSvc)
 		templateUrl: "vpgrid.htm",
 		restrict: 'E'
 	};
-}
-
-
-
-//////////////////////////////////////////////////////////////////////
-
-function VpLayout(VpAlmanacSvc, $scope)
-{
-	var months = VpAlmanacSvc.vpmonths;
-
-	this.hdrs = [];
-	this.rows = [];
-	
-	for (var m=0; m < months.length; m++)
-	{
-		var vpmonth = months[m];
-
-		if ($scope.vp.layout.col)
-		{
-			this.hdrs.push(vpmonth.hdr);
-
-			if (m == 0)
-			{
-				for (var d=0; d < (31+6); d++)
-					this.rows.push({cells: []});
-			}
-
-			for (var e=0; e < vpmonth.offset; e++)
-				this.rows[e].cells.push({empty: true});
-
-			for (var d=0; d < vpmonth.vpdays.length; d++)
-				this.rows[d + vpmonth.offset].cells.push(vpmonth.vpdays[d]);
-
-			for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
-				this.rows[e].cells.push({empty: true});
-		}
-
-		if ($scope.vp.layout.row)
-		{
-			var row = {hdr: vpmonth.hdr, cells: []};
-
-			for (var e=0; e < vpmonth.offset; e++)
-				row.cells.push({empty: true});
-
-			for (var d=0; d < vpmonth.vpdays.length; d++)
-				row.cells.push(vpmonth.vpdays[d]);
-
-			for (var e=(vpmonth.offset + vpmonth.vpdays.length); e < (31+6); e++)
-				row.cells.push({empty: true});
-
-			this.rows.push(row);
-		}
-	}
 }
 
 
