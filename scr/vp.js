@@ -1,8 +1,8 @@
 var app = angular.module("vpapp", []);
 app.controller("VpAppController", VpApp);
+app.directive("vpGrid", VpGrid);
 app.service("VpSettingsSvc", VpSettings);
 app.service("VpAlmanacSvc", VpAlmanac);
-app.directive("vpGrid", VpGrid);
 
 function VpApp(VpSettingsSvc, $window, $timeout)
 {
