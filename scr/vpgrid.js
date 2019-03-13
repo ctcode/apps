@@ -4,15 +4,6 @@ function VpGridDtv(vpAlmanac)
 {
 	function fCtl($timeout) {
 
-		function cellPos(view, xpos, ypos) {
-			var pos = {x: xpos, y: ypos};
-
-			if (view.list)
-				return {x: pos.y, y: pos.x};
-
-			return pos;
-		}
-
 		this.setView = function(view) {
 			this.rows = [];
 			var months = vpAlmanac.vpmonths;
@@ -55,6 +46,15 @@ function VpGridDtv(vpAlmanac)
 			this.updateCSS();
 		}
 
+		function cellPos(view, xpos, ypos) {
+			var pos = {x: xpos, y: ypos};
+
+			if (view.list)
+				return {x: pos.y, y: pos.x};
+
+			return pos;
+		}
+
 		this.reset = function() {
 			vpAlmanac.scroll();
 		}
@@ -89,7 +89,7 @@ function VpGridDtv(vpAlmanac)
 		}
 
 		function onScroll(evt) {
-			//console.log(evt);
+			console.log(evt);
 			scope.reset();
 		}
 
