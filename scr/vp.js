@@ -1,10 +1,11 @@
 var app = angular.module("vpapp", []);
-app.controller("vpApp", VpAppCtl);
-app.directive("vpGrid", VpGridDtv);
+app.controller("vpApp", VpAppController);
+app.directive("vpGrid", VpGridDirective);
+app.directive("vpGridElement", VpGridElementDirective);
 app.service("vpSettings", VpSettingsSvc);
 app.service("vpAlmanac", VpAlmanacSvc);
 
-function VpAppCtl(vpSettings, $timeout)
+function VpAppController(vpSettings, $timeout)
 {
 	this.show = {banner: true};
 	this.viewinfo = {};

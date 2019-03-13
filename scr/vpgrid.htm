@@ -40,7 +40,7 @@
 	background-color: red;
 }
 </style>
-<style ng-if="view.column">
+<style ng-if="gridview.column">
 	.vpgrid::-webkit-scrollbar {
 		height: 0;
 	}
@@ -54,7 +54,7 @@
 		font-size: 1.2vh;
 	}
 </style>
-<style ng-if="view.list">
+<style ng-if="gridview.list">
 	.vpgrid::-webkit-scrollbar {
 		width: 0;
 	}
@@ -80,7 +80,7 @@
 		width: auto;
 	}
 </style>
-<style ng-if="view.expand">
+<style ng-if="gridview.expand">
 	.vpgridcontent {
 		width: 300%;
 	}
@@ -90,7 +90,7 @@
 	}
 </style>
 
-<div class="vpgrid" ng-hide="vg.redraw">
+<div class="vpgrid" ng-hide="vg.redraw" vp-grid-element>
 	<div class="vpgridcontent">
 		<table class="vptable">
 			<tr ng-repeat="row in vg.rows">

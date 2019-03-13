@@ -1,14 +1,40 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpGridDtv(vpAlmanac)
+function VpGridDirective()
 {
-	function fCtl($timeout) {
+	function fLink(scope, element) {
+		element.css("width", "100%");
+	}
 
-		this.setView = function(view) {
-			this.rows = [];
+	return {
+		scope: {gridview: "<"},
+		link: fLink,
+		templateUrl: "vpgrid.htm",
+		restrict: 'E'
+	};
+}
+
+
+
+function VpGridElementDirective(vpAlmanac)
+{
+	function fCtl($scope, $timeout) {
+
+		$scope.$watch("gridview", onGridView, true);
+
+		this.rows=[];
+		this.redraw = false;
+		
+		this.reset = function() {
+			vpAlmanac.scroll();
+		}
+
+		function onGridView() {
+			$scope.vg.rows = [];
+			var rows = $scope.vg.rows;
 			var months = vpAlmanac.vpmonths;
 
-			var sz = cellPos(view, months.length, 31+6+1);
+			var sz = cellPos(months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
 			{
 				var row = {cells: []};
@@ -16,15 +42,15 @@ function VpGridDtv(vpAlmanac)
 				for (var x=0; x < sz.x; x++)
 					row.cells.push({empty: true})
 
-				this.rows.push(row);
+				rows.push(row);
 			}
 
 			for (var m=0; m < months.length; m++)
 			{
 				var vpmonth = months[m];
 
-				var pos = cellPos(view, m, 0);
-				this.rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
+				var pos = cellPos(m, 0);
+				rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
 
 				for (var d=0; d < vpmonth.vpdays.length; d++)
 				{
@@ -38,45 +64,46 @@ function VpGridDtv(vpAlmanac)
 					if (vpday.today)
 						cell.cls.today = true;
 
-					var pos = cellPos(view, m, (d+1) + vpmonth.offset);
-					this.rows[pos.y].cells[pos.x] = cell;
+					var pos = cellPos(m, (d+1) + vpmonth.offset);
+					rows[pos.y].cells[pos.x] = cell;
 				}
 			}
 
-			this.updateCSS();
+			updateCSS();
 		}
 
-		function cellPos(view, xpos, ypos) {
+		function cellPos(xpos, ypos) {
 			var pos = {x: xpos, y: ypos};
 
-			if (view.list)
+			if ($scope.gridview.list)
 				return {x: pos.y, y: pos.x};
 
 			return pos;
 		}
 
-		this.reset = function() {
-			vpAlmanac.scroll();
-		}
-
-		this.updateCSS = function() {
-			this.redraw = true;
+		function updateCSS() {
+			$scope.vg.redraw = true;
 			$timeout(function(){
-				this.redraw = false;
-			}.bind(this), 100);
+				$scope.vg.redraw = false;
+			}, 100);
 		}
 	}
 
-	function fLink(scope, element) {
+	function fLink(scope, element, attrs) {
 
+		scope.$watch("gridview", onGridView, true);
 		element.on("scroll", onScroll);
-		element.css("width", "100%");
 
-		function onView(view) {
-			if (view.column && !view.print)
+		function onGridView(gv) {
+			if (gv.column && !gv.print)
 				element.on("wheel", onWheel);
 			else
 				element.off("wheel", onWheel);
+		}
+
+		function onScroll(evt) {
+			console.log(evt);
+			scope.vg.reset();
 		}
 
 		function onWheel(evt) {
@@ -87,23 +114,13 @@ function VpGridDtv(vpAlmanac)
 			evt.target.scrollBy(dy,0);
 			evt.preventDefault();
 		}
-
-		function onScroll(evt) {
-			console.log(evt);
-			scope.reset();
-		}
-
-		scope.$watch("view", onView, true);
-		scope.$watch("view", scope.vg.setView.bind(scope.vg), true);
 	}
 
 	return {
-		scope: {view: "="},
 		controller: fCtl,
 		controllerAs: "vg",
 		link: fLink,
-		templateUrl: "vpgrid.htm",
-		restrict: 'E'
+		restrict: 'A'
 	};
 }
 
