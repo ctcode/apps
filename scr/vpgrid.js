@@ -20,18 +20,14 @@ function VpGridElementDirective(vpAlmanac)
 {
 	function fCtl($scope, $timeout) {
 
-		$scope.$watch("gridview", onGridView, true);
-
-		this.rows=[];
-		this.redraw = false;
+		$scope.$watch("gridview", onGridView.bind(this), true);
 		
 		this.reset = function() {
 			vpAlmanac.scroll();
 		}
 
 		function onGridView() {
-			$scope.vg.rows = [];
-			var rows = $scope.vg.rows;
+			this.rows = [];
 			var months = vpAlmanac.vpmonths;
 
 			var sz = cellPos(months.length, 31+6+1);
@@ -42,7 +38,7 @@ function VpGridElementDirective(vpAlmanac)
 				for (var x=0; x < sz.x; x++)
 					row.cells.push({empty: true})
 
-				rows.push(row);
+				this.rows.push(row);
 			}
 
 			for (var m=0; m < months.length; m++)
@@ -50,7 +46,7 @@ function VpGridElementDirective(vpAlmanac)
 				var vpmonth = months[m];
 
 				var pos = cellPos(m, 0);
-				rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
+				this.rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
 
 				for (var d=0; d < vpmonth.vpdays.length; d++)
 				{
@@ -65,7 +61,7 @@ function VpGridElementDirective(vpAlmanac)
 						cell.cls.today = true;
 
 					var pos = cellPos(m, (d+1) + vpmonth.offset);
-					rows[pos.y].cells[pos.x] = cell;
+					this.rows[pos.y].cells[pos.x] = cell;
 				}
 			}
 
