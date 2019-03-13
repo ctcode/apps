@@ -27,8 +27,8 @@ function VpGridElementDirective(vpAlmanac)
 		}
 
 		function onGridView() {
-			this.rows = [];
 			var months = vpAlmanac.vpmonths;
+			this.rows = [];
 
 			var sz = cellPos(months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
