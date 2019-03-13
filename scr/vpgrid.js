@@ -2,7 +2,7 @@
 
 function VpGridDtv(vpAlmanac)
 {
-	function fCtl($scope, $timeout) {
+	function fCtl($timeout) {
 
 		function cellPos(view, xpos, ypos) {
 			var pos = {x: xpos, y: ypos};
@@ -13,9 +13,8 @@ function VpGridDtv(vpAlmanac)
 			return pos;
 		}
 
-		$scope.setView = function(view) {
-			$scope.vg.rows = [];
-			var rows = $scope.vg.rows;
+		this.setView = function(view) {
+			this.rows = [];
 			var months = vpAlmanac.vpmonths;
 
 			var sz = cellPos(view, months.length, 31+6+1);
@@ -26,7 +25,7 @@ function VpGridDtv(vpAlmanac)
 				for (var x=0; x < sz.x; x++)
 					row.cells.push({empty: true})
 
-				rows.push(row);
+				this.rows.push(row);
 			}
 
 			for (var m=0; m < months.length; m++)
@@ -34,7 +33,7 @@ function VpGridDtv(vpAlmanac)
 				var vpmonth = months[m];
 
 				var pos = cellPos(view, m, 0);
-				rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
+				this.rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
 
 				for (var d=0; d < vpmonth.vpdays.length; d++)
 				{
@@ -49,22 +48,22 @@ function VpGridDtv(vpAlmanac)
 						cell.cls.today = true;
 
 					var pos = cellPos(view, m, (d+1) + vpmonth.offset);
-					rows[pos.y].cells[pos.x] = cell;
+					this.rows[pos.y].cells[pos.x] = cell;
 				}
 			}
-			
-			redraw();
+
+			this.updateCSS();
 		}
 
-		$scope.reset = function() {
+		this.reset = function() {
 			vpAlmanac.scroll();
 		}
 
-		function redraw() {
-			$scope.vg.redraw = true;
+		this.updateCSS = function() {
+			this.redraw = true;
 			$timeout(function(){
-				$scope.vg.redraw = false;
-			}, 100);
+				this.redraw = false;
+			}.bind(this), 100);
 		}
 	}
 
@@ -95,7 +94,7 @@ function VpGridDtv(vpAlmanac)
 		}
 
 		scope.$watch("view", onView, true);
-		scope.$watch("view", scope.setView, true);
+		scope.$watch("view", scope.vg.setView.bind(scope.vg), true);
 	}
 
 	return {
