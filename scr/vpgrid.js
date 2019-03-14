@@ -16,21 +16,17 @@ function VpGridDirective()
 
 
 
-function VpGridElementDirective(vpAlmanac)
+function VpGridElementDirective(vpAlmanac, $timeout)
 {
 	function fCtl($scope, $timeout) {
 
 		$scope.$watch("gridview", onGridView.bind(this), true);
-		
-		this.reset = function() {
-			vpAlmanac.scroll();
-		}
 
 		function onGridView() {
 			var months = vpAlmanac.vpmonths;
 			this.rows = [];
 
-			var sz = cellPos(months.length, 31+6+1);
+			var sz = getPos(months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
 			{
 				var row = {cells: []};
@@ -45,7 +41,7 @@ function VpGridElementDirective(vpAlmanac)
 			{
 				var vpmonth = months[m];
 
-				var pos = cellPos(m, 0);
+				var pos = getPos(m, 0);
 				this.rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
 
 				for (var d=0; d < vpmonth.vpdays.length; d++)
@@ -60,46 +56,64 @@ function VpGridElementDirective(vpAlmanac)
 					if (vpday.today)
 						cell.cls.today = true;
 
-					var pos = cellPos(m, (d+1) + vpmonth.offset);
+					var pos = getPos(m, (d+1) + vpmonth.offset);
 					this.rows[pos.y].cells[pos.x] = cell;
 				}
 			}
-
-			updateCSS();
 		}
 
-		function cellPos(xpos, ypos) {
-			var pos = {x: xpos, y: ypos};
-
-			if ($scope.gridview.list)
-				return {x: pos.y, y: pos.x};
-
-			return pos;
-		}
-
-		function updateCSS() {
-			$scope.vg.redraw = true;
-			$timeout(function(){
-				$scope.vg.redraw = false;
-			}, 100);
+		function getPos(xpos, ypos) {
+			return $scope.gridview.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
 		}
 	}
 
 	function fLink(scope, element, attrs) {
 
-		scope.$watch("gridview", onGridView, true);
-		element.on("scroll", onScroll);
+		scope.$watch("vg.rows", function() {
+			scope.vpcssfix = true;
+			$timeout(function() {
+				scope.vpcssfix = false;
+				$timeout(updateUI)
+			});
+		});
 
-		function onGridView(gv) {
+		var scrollpos = (1/3);
+		var div = element[0];
+
+		function updateUI() {
+			var gv = scope.gridview;
+
 			if (gv.column && !gv.print)
 				element.on("wheel", onWheel);
 			else
 				element.off("wheel", onWheel);
+
+			div.scrollLeft = 0;
+			div.scrollTop = 0;
+
+			if (gv.print)
+			{
+				element.off("scroll", onScroll);
+			}
+			else
+			{
+				if (gv.column || gv.expand)
+					div.scrollLeft = (div.scrollWidth * scrollpos);
+
+				if (gv.list)
+					div.scrollTop = (div.scrollHeight * scrollpos);
+
+				element.on("scroll", onScroll);
+			}
 		}
 
-		function onScroll(evt) {
-			console.log(evt);
-			scope.vg.reset();
+		function onScroll() {
+			var gv = scope.gridview;
+			if (gv.column || gv.expand)
+				scrollpos = (div.scrollLeft / div.scrollWidth);
+
+			if (gv.list)
+				scrollpos = (div.scrollTop / div.scrollHeight);
 		}
 
 		function onWheel(evt) {
