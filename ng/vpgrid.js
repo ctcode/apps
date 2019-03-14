@@ -170,7 +170,7 @@ function VpSettingsSvc()
 	};
 	
 	this.load = function() {
-		this.planner_title = "vp-scr";
+		this.planner_title = "vp-ng";
 	}
 }
 

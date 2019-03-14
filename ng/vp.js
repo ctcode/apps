@@ -1,51 +1,39 @@
-function vp_main($scope, $document, $timeout)
+var app = angular.module("vpapp", []);
+app.controller("vpApp", VpAppController);
+app.directive("vpGrid", VpGridDirective);
+app.directive("vpGridElement", VpGridElementDirective);
+app.service("vpSettings", VpSettingsSvc);
+app.service("vpAlmanac", VpAlmanacSvc);
+
+function VpAppController(vpSettings, $timeout)
 {
-	$scope.toolbtnclass = {};
-	$scope.show = {banner: true, grid: false, settings: false};
-	$scope.settings = {banner_text: "visual-planner", vipconfig: new VpGridConfig()};
-	$scope.sign_msg = "Signing In...";
+	this.show = {banner: true};
+	this.viewinfo = {};
+	this.settings = vpSettings;
+	this.sign_msg = "Signing In...";
+	this.multi_col_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 
 	$timeout(function(){
-		$scope.sign_msg = "Signed Out";
-		$scope.show = {banner: true, grid: true, settings: false};
-		$scope.settings = {banner_text: "vpng", vipconfig: new VpGridConfig()};
-		$scope.vpgrid = new VpGrid();
-		$scope.onclickColumn();
-		$document[0].getElementById("grid").onwheel = $scope.onwheel;
-		console.log($scope.vpgrid);
-	}, 3000);
+		vpSettings.load();
+		this.sign_msg = "Signed Out";
+		this.show = {banner: true, grid: true};
+		this.viewinfo = {view: {column: true}, btnclass: {column: {checked: true}}};
+	}.bind(this), 3000);
 
-	//this.div.focus();
-
-	$scope.onclickColumn = function() {
-		$scope.toolbtnclass = {column: {checked: true}};
-		$scope.vpgrid.setView({column: true});
+	this.onclickPrint = function() {
+		this.viewinfo.view.print = true;
+		this.viewinfo.btnclass = {print: {checked: true}};
 	}
 
-	$scope.onclickList = function() {
-		$scope.toolbtnclass = {list: {checked: true}};
-		$scope.vpgrid.setView({list: true});
+	this.onclickSettings = function() {
+		this.show = {settings: true};
 	}
 
-	$scope.onclickExpand = function() {
-		$scope.toolbtnclass = {expand: {checked: true}};
-		$scope.vpgrid.setView({expand: true});
-	}
-
-	$scope.onclickSettings = function() {
-		$scope.show = {banner: false, grid: false, settings: true};
-	}
-
-	$scope.onclickCancel = function() {
-		//$scope.settings = gAppData.getAppData();
-		$scope.form.$setPristine(true);
-		$scope.show = {banner: true, grid: true, settings: false};
-	}
-
-	$scope.onwheel = function(evt) {
-		$scope.vpgrid.onwheel(evt);
-		$scope.$apply();
+	this.onclickCancel = function() {
+		this.form.$setPristine(true);
+		this.show = {banner: true, grid: true};
 	}
 }
 
 // s = angular.element($0).scope()
+// angular.element($0).injector().get("vpSettings")
