@@ -39,55 +39,87 @@
 	color: white;
 	background-color: red;
 }
+#printmsg {
+	display: none;
+}
 </style>
 <style ng-if="gridview.column">
-	.vpgrid::-webkit-scrollbar {
-		height: 0;
-	}
-	.vpgrid {
-		overflow-y: hidden;
-	}
+.vpgrid::-webkit-scrollbar {
+	height: 0;
+}
+.vpgrid {
+	overflow-y: hidden;
+}
+.vpgridcontent {
+	width: 300%;
+}
+.vptable {
+	font-size: 1.2vh;
+}
+@media only print
+{
 	.vpgridcontent {
-		width: 300%;
+		width: 100%;
 	}
-	.vptable {
-		font-size: 1.2vh;
-	}
+}
 </style>
 <style ng-if="gridview.list">
-	.vpgrid::-webkit-scrollbar {
-		width: 0;
-	}
-	.vpgrid {
-		overflow-x: hidden;
-	}
+.vpgrid::-webkit-scrollbar {
+	width: 0;
+}
+.vpgrid {
+	overflow-x: hidden;
+}
+.vpgridcontent {
+	height: 300%;
+}
+.vptable {
+	font-size: 1.4vh;
+}
+.vphdr {
+	width: 10em;
+}
+.vpday {
+	position: relative;
+	vertical-align: top;
+	text-align: center;
+	z-index: 0;
+}
+.vpnum {
+	width: auto;
+}
+@media only print
+{
 	.vpgridcontent {
-		height: 300%;
+		height: 100%;
 	}
-	.vptable {
-		font-size: 1.4vh;
-	}
-	.vphdr {
-		width: 10em;
-	}
-	.vpday {
-		position: relative;
-		vertical-align: top;
-		text-align: center;
-		z-index: 0;
-	}
-	.vpnum {
-		width: auto;
-	}
+}
 </style>
 <style ng-if="gridview.expand">
-	.vpgridcontent {
-		width: 300%;
-	}
-	.vptable {
-		font-size: 1em;
+.vpgridcontent {
+	width: 300%;
+}
+.vptable {
+	font-size: 1em;
+	height: initial;
+}
+@media only print
+{
+	.vpgrid {
 		height: initial;
 	}
+	.vpgridcontent {
+		width: 100%;
+		position: initial;
+	}
+}
+</style>
+<style ng-if="!gridview.print">
+@media only print
+{
+	.vpgrid {display: none;}
+	#printmsg {display: initial;}
+}
 </style>
 
 <div class="vpgrid" vp-grid-element>
@@ -107,3 +139,5 @@
 		</table>
 	</div>
 </div>
+
+<h1 id="printmsg">Print not available</h1>
