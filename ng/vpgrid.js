@@ -69,16 +69,27 @@ function VpGridElementDirective(vpAlmanac, $timeout)
 
 	function fLink(scope, element, attrs) {
 
-		scope.$watch("vg.rows", function() {
-			scope.vpcssfix = true;
-			$timeout(function() {
-				scope.vpcssfix = false;
-				$timeout(updateUI)
-			});
+		var div = element[0];
+		var cssfix = false;
+		var scrollpos = (1/3);
+
+		scope.$watch("gridview", function() {
+			cssfix = true;
 		});
 
-		var scrollpos = (1/3);
-		var div = element[0];
+		scope.$watch("vg.rows", function() {
+			if (cssfix)
+			{
+				scope.vpcssfix = true;
+				$timeout(function() {
+					scope.vpcssfix = false;
+					$timeout(updateUI)
+				});
+				cssfix = false;
+			}
+			else
+				updateUI();
+		});
 
 		function updateUI() {
 			var gv = scope.gridview;
