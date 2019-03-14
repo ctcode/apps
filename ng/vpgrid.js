@@ -70,26 +70,9 @@ function VpGridElementDirective(vpAlmanac, $timeout)
 	function fLink(scope, element, attrs) {
 
 		var div = element[0];
-		var cssfix = false;
 		var scrollpos = (1/3);
 
-		scope.$watch("gridview", function() {
-			cssfix = true;
-		});
-
-		scope.$watch("vg.rows", function() {
-			if (cssfix)
-			{
-				scope.vpcssfix = true;
-				$timeout(function() {
-					scope.vpcssfix = false;
-					$timeout(updateUI)
-				});
-				cssfix = false;
-			}
-			else
-				updateUI();
-		});
+		scope.$watch("vg.rows", updateUI);
 
 		function updateUI() {
 			var gv = scope.gridview;
@@ -99,12 +82,12 @@ function VpGridElementDirective(vpAlmanac, $timeout)
 			else
 				element.off("wheel", onWheel);
 
-			div.scrollLeft = 0;
-			div.scrollTop = 0;
-
 			if (gv.print)
 			{
 				element.off("scroll", onScroll);
+
+				//div.scrollLeft = 0;
+				//div.scrollTop = 0;
 			}
 			else
 			{
@@ -116,6 +99,11 @@ function VpGridElementDirective(vpAlmanac, $timeout)
 
 				element.on("scroll", onScroll);
 			}
+			
+			element.css("overflow", "hidden");
+			$timeout(function() {
+				element.css("overflow", "auto");
+			});
 		}
 
 		function onScroll() {
