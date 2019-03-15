@@ -1,0 +1,77 @@
+<style>
+.vptable {
+	width: 100%;
+	border-spacing: 1px;
+	table-layout: fixed;
+}
+.vphdr {
+	text-align: center;
+	font-weight: bold;
+	padding: 1em;
+}
+.vpday {
+	background-color: #eaeaea;
+}
+.vpday.weekend {
+	background-color: #d8d8d8;
+}
+.vpnum {
+	font-size: 0.8em;
+	width: 2em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	margin: 0.2em;
+	text-align: center;
+}
+.vpday.today .vpnum {
+	font-weight: bold;
+	color: white;
+	background-color: red;
+}
+</style>
+
+<style ng-if="tableview.column">
+.vptable {
+	height: 100%;
+	font-size: 1.2vh;
+}
+</style>
+
+<style ng-if="tableview.list">
+.vptable {
+	height: 100%;
+	font-size: 1.4vh;
+}
+.vphdr {
+	width: 10em;
+}
+.vpday {
+	position: relative;
+	vertical-align: top;
+	text-align: center;
+	z-index: 0;
+}
+.vpnum {
+	width: auto;
+}
+</style>
+
+<style ng-if="tableview.expand">
+.vptable {
+	font-size: 1em;
+}
+</style>
+
+<table class="vptable">
+	<tr ng-repeat="row in vt.rows">
+		<td ng-if="cell.hdr" class="vphdr" ng-repeat-start="cell in row.cells">{{cell.hdr}}</td>
+		<td ng-if="cell.day" class="vpday" ng-class="cell.cls">
+			<div class="vpnum">{{cell.day.num}}</div>
+			<div ng-repeat="evt in cell.day.evts" class="vpevt">
+				<div ng-if="evt.marker" class="vpevtmarker">&nbsp;</div>
+				<div ng-if="evt.title" class="vpevttitle">{{evt.title}}</div>
+			</div>
+		</td>
+		<td ng-if="cell.empty" ng-repeat-end>&nbsp;</td>
+	</tr>
+</table>
