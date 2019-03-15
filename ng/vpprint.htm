@@ -17,23 +17,22 @@ body {
 }
 </style>
 </head>
-<body ng-app="vpprintapp" ng-controller="vpPrintApp as vpp" ng-cloak>
+<body ng-app="app" ng-controller="vpPrintApp as vpp" ng-cloak>
 <title>Print</title>
-<vp-table tableview="vpp.viewinfo"></vp-table>
+
+<vp-table tableview="vpp.viewinfo.view"></vp-table>
+
 <script type='text/javascript'>
-
-var app = angular.module("vpprintapp", []);
-app.controller("vpPrintApp", VpPrintAppController);
-app.directive("vpTable", VpTableDirective);
-app.service("vpAlmanac", VpAlmanacStorageSvc);
-
-function VpPrintAppController()
-{
-	this.viewinfo = {column: true};
-	//this.viewinfo = {list: true};
-	//this.viewinfo = {expand: true};
-}
-
+angular.module("app", [])
+	.controller("vpPrintApp", function() {
+		this.viewinfo = {};
+		if ($window.localStorage)
+			this.viewinfo = JSON.parse($window.localStorage.getItem("vp-viewinfo"));
+	})
+	.directive("vpTable", VpTableDirective)
+	.service("vpAlmanac", VpAlmanacStorageSvc)
+;
 </script>
+
 </body>
 </html>
