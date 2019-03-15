@@ -125,10 +125,10 @@ VpAlmanacSvc.prototype.init_months = function()
 	
 	var vdt = new VpDate();
 	vdt.toStartOfMonth();
-	vdt.offsetMonth(this.offset);
+	vdt.offsetMonth(this.offset - cfg.multi_col_count);
 
 	this.vpmonths = [];
-	for (var i=0; i < cfg.multi_col_count; i++)
+	for (var i=0; i < (cfg.multi_col_count*3); i++)
 	{
 		var vpmonth = new VpMonth(vdt.ymd());
 		this.vpmonths.push(vpmonth);
@@ -176,6 +176,31 @@ console.log("scroll me");
 return;
 	this.offset += (this.cfg.multi_col_count * delta);
 	this.init_months();
+}
+
+VpAlmanacSvc.prototype.setStorage = function(offset)
+{
+	var stg = [];
+	var n = Math.floor(this.vpmonths.length*offset);
+	var c = (n + this.cfg.multi_col_count)
+	
+	for (var i=n; i < c; i++)
+		stg.push(this.vpmonths[i]);
+
+	window.sessionStorage.setItem("vpalmanac", JSON.stringify(stg));
+}
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+function VpAlmanacStorageSvc()
+{
+	this.vpmonths = [];
+
+	var stg = window.sessionStorage.getItem("vpalmanac");
+	if (stg)
+		this.vpmonths = JSON.parse(stg);
 }
 
 

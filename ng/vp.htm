@@ -7,7 +7,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
 <link href="vp_manifest.json" rel="manifest">
 <link href="vp.png" rel="icon">
-<script src="vpgrid.js" type='text/javascript'></script>
+<script src="vptable.js" type='text/javascript'></script>
 <script src="vp.js" type='text/javascript'></script>
 <style>
 body {
@@ -100,11 +100,14 @@ body {
 #settings .monthnames {
 	width: 30em;
 }
+#printmsg {
+	display: none;
+}
 @media only print
 {
-	#banner {display: none;}
+	#grid {display: none;}
 	#calendarbar {display: none;}
-	#settings {display: none;}
+	#printmsg {display: initial;}
 }
 </style>
 </head>
@@ -116,7 +119,7 @@ body {
 	<div id="tools">
 		<div>{{vp.sign_msg}}</div>
 		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
-		<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()" ng-class="vp.viewinfo.btnclass.print"/>
+		<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
 		<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.viewinfo={view: {expand: true}, btnclass: {expand: {checked: true}}}" ng-class="vp.viewinfo.btnclass.expand"/>
 		<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vp.viewinfo={view: {list: true}, btnclass: {list: {checked: true}}}" ng-class="vp.viewinfo.btnclass.list"/>
 		<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vp.viewinfo={view: {column: true}, btnclass: {column: {checked: true}}}" ng-class="vp.viewinfo.btnclass.column"/>
@@ -124,8 +127,10 @@ body {
 </div>
 
 <div id="grid" ng-if="vp.show.grid" tabIndex="1">
-	<vp-grid gridview="vp.viewinfo.view"></vp-grid>
+	<vp-table tableview="vp.viewinfo.view"></vp-table>
 </div>
+
+<h1 id="printmsg">Printing not available</h1>
 
 <div id="calendarbar" ng-show="vp.show.grid"></div>
 

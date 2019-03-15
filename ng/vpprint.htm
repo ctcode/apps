@@ -23,15 +23,14 @@ body {
 <script type='text/javascript'>
 
 var app = angular.module("vpprintapp", []);
-app.controller("vpPrintApp", VpAppController);
+app.controller("vpPrintApp", VpPrintAppController);
 app.directive("vpTable", VpTableDirective);
-app.service("vpSettings", VpSettingsSvc);
-app.service("vpAlmanac", VpAlmanacSvc);
+app.service("vpAlmanac", VpAlmanacStorageSvc);
 
-function VpAppController()
+function VpPrintAppController()
 {
-	//this.viewinfo = {column: true};
-	this.viewinfo = {list: true};
+	this.viewinfo = {column: true};
+	//this.viewinfo = {list: true};
 	//this.viewinfo = {expand: true};
 }
 

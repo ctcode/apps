@@ -1,11 +1,10 @@
 var app = angular.module("vpapp", []);
 app.controller("vpApp", VpAppController);
-app.directive("vpGrid", VpGridDirective);
-app.directive("vpGridElement", VpGridElementDirective);
+app.directive("vpTable", VpTableDirective);
 app.service("vpSettings", VpSettingsSvc);
 app.service("vpAlmanac", VpAlmanacSvc);
 
-function VpAppController(vpSettings, $timeout)
+function VpAppController(vpSettings, vpAlmanac, $timeout, $window)
 {
 	this.show = {banner: true};
 	this.viewinfo = {};
@@ -21,8 +20,8 @@ function VpAppController(vpSettings, $timeout)
 	}.bind(this), 3000);
 
 	this.onclickPrint = function() {
-		this.viewinfo.view.print = true;
-		this.viewinfo.btnclass = {print: {checked: true}};
+		vpAlmanac.setStorage(0.28);  // todo
+		$window.open("vpprint.htm");
 	}
 
 	this.onclickSettings = function() {
