@@ -187,7 +187,7 @@ VpAlmanacSvc.prototype.setStorage = function(offset)
 	for (var i=n; i < c; i++)
 		stg.push(this.vpmonths[i]);
 
-	window.sessionStorage.setItem("vpalmanac", JSON.stringify(stg));
+	window.sessionStorage.setItem("vp-almanac", JSON.stringify(stg));
 }
 
 
@@ -198,7 +198,7 @@ function VpAlmanacStorageSvc()
 {
 	this.vpmonths = [];
 
-	var stg = window.sessionStorage.getItem("vpalmanac");
+	var stg = window.sessionStorage.getItem("vp-almanac");
 	if (stg)
 		this.vpmonths = JSON.parse(stg);
 }
