@@ -4,7 +4,7 @@ function VpTableDirective(vpAlmanac)
 {
 	function fCtl($scope) {
 
-		$scope.$watch("tableview", updateView.bind(this), true);
+		$scope.$watch("tableview", updateView.bind(this));
 
 		function updateView() {
 			var months = vpAlmanac.vpmonths;
@@ -117,6 +117,7 @@ function VpAlmanacSvc(vpSettings)
 
 	this.offset = this.cfg.auto_scroll ? this.cfg.auto_scroll_offset : 0;
 	this.init_months();
+	this.setStorage(0.28);  // todo
 }
 
 VpAlmanacSvc.prototype.init_months = function()
