@@ -51,14 +51,10 @@ function VpTableDirective(vpAlmanac)
 		}
 	}
 
-	function fLink(scope, element, attrs) {
-	}
-
 	return {
 		scope: {tableview: "<"},
 		controller: fCtl,
 		controllerAs: "vt",
-		link: fLink,
 		templateUrl: "vptable.htm",
 		restrict: 'E'
 	};

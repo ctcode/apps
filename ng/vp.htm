@@ -9,6 +9,7 @@
 <link href="vp.png" rel="icon">
 <script src="vp.js" type='text/javascript'></script>
 <script src="vptable.js" type='text/javascript'></script>
+
 <style>
 body {
 	font-family: Arial;
@@ -63,6 +64,12 @@ body {
 	height: 100%;
 	border: none;
 	outline: none;
+	position: relative;
+}
+#gridcontent {
+	height: 100%;
+	position: absolute;
+	pointer-events: none;
 }
 #calendarbar {
 	font-size: 0.6em;
@@ -111,8 +118,33 @@ body {
 }
 </style>
 </head>
+
 <body ng-app="vpapp" ng-controller="vpApp as vp" ng-cloak>
 <title ng-bind="vp.settings.planner_title">Loading...</title>
+
+<style ng-if="vp.view.info.column">
+#grid::-webkit-scrollbar {
+	height: 0;
+}
+#gridcontent {
+	width: 300%;
+}
+</style>
+
+<style ng-if="vp.view.info.list">
+#grid::-webkit-scrollbar {
+	width: 0;
+}
+#gridcontent {
+	height: 300%;
+}
+</style>
+
+<style ng-if="vp.view.info.expand">
+#gridcontent {
+	width: 300%;
+}
+</style>
 
 <div id="banner" ng-show="vp.show.banner">
 	<div id="bantxt">{{vp.settings.planner_title}}</div>
@@ -126,8 +158,10 @@ body {
 	</div>
 </div>
 
-<div id="grid" ng-if="vp.show.grid" tabIndex="1">
-	<vp-table tableview="vp.view.info"></vp-table>
+<div id="grid" tabIndex="1" ng-if="vp.show.grid" vp-scroll>
+	<div id="gridcontent">
+		<vp-table tableview="vp.view.info"></vp-table>
+	</div>
 </div>
 
 <h1 id="printmsg">Print not available</h1>
@@ -244,6 +278,7 @@ body {
 
 <script type='text/javascript'>
 angular.module("vpapp", [])
+	.directive("vpScroll", VpScrollDirective)
 	.directive("vpTable", VpTableDirective)
 	.service("vpViewStorage", VpViewStorageSvc)
 	.service("vpSettings", VpSettingsSvc)
