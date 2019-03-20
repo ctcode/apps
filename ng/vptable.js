@@ -117,7 +117,7 @@ function VpAlmanacSvc(vpSettings)
 
 	this.offset = this.cfg.auto_scroll ? this.cfg.auto_scroll_offset : 0;
 	this.init_months();
-	this.setStorage(0.28);  // todo
+	this.print_offset = 0.28  // todo
 }
 
 VpAlmanacSvc.prototype.init_months = function()
@@ -179,16 +179,16 @@ return;
 	this.init_months();
 }
 
-VpAlmanacSvc.prototype.setStorage = function(offset)
+VpAlmanacSvc.prototype.prePrint = function()
 {
-	var stg = [];
-	var n = Math.floor(this.vpmonths.length*offset);
+	var print_span = [];
+	var n = Math.floor(this.vpmonths.length * this.print_offset);
 	var c = (n + this.cfg.multi_col_count)
 	
 	for (var i=n; i < c; i++)
-		stg.push(this.vpmonths[i]);
+		print_span.push(this.vpmonths[i]);
 
-	window.sessionStorage.setItem("vp-almanac", JSON.stringify(stg));
+	window.sessionStorage.setItem("vp-almanac-print", JSON.stringify(print_span));
 }
 
 
@@ -199,7 +199,7 @@ function VpAlmanacStorageSvc()
 {
 	this.vpmonths = [];
 
-	var stg = window.sessionStorage.getItem("vp-almanac");
+	var stg = window.sessionStorage.getItem("vp-almanac-print");
 	if (stg)
 		this.vpmonths = JSON.parse(stg);
 }

@@ -25,11 +25,11 @@ body {
 
 <script type='text/javascript'>
 angular.module("app", [])
-	.controller("vpPrintApp", function(vpViewStg) {
-		this.view = vpViewStg;
+	.controller("vpPrintApp", function(vpViewStorage) {
+		this.view = vpViewStorage;
 	})
 	.directive("vpTable", VpTableDirective)
-	.service("vpViewStg", VpViewStgSvc)
+	.service("vpViewStorage", VpViewStorageSvc)
 	.service("vpAlmanac", VpAlmanacStorageSvc)
 ;
 </script>
