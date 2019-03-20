@@ -113,7 +113,6 @@ function VpAlmanacSvc(vpSettings)
 
 	this.offset = this.cfg.auto_scroll ? this.cfg.auto_scroll_offset : 0;
 	this.init_months();
-	this.print_offset = 0.28  // todo
 }
 
 VpAlmanacSvc.prototype.init_months = function()
@@ -175,10 +174,10 @@ return;
 	this.init_months();
 }
 
-VpAlmanacSvc.prototype.prePrint = function()
+VpAlmanacSvc.prototype.prePrint = function(offset)
 {
 	var print_span = [];
-	var n = Math.floor(this.vpmonths.length * this.print_offset);
+	var n = Math.floor((this.vpmonths.length * offset) + 0.6);
 	var c = (n + this.cfg.multi_col_count)
 	
 	for (var i=n; i < c; i++)
