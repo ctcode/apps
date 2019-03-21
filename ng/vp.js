@@ -7,6 +7,7 @@ function VpAppController(vpViewStorage, vpAlmanac, vpSettings, $scope, $timeout,
 	this.settings = vpSettings;
 	this.sign_msg = "Signing In...";
 	this.multi_col_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
+	this.page=0;
 
 	$timeout(function(){
 		vpSettings.load();
@@ -39,8 +40,8 @@ function VpViewStorageSvc($window)
 		var stg = $window.localStorage.getItem("vp-viewname");
 		var name = stg ? stg : "column";
 
-		this.info = {};
-		this.info[name] = {cls: {checked: true}};
+		this.sel = {};
+		this.sel[name] = {cls: {checked: true}};
 	}
 
 	this.setName = function(name) {
@@ -61,8 +62,10 @@ function VpScrollDirective(vpAlmanac, $timeout)
 		var div = element[0];
 		var vpv = {};
 
-		scope.$watch("vp.view.info", function() {
-			vpv = scope.vp.view.info;
+		element.on("scroll", onScroll);
+
+		scope.$watch("vp.view.sel", function() {
+			vpv = scope.vp.view.sel;
 			$timeout(updateUI);
 		});
 
@@ -87,6 +90,25 @@ function VpScrollDirective(vpAlmanac, $timeout)
 				div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
 				div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
 			});
+		}
+
+		var tmo=null;
+		function onScroll(evt) {
+			$timeout.cancel(tmo);
+
+			var pos = vpv.list ? div.scrollTop : div.scrollLeft;
+			var max = vpv.list ? (div.scrollHeight - div.clientHeight) : (div.scrollWidth - div.clientWidth);
+
+			var off = false;
+			if (pos == 0) off = -1;
+			if (pos == max) off = 1;
+
+			if (off)
+			{
+				tmo = $timeout(function() {
+					vpAlmanac.reset(off);
+				}, 1000);
+			}
 		}
 
 		function onWheel(evt) {

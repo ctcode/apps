@@ -4,11 +4,15 @@ function VpTableDirective(vpAlmanac)
 {
 	function fCtl($scope) {
 
-		$scope.$watch("tableview", updateView.bind(this));
+		$scope.setpage = function(off) {console.log(off);};
+		
+		$scope.tablepage = vpAlmanac.page;
+		$scope.$watch("tableview", build.bind(this));
+		$scope.$watch("tablepage", build.bind(this));
 
-		function updateView() {
-			var months = vpAlmanac.vpmonths;
+		function build() {
 			this.rows = [];
+			var months = vpAlmanac.vpmonths;
 
 			var sz = getPos(months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
@@ -40,7 +44,7 @@ function VpTableDirective(vpAlmanac)
 					if (vpday.today)
 						cell.cls.today = true;
 
-					var pos = getPos(m, (d+1) + vpmonth.offset);
+					var pos = getPos(m, (d+1) + vpmonth.dayoffset);
 					this.rows[pos.y].cells[pos.x] = cell;
 				}
 			}
@@ -51,10 +55,14 @@ function VpTableDirective(vpAlmanac)
 		}
 	}
 
+	function fLink(scope, element, attrs) {
+	}
+
 	return {
-		scope: {tableview: "<"},
+		scope: {tableview: '<'},
 		controller: fCtl,
 		controllerAs: "vt",
+		link: fLink,
 		templateUrl: "vptable.htm",
 		restrict: 'E'
 	};
@@ -111,6 +119,7 @@ function VpAlmanacSvc(vpSettings)
 	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
 	VpDate.localemonth = this.cfg.month_names.split('-');
 
+	this.page={i: 0};
 	this.offset = this.cfg.auto_scroll ? this.cfg.auto_scroll_offset : 0;
 	this.init_months();
 }
@@ -136,9 +145,9 @@ VpAlmanacSvc.prototype.init_months = function()
 		var vdt = new VpDate(ymd);
 		
 		this.hdr = vdt.MonthTitle();
-		this.offset = 0;
+		this.dayoffset = 0;
 		if (cfg.align_weekends)
-			this.offset = vdt.DayOfWeek();
+			this.dayoffset = vdt.DayOfWeek();
 
 		this.vpdays = [];
 
@@ -166,12 +175,12 @@ VpAlmanacSvc.prototype.init_months = function()
 	}
 }
 
-VpAlmanacSvc.prototype.scroll = function(delta)
+VpAlmanacSvc.prototype.reset = function(offset)
 {
-console.log("scroll me");
-return;
-	this.offset += (this.cfg.multi_col_count * delta);
-	this.init_months();
+	this.page.i += offset;
+	console.log(this);
+	//this.offset += (this.cfg.multi_col_count * offset);
+	//this.init_months();
 }
 
 VpAlmanacSvc.prototype.prePrint = function(offset)
