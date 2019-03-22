@@ -41,7 +41,10 @@ function VpViewStorageSvc($window)
 		var name = stg ? stg : "column";
 
 		this.sel = {};
-		this.sel[name] = {cls: {checked: true}};
+		this.sel[name] = true;
+
+		this.cls = {};
+		this.cls[name] = {checked: true};
 	}
 
 	this.setName = function(name) {
@@ -106,7 +109,7 @@ function VpScrollDirective(vpAlmanac, $timeout)
 			if (off)
 			{
 				tmo = $timeout(function() {
-					vpAlmanac.reset(off);
+					vpAlmanac.movePage(off);
 				}, 1000);
 			}
 		}

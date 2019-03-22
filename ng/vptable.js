@@ -3,14 +3,22 @@
 function VpTableDirective(vpAlmanac)
 {
 	function fCtl($scope) {
-
-		$scope.setpage = function(off) {console.log(off);};
 		
-		$scope.tablepage = vpAlmanac.page;
-		$scope.$watch("tableview", build.bind(this));
-		$scope.$watch("tablepage", build.bind(this));
+		$scope.tablepage = vpAlmanac.bookmark;
+		$scope.$watch("tablepage", function() {
+			console.log("tablepage");
+			this.build();
+		}.bind(this), true);
 
-		function build() {
+		$scope.$watch("tableview", function() {
+			console.log("tableview");
+			if ($scope.tablepage.page == 0)
+				this.build();
+			else
+				vpAlmanac.setPage(0);
+		}.bind(this), true);
+
+		this.build = function() {
 			this.rows = [];
 			var months = vpAlmanac.vpmonths;
 
@@ -119,7 +127,7 @@ function VpAlmanacSvc(vpSettings)
 	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
 	VpDate.localemonth = this.cfg.month_names.split('-');
 
-	this.page={i: 0};
+	this.bookmark = {page: 0};
 	this.offset = this.cfg.auto_scroll ? this.cfg.auto_scroll_offset : 0;
 	this.init_months();
 }
@@ -175,10 +183,18 @@ VpAlmanacSvc.prototype.init_months = function()
 	}
 }
 
-VpAlmanacSvc.prototype.reset = function(offset)
+VpAlmanacSvc.prototype.setPage = function(pg)
 {
-	this.page.i += offset;
-	console.log(this);
+	this.bookmark.page = pg;
+	console.log("set:" + this.bookmark.page);
+	//this.offset += (this.cfg.multi_col_count * offset);
+	//this.init_months();
+}
+
+VpAlmanacSvc.prototype.movePage = function(off)
+{
+	this.bookmark.page += off;
+	console.log("move:" + this.bookmark.page);
 	//this.offset += (this.cfg.multi_col_count * offset);
 	//this.init_months();
 }
