@@ -67,6 +67,11 @@ function VpScrollDirective(vpAlmanac, $timeout)
 
 		element.on("scroll", onScroll);
 
+		scope.$watch("vp.show", function(vps) {
+			if (vps.grid)
+				$timeout(updateUI);
+		});
+
 		scope.$watch("vp.view.sel", function() {
 			vpv = scope.vp.view.sel;
 			$timeout(updateUI);
@@ -89,16 +94,9 @@ function VpScrollDirective(vpAlmanac, $timeout)
 					element.css("overflow-y", "hidden");
 				if (vpv.list)
 					element.css("overflow-x", "hidden");
-
-				if (vpv.list)
-					if (div.scrollHeight == 0) alert("height=0");
-				else
-					if (div.scrollWidth == 0) alert("width=0");
 				
-				$timeout(function() {
-					div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
-					div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
-				});
+				div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
+				div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
 			});
 		}
 
