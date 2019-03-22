@@ -94,8 +94,11 @@ function VpScrollDirective(vpAlmanac, $timeout)
 					if (div.scrollHeight == 0) alert("height=0");
 				else
 					if (div.scrollWidth == 0) alert("width=0");
-				div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
-				div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
+				
+				$timeout(function() {
+					div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
+					div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
+				});
 			});
 		}
 
