@@ -69,7 +69,7 @@ function VpViewStorageSvc($rootScope, $window)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpTableDirective(vpViewStorage, vpAlmanac)
+function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 {
 	function fCtl($scope) {
 
@@ -83,6 +83,11 @@ function VpTableDirective(vpViewStorage, vpAlmanac)
 		$scope.$on("table:page", function(evt, off) {
 			vpAlmanac.offsetPage(off);
 			$scope.vt.rows = createTableRows();
+		});
+
+		$scope.$on("table:print", function(evt, pos) {
+			vpAlmanac.setPrintStorage(pos);
+			$window.open("vpprint.htm");
 		});
 
 		vpAlmanac.initPage();
@@ -222,10 +227,10 @@ VpAlmanacSvc.prototype.createMonths = function()
 	}
 }
 
-VpAlmanacSvc.prototype.prePrint = function(offset)
+VpAlmanacSvc.prototype.setPrintStorage = function(scroll_pos)
 {
 	var print_span = [];
-	var n = Math.floor((this.vpmonths.length * offset) + 0.6);
+	var n = Math.floor((this.vpmonths.length * scroll_pos) + 0.6);
 	var c = (n + this.cfg.month_count)
 	
 	for (var i=n; i < c; i++)

@@ -1,13 +1,12 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpAppController(vpViewStorage, vpAlmanac, vpSettings, $scope, $window)
+function VpAppController(vpViewStorage, vpSettings, $scope, $rootScope)
 {
 	this.show = {banner: true};
 	this.view = vpViewStorage;
 	this.settings = vpSettings;
 	this.sign_msg = "Signing In...";
 	this.month_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
-	this.page=0;
 
 	$scope.$on("settings:load", function(evt) {
 		this.sign_msg = "Signed Out";
@@ -15,8 +14,7 @@ function VpAppController(vpViewStorage, vpAlmanac, vpSettings, $scope, $window)
 	}.bind(this));
 
 	this.onclickPrint = function() {
-		vpAlmanac.prePrint($scope.getScrollPos());
-		$window.open("vpprint.htm");
+		$rootScope.$broadcast("table:print", $scope.getScrollPos());
 	}
 
 	this.onclickSettings = function() {
