@@ -14,7 +14,7 @@ function VpAppController(vpViewStorage, vpSettings, $scope, $rootScope)
 	}.bind(this));
 
 	this.onclickPrint = function() {
-		$rootScope.$broadcast("table:print", $scope.getScrollPos());
+		$rootScope.$broadcast("cmd:print", $scope.getScrollPos());
 	}
 
 	this.onclickSettings = function() {
@@ -38,6 +38,12 @@ function VpScrollDirective($rootScope, $timeout)
 		var vpv = {};
 
 		element.on("scroll", onScroll);
+		scope.$on("view:load", updateUI);
+
+/*
+		scope.$on("table:setview", function() {
+			$timeout(updateUI);
+		});
 
 		scope.$watch("vp.show", function(vps) {
 			if (vps.grid)
@@ -48,12 +54,15 @@ function VpScrollDirective($rootScope, $timeout)
 			vpv = scope.vp.view.sel;
 			$timeout(updateUI);
 		});
+*/
 
 		scope.getScrollPos = function() {
 			return vpv.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
 		}
 		
 		function updateUI() {
+			vpv = scope.vp.view.sel;
+
 			if (vpv.column)
 				element.on("wheel", onWheel);
 			else
@@ -86,7 +95,7 @@ function VpScrollDirective($rootScope, $timeout)
 			if (off)
 			{
 				tmo = $timeout(function() {
-					$rootScope.$broadcast("table:page", off);
+					$rootScope.$broadcast("scroll:page", off);
 				}, 1000);
 			}
 		}

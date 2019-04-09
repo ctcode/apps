@@ -54,7 +54,7 @@ function VpViewStorageSvc($rootScope, $window)
 		this.cls = {};
 		this.cls[name] = {checked: true};
 
-		$rootScope.$broadcast("table:setview");
+		$rootScope.$broadcast("view:load");
 	}
 
 	this.setName = function(name) {
@@ -73,18 +73,18 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 {
 	function fCtl($scope) {
 
-		$scope.$on("table:setview", function() {
+		$scope.$on("view:load", function() {
 			vpAlmanac.initPage();
 			$scope.vt.tableview = vpViewStorage.sel;
 			$scope.vt.rows = createTableRows();
 		});
 
-		$scope.$on("table:page", function(evt, off) {
+		$scope.$on("scroll:page", function(evt, off) {
 			vpAlmanac.offsetPage(off);
 			$scope.vt.rows = createTableRows();
 		});
 
-		$scope.$on("table:print", function(evt, pos) {
+		$scope.$on("cmd:print", function(evt, pos) {
 			vpAlmanac.setPrintStorage(pos);
 			$window.open("vpprint.htm");
 		});
