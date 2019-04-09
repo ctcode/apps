@@ -53,13 +53,13 @@ function VpViewStorageSvc($rootScope, $window)
 
 		this.cls = {};
 		this.cls[name] = {checked: true};
+
+		$rootScope.$broadcast("table:setview");
 	}
 
 	this.setName = function(name) {
 		$window.localStorage.setItem("vp-viewname", name);
 		this.load();
-
-		$rootScope.$broadcast("table:setview");
 	}
 
 	this.load();
@@ -73,10 +73,9 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 {
 	function fCtl($scope) {
 
-		$scope.vt.tableview = vpViewStorage;
-
 		$scope.$on("table:setview", function() {
 			vpAlmanac.initPage();
+			$scope.vt.tableview = vpViewStorage.sel;
 			$scope.vt.rows = createTableRows();
 		});
 
@@ -90,8 +89,7 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 			$window.open("vpprint.htm");
 		});
 
-		vpAlmanac.initPage();
-		$scope.vt.rows = createTableRows();
+		vpViewStorage.load();
 		
 		function createTableRows() {
 			var rows = [];
@@ -136,7 +134,7 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 		}
 
 		function getPos(xpos, ypos) {
-			return vpViewStorage.sel.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
+			return $scope.vt.tableview.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
 		}
 	}
 
