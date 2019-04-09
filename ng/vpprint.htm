@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto" type="text/css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
 <link href="vp.png" rel="icon">
-<script src="vp.js" type='text/javascript'></script>
 <script src="vptable.js" type='text/javascript'></script>
 <style>
 body {
@@ -18,19 +17,16 @@ body {
 }
 </style>
 </head>
-<body ng-app="app" ng-controller="vpPrintApp as vpp" ng-cloak>
+<body ng-app="app" ng-cloak>
 <title>Print</title>
 
-<vp-table tableview="vpp.view.sel"></vp-table>
+<vp-table></vp-table>
 
 <script type='text/javascript'>
 angular.module("app", [])
-	.controller("vpPrintApp", function(vpViewStorage) {
-		this.view = vpViewStorage;
-	})
-	.directive("vpTable", VpTableDirective)
 	.service("vpViewStorage", VpViewStorageSvc)
-	.service("vpAlmanac", VpAlmanacStorageSvc)
+	.service("vpAlmanac", VpAlmanacPrintSvc)
+	.directive("vpTable", VpTableDirective)
 ;
 </script>
 

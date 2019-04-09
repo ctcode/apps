@@ -1,19 +1,18 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpAppController(vpViewStorage, vpAlmanac, vpSettings, $scope, $timeout, $window)
+function VpAppController(vpViewStorage, vpAlmanac, vpSettings, $scope, $window)
 {
 	this.show = {banner: true};
 	this.view = vpViewStorage;
 	this.settings = vpSettings;
 	this.sign_msg = "Signing In...";
-	this.multi_col_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
+	this.month_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 	this.page=0;
 
-	$timeout(function(){
-		vpSettings.load();
+	$scope.$on("settings:load", function(evt) {
 		this.sign_msg = "Signed Out";
 		this.show = {banner: true, grid: true};
-	}.bind(this), 3000);
+	}.bind(this));
 
 	this.onclickPrint = function() {
 		vpAlmanac.prePrint($scope.getScrollPos());
@@ -34,32 +33,7 @@ function VpAppController(vpViewStorage, vpAlmanac, vpSettings, $scope, $timeout,
 
 //////////////////////////////////////////////////////////////////////
 
-function VpViewStorageSvc($window)
-{
-	this.load = function() {
-		var stg = $window.localStorage.getItem("vp-viewname");
-		var name = stg ? stg : "column";
-
-		this.sel = {};
-		this.sel[name] = true;
-
-		this.cls = {};
-		this.cls[name] = {checked: true};
-	}
-
-	this.setName = function(name) {
-		$window.localStorage.setItem("vp-viewname", name);
-		this.load();
-	}
-
-	this.load();
-}
-
-
-
-//////////////////////////////////////////////////////////////////////
-
-function VpScrollDirective(vpAlmanac, $timeout)
+function VpScrollDirective($rootScope, $timeout)
 {
 	function fLink(scope, element, attrs) {
 		var div = element[0];
@@ -85,7 +59,7 @@ function VpScrollDirective(vpAlmanac, $timeout)
 			if (vpv.column)
 				element.on("wheel", onWheel);
 			else
-				element.off("wheel", onWheel);
+				element.off("wheel");
 
 			element.css("overflow", "hidden");
 			$timeout(function() {
@@ -114,7 +88,7 @@ function VpScrollDirective(vpAlmanac, $timeout)
 			if (off)
 			{
 				tmo = $timeout(function() {
-					vpAlmanac.movePage(off);
+					$rootScope.$broadcast("table:page", off);
 				}, 1000);
 			}
 		}

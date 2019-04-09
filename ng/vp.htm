@@ -160,7 +160,7 @@ body {
 
 <div id="grid" tabIndex="1" ng-show="vp.show.grid" vp-scroll>
 	<div id="gridcontent">
-		<vp-table tableview="vp.view.sel"></vp-table>
+		<vp-table></vp-table>
 	</div>
 </div>
 
@@ -187,11 +187,11 @@ body {
 		<div class="sub"><input ng-model="vp.settings.planner_title">
 			Planner title.
 		</div>
-		<div class="sub"><select ng-model="vp.settings.vpconfig.multi_col_count"  ng-options="x for (x, y) in vp.multi_col_count_options"></select>
-			Number of columns to display.  More columns can be scrolled into view using the mouse wheel or cursor keys.
+		<div class="sub"><select ng-model="vp.settings.vpconfig.month_count"  ng-options="x for (x, y) in vp.month_count_options"></select>
+			Number of months to display.  More can be scrolled into view using the mouse wheel or cursor keys.
 		</div>
-		<div class="sub"><select ng-model="vp.settings.vpconfig.multi_col_count_portrait"  ng-options="x for (x, y) in vp.multi_col_count_options"></select>
-			Number of columns to display in portrait mode on mobile devices.
+		<div class="sub"><select ng-model="vp.settings.vpconfig.month_count_portrait"  ng-options="x for (x, y) in vp.month_count_options"></select>
+			Number of months to display in portrait mode on mobile devices.
 		</div>
 		<div class="sub"><input ng-model="vp.settings.vpconfig.auto_scroll" type="checkbox">
 			Auto-scroll to current month.  If not selected, the view will always start at the beginning of the year.
@@ -278,11 +278,11 @@ body {
 
 <script type='text/javascript'>
 angular.module("vpapp", [])
-	.directive("vpScroll", VpScrollDirective)
-	.directive("vpTable", VpTableDirective)
-	.service("vpViewStorage", VpViewStorageSvc)
 	.service("vpSettings", VpSettingsSvc)
 	.service("vpAlmanac", VpAlmanacSvc)
+	.service("vpViewStorage", VpViewStorageSvc)
+	.directive("vpScroll", VpScrollDirective)
+	.directive("vpTable", VpTableDirective)
 	.controller("vpApp", VpAppController)
 ;
 </script>
