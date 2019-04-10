@@ -17,8 +17,11 @@ body {
 	margin: 0;
 	min-width: 600px;
 	min-height: 400px;
+}
+#planner {
 	display: flex;
 	flex-direction: column;
+	height: 100%;
 }
 #banner {
 	font-family: Roboto;
@@ -66,6 +69,9 @@ body {
 	outline: none;
 	position: relative;
 }
+#grid.hide {
+	visibility: hidden;
+}
 #gridcontent {
 	height: 100%;
 	position: absolute;
@@ -112,8 +118,7 @@ body {
 }
 @media only print
 {
-	#grid {display: none;}
-	#calendarbar {display: none;}
+	#planner {display: none;}
 	#printmsg {display: initial;}
 }
 </style>
@@ -146,27 +151,29 @@ body {
 }
 </style>
 
-<div id="banner" ng-show="vp.show.banner">
-	<div id="bantxt">{{vp.settings.planner_title}}</div>
-	<div id="tools">
-		<div>{{vp.sign_msg}}</div>
-		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
-		<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
-		<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.view.setName('expand')" ng-class="vp.view.cls.expand"/>
-		<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vp.view.setName('list')" ng-class="vp.view.cls.list"/>
-		<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vp.view.setName('column')" ng-class="vp.view.cls.column"/>
+<div id="planner" ng-show="vp.show.planner">
+	<div id="banner">
+		<div id="bantxt">{{vp.settings.planner_title}}</div>
+		<div id="tools">
+			<div>{{vp.sign_msg}}</div>
+			<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
+			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
+			<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.onclickView('expand')" ng-class="vp.view.cls.expand"/>
+			<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vp.onclickView('list')" ng-class="vp.view.cls.list"/>
+			<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vp.onclickView('column')" ng-class="vp.view.cls.column"/>
+		</div>
 	</div>
+
+	<div id="grid" tabIndex="1" vp-scroll>
+		<div id="gridcontent">
+			<vp-table></vp-table>
+		</div>
+	</div>
+
+	<div id="calendarbar"></div>
 </div>
 
-<div id="grid" tabIndex="1" ng-show="vp.show.grid" vp-scroll>
-	<div id="gridcontent">
-		<vp-table></vp-table>
-	</div>
-</div>
-
-<h1 id="printmsg">Print not available</h1>
-
-<div id="calendarbar" ng-show="vp.show.grid"></div>
+<h1 id="printmsg" ng-show="vp.show.planner">Print not available</h1>
 
 <div id="settings" ng-show="vp.show.settings">
 	<div id="savebtns">

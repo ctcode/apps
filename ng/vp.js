@@ -2,7 +2,7 @@
 
 function VpAppController(vpViewStorage, vpSettings, $scope, $rootScope)
 {
-	this.show = {banner: true};
+	this.show = {planner: true};
 	this.view = vpViewStorage;
 	this.settings = vpSettings;
 	this.sign_msg = "Signing In...";
@@ -10,8 +10,16 @@ function VpAppController(vpViewStorage, vpSettings, $scope, $rootScope)
 
 	$scope.$on("settings:load", function(evt) {
 		this.sign_msg = "Signed Out";
-		this.show = {banner: true, grid: true};
+		vpViewStorage.load();
+		$scope.initScrollView();
+		$rootScope.$broadcast("cmd:view");
 	}.bind(this));
+
+	this.onclickView = function(name) {
+		vpViewStorage.setName(name);
+		$scope.initScrollView();
+		$rootScope.$broadcast("cmd:view");
+	}
 
 	this.onclickPrint = function() {
 		$rootScope.$broadcast("cmd:print", $scope.getScrollPos());
@@ -23,7 +31,7 @@ function VpAppController(vpViewStorage, vpSettings, $scope, $rootScope)
 
 	this.onclickCancel = function() {
 		this.form.$setPristine(true);
-		this.show = {banner: true, grid: true};
+		this.show = {planner: true};
 	}
 }
 
@@ -38,29 +46,12 @@ function VpScrollDirective($rootScope, $timeout)
 		var vpv = {};
 
 		element.on("scroll", onScroll);
-		scope.$on("view:load", updateUI);
-
-/*
-		scope.$on("table:setview", function() {
-			$timeout(updateUI);
-		});
-
-		scope.$watch("vp.show", function(vps) {
-			if (vps.grid)
-				$timeout(updateUI);
-		});
-
-		scope.$watch("vp.view.sel", function() {
-			vpv = scope.vp.view.sel;
-			$timeout(updateUI);
-		});
-*/
 
 		scope.getScrollPos = function() {
 			return vpv.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
 		}
-		
-		function updateUI() {
+
+		scope.initScrollView = function() {
 			vpv = scope.vp.view.sel;
 
 			if (vpv.column)
@@ -76,9 +67,13 @@ function VpScrollDirective($rootScope, $timeout)
 				if (vpv.list)
 					element.css("overflow-x", "hidden");
 				
-				div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
-				div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
+				resetScrollPos();
 			});
+		}
+
+		function resetScrollPos() {
+			div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
+			div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
 		}
 
 		var tmo=null;
@@ -94,9 +89,8 @@ function VpScrollDirective($rootScope, $timeout)
 
 			if (off)
 			{
-				tmo = $timeout(function() {
-					$rootScope.$broadcast("scroll:page", off);
-				}, 1000);
+				resetScrollPos();
+				$rootScope.$broadcast("scroll:page", off);
 			}
 		}
 
