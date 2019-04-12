@@ -102,9 +102,7 @@ function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
 				tmo = $timeout(function() {
 					showView(false);
 					$timeout(function() {
-						scope.$apply(function() {
-							$rootScope.$broadcast("scroll:page", off);
-						});
+						$rootScope.$broadcast("scroll:page", off);
 						$timeout(function() {
 							resetScroll();
 							showView(true);
