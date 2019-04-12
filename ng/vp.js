@@ -86,30 +86,27 @@ function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
 			div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
 		}
 
-		var tmo=null;
-		function onScroll(evt) {
-			$timeout.cancel(tmo);
-
+		function pageScroll() {
 			var pos = vpv.list ? div.scrollTop : div.scrollLeft;
 			var max = vpv.list ? (div.scrollHeight - div.clientHeight) : (div.scrollWidth - div.clientWidth);
 
-			var off = false;
-			if (pos == 0) off = -1;
-			if (pos == max) off = 1;
+			if (pos > 0 && pos < max)
+				return;
 
-			if (off)
-			{
-				tmo = $timeout(function() {
-					showView(false);
-					$timeout(function() {
-						$rootScope.$broadcast("scroll:page", off);
-						$timeout(function() {
-							resetScroll();
-							showView(true);
-						});
-					});
-				}, 1000);
-			}
+			showView(false);
+			$timeout(function() {
+				$rootScope.$broadcast("scroll:page", pos == 0 ? -1 : 1);
+				$timeout(function() {
+					resetScroll();
+					showView(true);
+				});
+			});
+		}
+
+		var tmo=null;
+		function onScroll(evt) {
+			$timeout.cancel(tmo);
+			tmo = $timeout(pageScroll, 1000);
 		}
 
 		function onWheel(evt) {
