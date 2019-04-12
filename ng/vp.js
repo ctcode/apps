@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpAppController(vpViewStorage, vpSettings, $scope, $rootScope)
+function VpAppController(vpViewStorage, vpSettings, $scope)
 {
 	this.show = {planner: true};
 	this.view = vpViewStorage;
@@ -11,18 +11,16 @@ function VpAppController(vpViewStorage, vpSettings, $scope, $rootScope)
 	$scope.$on("settings:load", function(evt) {
 		this.sign_msg = "Signed Out";
 		vpViewStorage.load();
-		$scope.initScrollView();
-		$rootScope.$broadcast("cmd:view");
+		$scope.vpscroll.initView();
 	}.bind(this));
 
 	this.onclickView = function(name) {
 		vpViewStorage.setName(name);
-		$scope.initScrollView();
-		$rootScope.$broadcast("cmd:view");
+		$scope.vpscroll.initView();
 	}
 
 	this.onclickPrint = function() {
-		$rootScope.$broadcast("cmd:print", $scope.getScrollPos());
+		$scope.vpscroll.initPrint();
 	}
 
 	this.onclickSettings = function() {
@@ -39,39 +37,51 @@ function VpAppController(vpViewStorage, vpSettings, $scope, $rootScope)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpScrollDirective($rootScope, $timeout)
+function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
 {
 	function fLink(scope, element, attrs) {
+		scope.vpscroll = {};
 		var div = element[0];
 		var vpv = {};
 
 		element.on("scroll", onScroll);
 
-		scope.getScrollPos = function() {
-			return vpv.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
-		}
-
-		scope.initScrollView = function() {
+		scope.vpscroll.initView = function() {
 			vpv = scope.vp.view.sel;
 
-			if (vpv.column)
-				element.on("wheel", onWheel);
-			else
-				element.off("wheel");
-
-			element.css("overflow", "hidden");
+			showView(false);
 			$timeout(function() {
+				if (vpv.column)
+					element.on("wheel", onWheel);
+				else
+					element.off("wheel");
+
 				element.css("overflow", "auto");
 				if (vpv.column)
 					element.css("overflow-y", "hidden");
 				if (vpv.list)
 					element.css("overflow-x", "hidden");
-				
-				resetScrollPos();
+
+				$rootScope.$broadcast("cmd:view");
+
+				resetScroll();
+				showView(true);
 			});
 		}
 
-		function resetScrollPos() {
+		scope.vpscroll.initPrint = function() {
+			$rootScope.$broadcast("cmd:print", getScrollPos());
+		}
+
+		function showView(show) {
+			element.css("visibility", show ? "" : "hidden");
+		}
+
+		function getScrollPos() {
+			return vpv.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
+		}
+
+		function resetScroll() {
 			div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
 			div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
 		}
@@ -89,8 +99,18 @@ function VpScrollDirective($rootScope, $timeout)
 
 			if (off)
 			{
-				resetScrollPos();
-				$rootScope.$broadcast("scroll:page", off);
+				tmo = $timeout(function() {
+					showView(false);
+					$timeout(function() {
+						scope.$apply(function() {
+							$rootScope.$broadcast("scroll:page", off);
+						});
+						$timeout(function() {
+							resetScroll();
+							showView(true);
+						});
+					});
+				}, 1000);
 			}
 		}
 

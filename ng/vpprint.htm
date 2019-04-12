@@ -17,7 +17,7 @@ body {
 }
 </style>
 </head>
-<body ng-app="app" ng-cloak>
+<body ng-app="app" ng-controller="vpPrintApp" ng-cloak>
 <title>Print</title>
 
 <vp-table></vp-table>
@@ -27,6 +27,12 @@ angular.module("app", [])
 	.service("vpViewStorage", VpViewStorageSvc)
 	.service("vpAlmanac", VpAlmanacPrintSvc)
 	.directive("vpTable", VpTableDirective)
+	.controller("vpPrintApp", function(vpViewStorage, $timeout, $rootScope) {
+		$timeout(function() {
+			vpViewStorage.load();
+			$rootScope.$broadcast("cmd:view");
+		});
+	})
 ;
 </script>
 
