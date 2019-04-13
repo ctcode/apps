@@ -75,23 +75,29 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 {
 	function fCtl($scope) {
 
+		$scope.vt.tableview = vpViewStorage;
+
 		$scope.$on("cmd:view", function() {
 			vpAlmanac.initPage();
-			$scope.vt.tableview = vpViewStorage.sel;
-			$scope.vt.rows = createTableRows();
+			createRows();
 		});
 
 		$scope.$on("scroll:page", function(evt, off) {
 			vpAlmanac.offsetPage(off);
-			$scope.vt.rows = createTableRows();
+			createRows();
 		});
 
 		$scope.$on("cmd:print", function(evt, pos) {
-			vpAlmanac.setPrintStorage(pos);
+			vpAlmanac.savePrintInfo(pos);
 			$window.open("vpprint.htm");
 		});
+
+		$scope.$on("print:view", function() {
+			vpAlmanac.loadPrintInfo();
+			createRows();
+		});
 		
-		function createTableRows() {
+		function createRows() {
 			var rows = [];
 			var months = vpAlmanac.vpmonths;
 
@@ -130,11 +136,11 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 				}
 			}
 			
-			return rows;
+			$scope.vt.rows = rows;
 		}
 
 		function getPos(xpos, ypos) {
-			return $scope.vt.tableview.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
+			return $scope.vt.tableview.sel.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
 		}
 	}
 
@@ -225,33 +231,21 @@ VpAlmanacSvc.prototype.createMonths = function()
 	}
 }
 
-VpAlmanacSvc.prototype.setPrintStorage = function(scroll_pos)
+VpAlmanacSvc.prototype.savePrintInfo = function(pos)
 {
 	var print_span = [];
-	var n = Math.floor((this.vpmonths.length * scroll_pos) + 0.6);
+	var n = Math.floor((this.vpmonths.length * pos) + 0.6);
 	var c = (n + this.cfg.month_count)
 	
 	for (var i=n; i < c; i++)
 		print_span.push(this.vpmonths[i]);
 
-	window.sessionStorage.setItem("vp-almanac-print", JSON.stringify(print_span));
+	window.VpPrintInfo = print_span;
 }
 
-
-
-//////////////////////////////////////////////////////////////////////
-
-function VpAlmanacPrintSvc()
+VpAlmanacSvc.prototype.loadPrintInfo = function()
 {
-}
-
-VpAlmanacPrintSvc.prototype.initPage = function()
-{
-	this.vpmonths = [];
-
-	var stg = window.sessionStorage.getItem("vp-almanac-print");
-	if (stg)
-		this.vpmonths = JSON.parse(stg);
+	this.vpmonths = window.opener.VpPrintInfo;
 }
 
 

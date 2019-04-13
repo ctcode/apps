@@ -25,12 +25,13 @@ body {
 <script type='text/javascript'>
 angular.module("app", [])
 	.service("vpViewStorage", VpViewStorageSvc)
-	.service("vpAlmanac", VpAlmanacPrintSvc)
+	.service("vpSettings", VpSettingsSvc)
+	.service("vpAlmanac", VpAlmanacSvc)
 	.directive("vpTable", VpTableDirective)
 	.controller("vpPrintApp", function(vpViewStorage, $timeout, $rootScope) {
 		$timeout(function() {
 			vpViewStorage.load();
-			$rootScope.$broadcast("cmd:view");
+			$rootScope.$broadcast("print:view");
 		});
 	})
 ;
