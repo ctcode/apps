@@ -69,9 +69,6 @@ body {
 	outline: none;
 	position: relative;
 }
-#grid.hide {
-	visibility: hidden;
-}
 #gridcontent {
 	height: 100%;
 	position: absolute;
@@ -155,7 +152,7 @@ body {
 	<div id="banner">
 		<div id="bantxt">{{vp.settings.planner_title}}</div>
 		<div id="tools">
-			<div>{{vp.sign_msg}}</div>
+			<div>{{vp.account.sign_msg}}</div>
 			<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
 			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
 			<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.onclickView('expand')" ng-class="vp.view.cls.expand"/>
@@ -285,6 +282,7 @@ body {
 
 <script type='text/javascript'>
 angular.module("vpapp", [])
+	.service("vpAccount", VpAccountSvc)
 	.service("vpSettings", VpSettingsSvc)
 	.service("vpAlmanac", VpAlmanacSvc)
 	.service("vpViewStorage", VpViewStorageSvc)

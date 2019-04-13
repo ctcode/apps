@@ -1,18 +1,25 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpAppController(vpViewStorage, vpSettings, $scope)
+function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope)
 {
 	this.show = {planner: true};
-	this.view = vpViewStorage;
+	this.account = vpAccount;
 	this.settings = vpSettings;
-	this.sign_msg = "Signing In...";
+	this.view = vpViewStorage;
 	this.month_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 
-	$scope.$on("settings:load", function(evt) {
-		this.sign_msg = "Signed Out";
+	$scope.$on("account:signin", function() {
+		vpSettings.load();
+	});
+
+	$scope.$on("account:signout", function() {
+		vpSettings.reset();
+	});
+
+	$scope.$on("settings:load", function() {
 		vpViewStorage.load();
 		$scope.vpscroll.initView();
-	}.bind(this));
+	});
 
 	this.onclickView = function(name) {
 		vpViewStorage.setName(name);
@@ -123,4 +130,27 @@ function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
 		link: fLink,
 		restrict: 'A'
 	};
+}
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+function VpAccountSvc($timeout, $rootScope)
+{
+	this.signIn = function() {
+		this.sign_msg = "Signing In...";
+
+		$timeout(function() {
+			this.sign_msg = "user";
+			$rootScope.$broadcast("account:signin");
+		}.bind(this), 3000);
+	}
+
+	this.signOut = function() {
+		this.sign_msg = "Signed Out";
+		$rootScope.$broadcast("account:signout");
+	}
+	
+	this.signIn();
 }

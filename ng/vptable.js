@@ -3,8 +3,6 @@
 
 function VpSettingsSvc($timeout, $rootScope)
 {
-	this.planner_title = "visual-planner";
-
 	this.vpconfig = {
 		month_count: 6,
 		month_count_portrait: 3,
@@ -32,10 +30,18 @@ function VpSettingsSvc($timeout, $rootScope)
 		multi_day_opacity: 0.8
 	};
 
-	$timeout(function() {
-		this.planner_title = "vp-ng";
-		$rootScope.$broadcast("settings:load");
-	}.bind(this), 3000);
+	this.load = function() {
+		$timeout(function() {
+			this.planner_title = "vp-ng";
+			$rootScope.$broadcast("settings:load");
+		}.bind(this), 1000);
+	}
+
+	this.reset = function() {
+		this.planner_title = "visual-planner";
+	}
+	
+	this.reset();
 }
 
 
