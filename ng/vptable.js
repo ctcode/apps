@@ -5,6 +5,12 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 	function fCtl($scope) {
 
 		$scope.vt.tableview = vpViewStorage;
+		
+		if (vpAlmanac.printinfo)
+		{
+			createRows();
+			return;
+		}
 
 		$scope.$on("cmd:view", function() {
 			vpAlmanac.initPage();
@@ -19,11 +25,6 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 		$scope.$on("cmd:print", function(evt, pos) {
 			vpAlmanac.savePrintInfo(pos);
 			$window.open("vpprint.htm");
-		});
-
-		$scope.$on("print:view", function() {
-			vpAlmanac.loadPrintInfo();
-			createRows();
 		});
 		
 		function createRows() {

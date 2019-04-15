@@ -88,6 +88,8 @@ function VpViewStorageSvc($rootScope, $window)
 		$window.localStorage.setItem("vp-viewname", name);
 		this.load();
 	}
+
+	this.load();
 }
 
 
@@ -100,6 +102,8 @@ function VpAlmanacSvc(vpSettings)
 	
 	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
 	VpDate.localemonth = this.cfg.month_names.split('-');
+	
+	this.loadPrintInfo();
 }
 
 VpAlmanacSvc.prototype.initPage = function()
@@ -179,7 +183,11 @@ VpAlmanacSvc.prototype.savePrintInfo = function(pos)
 
 VpAlmanacSvc.prototype.loadPrintInfo = function()
 {
-	this.vpmonths = window.opener.VpPrintInfo;
+	if (window.opener && window.opener.VpPrintInfo)
+	{
+		this.vpmonths = window.opener.VpPrintInfo;
+		this.printinfo = true;
+	}
 }
 
 

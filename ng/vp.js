@@ -17,7 +17,6 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope)
 	});
 
 	$scope.$on("settings:load", function() {
-		vpViewStorage.load();
 		$scope.vpscroll.initView();
 	});
 
