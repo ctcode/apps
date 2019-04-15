@@ -88,8 +88,8 @@ function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
 		}
 
 		function resetScroll() {
-			div.scrollTop = vpv.list ? (div.scrollHeight/3) : 0;
-			div.scrollLeft = vpv.list ? 0 : (div.scrollWidth/3);
+			div.scrollTop = vpv.list ? (div.scrollHeight-div.clientHeight)/2 : 0;
+			div.scrollLeft = vpv.list ? 0 : (div.scrollWidth-div.clientWidth)/2;
 		}
 
 		function pageScroll() {
