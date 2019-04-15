@@ -130,7 +130,7 @@ body {
 	height: 0;
 }
 #gridcontent {
-	width: 300%;
+	width: {{vp.scroll_size}}%;
 }
 </style>
 
@@ -139,13 +139,13 @@ body {
 	width: 0;
 }
 #gridcontent {
-	height: 300%;
+	height:  {{vp.scroll_size}}%;
 }
 </style>
 
 <style ng-if="vp.view.sel.expand">
 #gridcontent {
-	width: 300%;
+	width:  {{vp.scroll_size}}%;
 }
 </style>
 

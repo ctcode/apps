@@ -54,6 +54,9 @@ function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
 
 		scope.vpscroll.initView = function() {
 			vpv = scope.vp.view.sel;
+			
+			var m = scope.vp.settings.vpconfig.month_count;
+			scope.vp.scroll_size = ((m+12)/m)*100;
 
 			showView(false);
 			$timeout(function() {
