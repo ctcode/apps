@@ -33,12 +33,30 @@ function VpSettingsSvc($timeout, $rootScope)
 	this.load = function() {
 		$timeout(function() {
 			this.planner_title = "vp-ng";
+			
+			if (isPortrait())
+				this.vpconfig.month_count = this.vpconfig.month_count_portrait;
+			
 			$rootScope.$broadcast("settings:load");
 		}.bind(this), 1000);
 	}
 
 	this.reset = function() {
 		this.planner_title = "visual-planner";
+	}
+
+	function isPortrait()
+	{
+		var so = "";
+		if (screen.orientation && screen.orientation.type)
+			so = screen.orientation.type;
+		if (screen.msOrientation)  // edge, ie
+			so = screen.msOrientation;
+
+		if (so.includes("portrait"))
+			return true;
+
+		return false;
 	}
 	
 	this.reset();
