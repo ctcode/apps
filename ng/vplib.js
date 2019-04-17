@@ -126,7 +126,21 @@ function VpAlmanacSvc(vpSettings)
 
 VpAlmanacSvc.prototype.initPage = function()
 {
-	this.month_offset = (this.cfg.auto_scroll_offset - 6);
+	this.month_offset = -6;
+	
+	if (this.cfg.auto_scroll)
+	{
+		this.month_offset += this.cfg.auto_scroll_offset;
+	}
+	else
+	{
+		var off = ((this.cfg.first_month-1) - new Date().getMonth());
+		if (off > 0)
+			off -= 12;
+
+		this.month_offset += off;
+	}
+
 	this.createMonths();
 }
 

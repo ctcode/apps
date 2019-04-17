@@ -60,10 +60,9 @@ function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
 
 			showView(false);
 			$timeout(function() {
+				element.off("wheel");
 				if (vpv.column)
 					element.on("wheel", onWheel);
-				else
-					element.off("wheel");
 
 				element.css("overflow", "auto");
 				if (vpv.column)
