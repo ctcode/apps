@@ -1,11 +1,12 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope)
+function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 {
 	this.show = {planner: true};
 	this.account = vpAccount;
 	this.settings = vpSettings;
 	this.view = vpViewStorage;
+	this.busy = false;
 	this.month_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 
 	$scope.$on("account:signin", function() {
@@ -34,8 +35,20 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope)
 	}
 
 	this.onclickCancel = function() {
+		vpSettings.revert();
 		this.form.$setPristine(true);
 		this.show = {planner: true};
+	}
+
+	this.onclickSave = function() {
+		this.busy = true;
+		vpSettings.save();
+		$timeout(function() {
+			this.busy = false;
+			this.form.$setPristine(true);
+			this.show = {planner: true};
+			$scope.vpscroll.initView();
+		}.bind(this), 2000)
 	}
 }
 

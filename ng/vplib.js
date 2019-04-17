@@ -3,7 +3,11 @@
 
 function VpSettingsSvc($timeout, $rootScope)
 {
-	this.vpconfig = {
+	var gAppData = {};
+	var defaults = {};
+
+	defaults.planner_title = "visual-planner";
+	defaults.vpconfig = {
 		month_count: 6,
 		month_count_portrait: 3,
 		auto_scroll: true,
@@ -29,34 +33,30 @@ function VpSettingsSvc($timeout, $rootScope)
 		marker_width: 0.85,
 		multi_day_opacity: 0.8
 	};
+	
+	this.reset = function() {
+		this.planner_title = angular.copy(defaults.planner_title);
+		this.vpconfig = angular.copy(defaults.vpconfig);
+		gAppData = {};  // temp
+	}
+
+	this.revert = function() {
+		this.planner_title = angular.copy(gAppData.planner_title);
+		this.vpconfig = angular.copy(gAppData.vpconfig);
+	}
 
 	this.load = function() {
 		$timeout(function() {
-			this.planner_title = "vp-ng";
-			
-			if (isPortrait())
-				this.vpconfig.month_count = this.vpconfig.month_count_portrait;
-			
+			gAppData.planner_title = "vp-ng";  // temp
+			gAppData.vpconfig = angular.copy(defaults.vpconfig);  // temp
+			this.revert();
 			$rootScope.$broadcast("settings:load");
 		}.bind(this), 1000);
 	}
 
-	this.reset = function() {
-		this.planner_title = "visual-planner";
-	}
-
-	function isPortrait()
-	{
-		var so = "";
-		if (screen.orientation && screen.orientation.type)
-			so = screen.orientation.type;
-		if (screen.msOrientation)  // edge, ie
-			so = screen.msOrientation;
-
-		if (so.includes("portrait"))
-			return true;
-
-		return false;
+	this.save = function() {
+		gAppData.planner_title = angular.copy(this.planner_title);  // temp
+		gAppData.vpconfig = angular.copy(this.vpconfig);  // temp
 	}
 	
 	this.reset();
@@ -116,25 +116,26 @@ function VpViewStorageSvc($rootScope, $window)
 
 function VpAlmanacSvc(vpSettings)
 {
-	this.cfg = vpSettings.vpconfig;
+	this.vpsettings = vpSettings;
 	
-	VpDate.weekends = this.cfg.weekends.split(',').map(s => parseInt(s));
-	VpDate.localemonth = this.cfg.month_names.split('-');
+	VpDate.weekends = this.vpsettings.vpconfig.weekends.split(',').map(s => parseInt(s));
+	VpDate.localemonth = this.vpsettings.vpconfig.month_names.split('-');
 	
 	this.loadPrintInfo();
 }
 
 VpAlmanacSvc.prototype.initPage = function()
 {
+	var cfg = this.vpsettings.vpconfig;
 	this.month_offset = -6;
 	
-	if (this.cfg.auto_scroll)
+	if (cfg.auto_scroll)
 	{
-		this.month_offset += this.cfg.auto_scroll_offset;
+		this.month_offset += cfg.auto_scroll_offset;
 	}
 	else
 	{
-		var off = ((this.cfg.first_month-1) - new Date().getMonth());
+		var off = ((cfg.first_month-1) - new Date().getMonth());
 		if (off > 0)
 			off -= 12;
 
@@ -152,7 +153,10 @@ VpAlmanacSvc.prototype.offsetPage = function(off)
 
 VpAlmanacSvc.prototype.createMonths = function()
 {
-	var cfg = this.cfg;
+	var cfg = this.vpsettings.vpconfig;
+		
+	if (this.isPortrait())
+		cfg.month_count = cfg.month_count_portrait;
 	
 	var vdt = new VpDate();
 	vdt.toStartOfMonth();
@@ -209,7 +213,7 @@ VpAlmanacSvc.prototype.savePrintInfo = function(pos)
 {
 	var print_span = [];
 	var n = Math.floor((this.vpmonths.length * pos) + 0.6);
-	var c = (n + this.cfg.month_count)
+	var c = (n + this.vpsettings.vpconfig.month_count)
 	
 	for (var i=n; i < c; i++)
 		print_span.push(this.vpmonths[i]);
@@ -224,6 +228,20 @@ VpAlmanacSvc.prototype.loadPrintInfo = function()
 		this.vpmonths = window.opener.VpPrintInfo;
 		this.printinfo = true;
 	}
+}
+
+VpAlmanacSvc.prototype.isPortrait = function()
+{
+	var so = "";
+	if (screen.orientation && screen.orientation.type)
+		so = screen.orientation.type;
+	if (screen.msOrientation)  // edge, ie
+		so = screen.msOrientation;
+
+	if (so.includes("portrait"))
+		return true;
+
+	return false;
 }
 
 
