@@ -157,6 +157,10 @@ VpAlmanacSvc.prototype.createMonths = function()
 		var vdt = new VpDate(ymd);
 		
 		this.hdr = vdt.MonthTitle();
+		
+		if (vdt.isPastMonth())
+			this.past = true;
+		
 		this.dayoffset = 0;
 		if (cfg.align_weekends)
 			this.dayoffset = vdt.DayOfWeek();

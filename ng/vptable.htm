@@ -28,6 +28,9 @@
 	color: white;
 	background-color: red;
 }
+.vpcell.past {
+	opacity: {{vt.cfg.past_opacity}};
+}
 </style>
 
 <style ng-if="vt.tableview.sel.column">
@@ -64,8 +67,8 @@
 
 <table class="vptable">
 	<tr ng-repeat="row in vt.rows">
-		<td ng-if="cell.hdr" class="vphdr" ng-repeat-start="cell in row.cells">{{cell.hdr}}</td>
-		<td ng-if="cell.day" class="vpday" ng-class="cell.cls">
+		<td ng-if="cell.hdr" class="vpcell vphdr" ng-class="cell.cls" ng-repeat-start="cell in row.cells">{{cell.hdr}}</td>
+		<td ng-if="cell.day" class="vpcell vpday" ng-class="cell.cls">
 			<div class="vpnum">{{cell.day.num}}</div>
 			<div ng-repeat="evt in cell.day.evts" class="vpevt">
 				<div ng-if="evt.marker" class="vpevtmarker">&nbsp;</div>

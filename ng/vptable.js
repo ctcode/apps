@@ -1,10 +1,11 @@
 //////////////////////////////////////////////////////////////////////
 
-function VpTableDirective(vpViewStorage, vpAlmanac, $window)
+function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 {
 	function fCtl($scope) {
 
 		$scope.vt.tableview = vpViewStorage;
+		$scope.vt.cfg = vpSettings.vpconfig;
 		
 		if (vpAlmanac.printinfo)
 		{
@@ -45,15 +46,21 @@ function VpTableDirective(vpViewStorage, vpAlmanac, $window)
 			for (var m=0; m < months.length; m++)
 			{
 				var vpmonth = months[m];
+				
+				var cell = {hdr: vpmonth.hdr, cls: {}};
+				if (vpmonth.past)
+					cell.cls.past = true;
 
 				var pos = getPos(m, 0);
-				rows[pos.y].cells[pos.x] = {hdr: vpmonth.hdr};
+				rows[pos.y].cells[pos.x] = cell;
 
 				for (var d=0; d < vpmonth.vpdays.length; d++)
 				{
 					var vpday = vpmonth.vpdays[d];
+					var cell = {day: vpday, cls: {}};
 
-					cell = {day: vpday, cls: {}};
+					if (vpmonth.past)
+						cell.cls.past = true;
 
 					if (vpday.weekend)
 						cell.cls.weekend = true;
