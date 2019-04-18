@@ -28,11 +28,6 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 		});
 
 		function initView() {
-			$scope.vt.fontscale = vpSettings.vpconfig.font_scale_pc/100;
-			createRows();
-		}
-		
-		function createRows() {
 			var rows = [];
 			var months = vpAlmanac.vpmonths;
 
@@ -78,6 +73,8 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 			}
 			
 			$scope.vt.rows = rows;
+			$scope.vt.fontscale = vpSettings.vpconfig.font_scale_pc/100;
+			$scope.vt.past_opacity = vpSettings.vpconfig.past_opacity;
 		}
 
 		function getPos(xpos, ypos) {
