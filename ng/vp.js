@@ -56,31 +56,31 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
+function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 {
 	function fLink(scope, element, attrs) {
 		scope.vpscroll = {};
 		var div = element[0];
-		var vpv = {};
+		var view = {};
 
 		element.on("scroll", onScroll);
 
 		scope.vpscroll.initView = function() {
-			vpv = scope.vp.view.sel;
+			view = vpViewStorage.sel;
 			
-			var m = scope.vp.settings.vpconfig.month_count;
+			var m = vpSettings.getMonthCount();
 			scope.vp.scroll_size = ((m+12)/m)*100;
 
 			showView(false);
 			$timeout(function() {
 				element.off("wheel");
-				if (vpv.column)
+				if (view.column)
 					element.on("wheel", onWheel);
 
 				element.css("overflow", "auto");
-				if (vpv.column)
+				if (view.column)
 					element.css("overflow-y", "hidden");
-				if (vpv.list)
+				if (view.list)
 					element.css("overflow-x", "hidden");
 
 				$rootScope.$broadcast("cmd:view");
@@ -99,17 +99,17 @@ function VpScrollDirective(vpViewStorage, $rootScope, $timeout)
 		}
 
 		function getScrollPos() {
-			return vpv.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
+			return view.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
 		}
 
 		function resetScroll() {
-			div.scrollTop = vpv.list ? (div.scrollHeight-div.clientHeight)/2 : 0;
-			div.scrollLeft = vpv.list ? 0 : (div.scrollWidth-div.clientWidth)/2;
+			div.scrollTop = view.list ? (div.scrollHeight-div.clientHeight)/2 : 0;
+			div.scrollLeft = view.list ? 0 : (div.scrollWidth-div.clientWidth)/2;
 		}
 
 		function pageScroll() {
-			var pos = vpv.list ? div.scrollTop : div.scrollLeft;
-			var max = vpv.list ? (div.scrollHeight - div.clientHeight) : (div.scrollWidth - div.clientWidth);
+			var pos = view.list ? div.scrollTop : div.scrollLeft;
+			var max = view.list ? (div.scrollHeight - div.clientHeight) : (div.scrollWidth - div.clientWidth);
 
 			if (pos > 0 && pos < max)
 				return;

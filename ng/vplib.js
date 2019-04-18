@@ -58,6 +58,24 @@ function VpSettingsSvc($timeout, $rootScope)
 		gAppData.planner_title = angular.copy(this.planner_title);  // temp
 		gAppData.vpconfig = angular.copy(this.vpconfig);  // temp
 	}
+
+	this.getMonthCount = function() {
+		return isPortrait() ? this.vpconfig.month_count_portrait : this.vpconfig.month_count;
+	}
+
+	function isPortrait()
+	{
+		var so = "";
+		if (screen.orientation && screen.orientation.type)
+			so = screen.orientation.type;
+		if (screen.msOrientation)  // edge, ie
+			so = screen.msOrientation;
+
+		if (so.includes("portrait"))
+			return true;
+
+		return false;
+	}
 	
 	this.reset();
 }
@@ -154,16 +172,13 @@ VpAlmanacSvc.prototype.offsetPage = function(off)
 VpAlmanacSvc.prototype.createMonths = function()
 {
 	var cfg = this.vpsettings.vpconfig;
-		
-	if (this.isPortrait())
-		cfg.month_count = cfg.month_count_portrait;
 	
 	var vdt = new VpDate();
 	vdt.toStartOfMonth();
 	vdt.offsetMonth(this.month_offset);
 
 	this.vpmonths = [];
-	for (var i=0; i < (cfg.month_count+12); i++)
+	for (var i=0; i < (this.vpsettings.getMonthCount()+12); i++)
 	{
 		var vpmonth = new VpMonth(vdt.ymd());
 		this.vpmonths.push(vpmonth);
@@ -228,20 +243,6 @@ VpAlmanacSvc.prototype.loadPrintInfo = function()
 		this.vpmonths = window.opener.VpPrintInfo;
 		this.printinfo = true;
 	}
-}
-
-VpAlmanacSvc.prototype.isPortrait = function()
-{
-	var so = "";
-	if (screen.orientation && screen.orientation.type)
-		so = screen.orientation.type;
-	if (screen.msOrientation)  // edge, ie
-		so = screen.msOrientation;
-
-	if (so.includes("portrait"))
-		return true;
-
-	return false;
 }
 
 
