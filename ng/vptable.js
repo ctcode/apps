@@ -5,28 +5,32 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 	function fCtl($scope) {
 
 		$scope.vt.tableview = vpViewStorage;
-		$scope.vt.cfg = vpSettings.vpconfig;
 		
 		if (vpAlmanac.printinfo)
 		{
-			createRows();
+			initView();
 			return;
 		}
 
 		$scope.$on("cmd:view", function() {
 			vpAlmanac.initPage();
-			createRows();
+			initView();
 		});
 
 		$scope.$on("scroll:page", function(evt, off) {
 			vpAlmanac.offsetPage(off);
-			createRows();
+			initView();
 		});
 
 		$scope.$on("cmd:print", function(evt, pos) {
 			vpAlmanac.savePrintInfo(pos);
 			$window.open("vpprint.htm");
 		});
+
+		function initView() {
+			$scope.vt.fontscale = vpSettings.vpconfig.font_scale_pc/100;
+			createRows();
+		}
 		
 		function createRows() {
 			var rows = [];

@@ -3,6 +3,7 @@
 	width: 100%;
 	border-spacing: 1px;
 	table-layout: fixed;
+	--fontscale: {{vt.fontscale}};
 }
 .vphdr {
 	text-align: center;
@@ -36,14 +37,14 @@
 <style ng-if="vt.tableview.sel.column">
 .vptable {
 	height: 100%;
-	font-size: 1.2vh;
+	font-size: calc(1.4vh * var(--fontscale));
 }
 </style>
 
 <style ng-if="vt.tableview.sel.list">
 .vptable {
 	height: 100%;
-	font-size: 1.4vh;
+	font-size: calc(1.6vh * var(--fontscale));
 }
 .vphdr {
 	width: 10em;
