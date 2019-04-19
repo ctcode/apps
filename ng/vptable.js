@@ -3,8 +3,6 @@
 function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 {
 	function fCtl($scope) {
-
-		$scope.vt.tableview = vpViewStorage;
 		
 		if (vpAlmanac.printinfo)
 		{
@@ -75,10 +73,11 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 			$scope.vt.rows = rows;
 			$scope.vt.fontscale = vpSettings.vpconfig.font_scale_pc/100;
 			$scope.vt.past_opacity = vpSettings.vpconfig.past_opacity;
+			$scope.vt.tableview = vpViewStorage;
 		}
 
 		function getPos(xpos, ypos) {
-			return $scope.vt.tableview.sel.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
+			return vpViewStorage.sel.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
 		}
 	}
 
