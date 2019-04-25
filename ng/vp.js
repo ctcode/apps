@@ -46,7 +46,9 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 
 	$scope.$on("account:signout", function() {
 		vpSettings.reset();
-		$scope.vp.show = {planner: true};
+		$scope.$apply(function() {
+			$scope.vp.show = {planner: true};
+		});
 		$scope.vpscroll.initView();
 	});
 
