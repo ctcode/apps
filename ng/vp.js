@@ -15,10 +15,12 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 
 	$scope.$on("account:signout", function() {
 		vpSettings.reset();
+		this.show = {planner: true};
 		$scope.vpscroll.initView();
 	});
 
 	$scope.$on("settings:load", function() {
+		this.show = {planner: true};
 		$scope.vpscroll.initView();
 	});
 
