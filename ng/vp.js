@@ -75,23 +75,21 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			scope.vp.scroll_size = ((m+12)/m)*100;
 
 			showView(false);
+			element.off("wheel");
+			if (view.column)
+				element.on("wheel", onWheel);
+
+			element.css("overflow", "auto");
+			if (view.column)
+				element.css("overflow-y", "hidden");
+			if (view.list)
+				element.css("overflow-x", "hidden");
+
+			$rootScope.$broadcast("cmd:view");
+
 			$timeout(function() {
-				element.off("wheel");
-				if (view.column)
-					element.on("wheel", onWheel);
-
-				element.css("overflow", "auto");
-				if (view.column)
-					element.css("overflow-y", "hidden");
-				if (view.list)
-					element.css("overflow-x", "hidden");
-
-				$rootScope.$broadcast("cmd:view");
-
-				$timeout(function() {
-					resetScroll();
-					showView(true);
-				});
+				resetScroll();
+				showView(true);
 			});
 		}
 
