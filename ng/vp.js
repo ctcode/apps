@@ -88,8 +88,10 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 
 				$rootScope.$broadcast("cmd:view");
 
-				resetScroll();
-				showView(true);
+				$timeout(function() {
+					resetScroll();
+					showView(true);
+				});
 			});
 		}
 
