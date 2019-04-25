@@ -4,9 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto" type="text/css"/>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
-<link href="vp_manifest.json" rel="manifest">
+<link href="vpmanifest.json" rel="manifest">
 <link href="vp.png" rel="icon">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://apis.google.com/js/platform.js"></script>
+<script src="vpconfig.js" type='text/javascript'></script>
 <script src="vplib.js" type='text/javascript'></script>
 <script src="vptable.js" type='text/javascript'></script>
 <script src="vp.js" type='text/javascript'></script>
@@ -153,7 +156,7 @@ body {
 	<div id="banner">
 		<div id="bantxt">{{vp.settings.planner_title}}</div>
 		<div id="tools">
-			<div>{{vp.account.sign_msg}}</div>
+			<div>{{vp.account.getStatusMsg()}}</div>
 			<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
 			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
 			<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.onclickView('expand')" ng-class="vp.view.cls.expand"/>
@@ -180,12 +183,12 @@ body {
 		<div ng-show="vp.busy"><i>Saving...</i></div>
 	</div>
 	<div class="sub group"><b>Account</b>
-		<div class="sub">{{vp.sign_msg}}</div>
+		<div class="sub">{{vp.account.getStatusMsg()}}</div>
 		<div class="sub" ng-show="vp.g_signbtn_ok"><div id="g_signbtn" class="g-signin2" data-width="300" data-height="60" data-longtitle="true"></div></div>
-		<div class="sub" ng-show="vp.signed_in"><a href="https://myaccount.google.com/permissions" target="_blank">Permissions</a></div>
-		<div class="sub" ng-show="vp.signed_in"><a href="https://drive.google.com/drive/my-drive" target="_blank">Manage Application Data</a>  (Drive > Settings > Manage Apps)</div>
-		<div class="sub" ng-hide="vp.signed_in || g_signbtn_ok"><button ng-click="vp.onclickSignIn();">Sign In</button></div>
-		<div class="sub" ng-show="vp.signed_in"><button ng-click="vp.onclickSignOut();">Sign Out</button></div>
+		<div class="sub" ng-show="vp.account.isSignedIn()"><a href="https://myaccount.google.com/permissions" target="_blank">Permissions</a></div>
+		<div class="sub" ng-show="vp.account.isSignedIn()"><a href="https://drive.google.com/drive/my-drive" target="_blank">Manage Application Data</a>  (Drive > Settings > Manage Apps)</div>
+		<div class="sub" ng-hide="vp.account.isSignedIn() || g_signbtn_ok"><button ng-click="vp.account.SignIn();">Sign In</button></div>
+		<div class="sub" ng-show="vp.account.isSignedIn()"><button ng-click="vp.account.SignOut();">Sign Out</button></div>
 	</div>
 	<form name="vp.form">
 	<div class="sub group"><b>View</b>

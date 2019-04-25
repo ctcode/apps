@@ -84,29 +84,6 @@ function VpSettingsSvc($timeout, $rootScope)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpAccountSvc($timeout, $rootScope)
-{
-	this.signIn = function() {
-		this.sign_msg = "Signing In...";
-
-		$timeout(function() {
-			this.sign_msg = "user";
-			$rootScope.$broadcast("account:signin");
-		}.bind(this), 3000);
-	}
-
-	this.signOut = function() {
-		this.sign_msg = "Signed Out";
-		$rootScope.$broadcast("account:signout");
-	}
-	
-	this.signIn();
-}
-
-
-
-//////////////////////////////////////////////////////////////////////
-
 function VpViewStorageSvc($rootScope, $window)
 {
 	this.load = function() {
