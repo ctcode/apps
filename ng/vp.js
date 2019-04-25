@@ -9,21 +9,6 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 	this.busy = false;
 	this.month_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 
-	$scope.$on("account:signin", function() {
-		vpSettings.load();
-	});
-
-	$scope.$on("account:signout", function() {
-		vpSettings.reset();
-		this.show = {planner: true};
-		$scope.vpscroll.initView();
-	});
-
-	$scope.$on("settings:load", function() {
-		this.show = {planner: true};
-		$scope.vpscroll.initView();
-	});
-
 	this.onclickView = function(name) {
 		vpViewStorage.setName(name);
 		$scope.vpscroll.initView();
@@ -53,6 +38,21 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 			$scope.vpscroll.initView();
 		}.bind(this), 2000)
 	}
+
+	$scope.$on("account:signin", function() {
+		vpSettings.load();
+	});
+
+	$scope.$on("account:signout", function() {
+		vpSettings.reset();
+		$scope.vp.show = {planner: true};
+		$scope.vpscroll.initView();
+	});
+
+	$scope.$on("settings:load", function() {
+		$scope.vp.show = {planner: true};
+		$scope.vpscroll.initView();
+	});
 }
 
 
