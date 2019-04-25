@@ -46,9 +46,7 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 
 	$scope.$on("account:signout", function() {
 		vpSettings.reset();
-		$scope.$apply(function() {
-			$scope.vp.show = {planner: true};
-		});
+		$scope.vp.show = {planner: true};
 		$scope.vpscroll.initView();
 	});
 
@@ -87,11 +85,13 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			if (view.list)
 				element.css("overflow-x", "hidden");
 
-			$rootScope.$broadcast("cmd:view");
-
 			$timeout(function() {
-				resetScroll();
-				showView(true);
+				$rootScope.$broadcast("cmd:view");
+
+				$timeout(function() {
+					resetScroll();
+					showView(true);
+				});
 			});
 		}
 
