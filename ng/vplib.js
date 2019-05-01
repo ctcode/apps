@@ -3,9 +3,7 @@
 
 function VpSettingsSvc($timeout, $rootScope)
 {
-	var gAppData = {};
 	var defaults = {};
-
 	defaults.planner_title = "visual-planner";
 	defaults.vpconfig = {
 		month_count: 6,
@@ -16,7 +14,7 @@ function VpSettingsSvc($timeout, $rootScope)
 		weekends: "6,0",
 		align_weekends: true,
 		font_scale_pc: 80,
-		past_opacity: 0.7,
+		past_opacity: 0.6,
 		month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
 		show_event_time: true,
 		show_event_title: true,
@@ -33,30 +31,32 @@ function VpSettingsSvc($timeout, $rootScope)
 		marker_width: 0.85,
 		multi_day_opacity: 0.8
 	};
+
+	var appdata = {};
 	
 	this.reset = function() {
 		this.planner_title = angular.copy(defaults.planner_title);
 		this.vpconfig = angular.copy(defaults.vpconfig);
-		gAppData = {};  // temp
+		appdata = angular.copy(defaults);
 	}
 
 	this.revert = function() {
-		this.planner_title = angular.copy(gAppData.planner_title);
-		this.vpconfig = angular.copy(gAppData.vpconfig);
+		this.planner_title = angular.copy(appdata.planner_title);
+		this.vpconfig = angular.copy(appdata.vpconfig);
 	}
 
 	this.load = function() {
 		$timeout(function() {
-			gAppData.planner_title = "vp-ng";  // temp
-			gAppData.vpconfig = angular.copy(defaults.vpconfig);  // temp
+			appdata.planner_title = "vp-ng";
+			appdata.vpconfig = angular.copy(defaults.vpconfig);
 			this.revert();
 			$rootScope.$broadcast("settings:load");
 		}.bind(this), 1000);
 	}
 
 	this.save = function() {
-		gAppData.planner_title = angular.copy(this.planner_title);  // temp
-		gAppData.vpconfig = angular.copy(this.vpconfig);  // temp
+		appdata.planner_title = angular.copy(this.planner_title);
+		appdata.vpconfig = angular.copy(this.vpconfig);
 	}
 
 	this.getMonthCount = function() {

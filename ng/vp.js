@@ -40,18 +40,24 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 	}
 
 	$scope.$on("account:signin", function() {
-		vpSettings.load();
-		$scope.vp.show = {planner: true};
+		$scope.$apply(function() {
+			vpSettings.load();
+			$scope.vp.show = {planner: true};
+		});
 	});
 
 	$scope.$on("account:signout", function() {
-		vpSettings.reset();
-		$scope.vp.show = {planner: true};
-		$scope.vpscroll.initView();
+		$scope.$apply(function() {
+			vpSettings.reset();
+			$scope.vp.show = {planner: true};
+			$scope.vpscroll.initView();
+		});
 	});
 
 	$scope.$on("settings:load", function() {
-		$scope.vpscroll.initView();
+		$scope.$apply(function() {
+			$scope.vpscroll.initView();
+		});
 	});
 }
 
@@ -85,14 +91,14 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			if (view.list)
 				element.css("overflow-x", "hidden");
 
-			$timeout(function() {
+			//$timeout(function() {
 				$rootScope.$broadcast("cmd:view");
 
 				$timeout(function() {
 					resetScroll();
 					showView(true);
 				});
-			});
+			//});
 		}
 
 		scope.vpscroll.initPrint = function() {
