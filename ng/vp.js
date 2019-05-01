@@ -91,14 +91,14 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			if (view.list)
 				element.css("overflow-x", "hidden");
 
-			//$timeout(function() {
+			$timeout(function() {
 				$rootScope.$broadcast("cmd:view");
 
 				$timeout(function() {
 					resetScroll();
 					showView(true);
 				});
-			//});
+			});
 		}
 
 		scope.vpscroll.initPrint = function() {
