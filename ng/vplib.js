@@ -54,18 +54,18 @@ function VpSettingsSvc($rootScope)
 				.then(rcv, fail);
 			}
 			else onLoad();
-
-			function rcv(response) {
-				//appdata = JSON.parse(response.body);
-				appdata = {planner_title: "vp-ng", vpconfig: angular.copy(defaults.vpconfig)};
-				publish(appdata);
-				onLoad();
-			};
-
-			function onLoad() {
-				$rootScope.$broadcast("settings:load");
-			};
 		});
+
+		function rcv(response) {
+			//appdata = JSON.parse(response.body);
+			appdata = {planner_title: "vp-ng", vpconfig: angular.copy(defaults.vpconfig)};
+			publish(appdata);
+			onLoad();
+		};
+
+		function onLoad() {
+			$rootScope.$broadcast("settings:load");
+		};
 	}
 	
 	function loadFileID(thenDoThis) {
