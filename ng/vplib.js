@@ -209,55 +209,66 @@ function VpViewStorageSvc($rootScope, $window)
 
 function VpAlmanacSvc(vpSettings)
 {
-	this.vpsettings = vpSettings;
-	this.loadPrintInfo();
-}
+	var vpmonths = [];
+	var month_offset;
+	var cfg;
 
-VpAlmanacSvc.prototype.initPage = function()
-{
-	var cfg = this.vpsettings.vpconfig;
-	this.month_offset = -6;
-	
-	if (cfg.auto_scroll)
-	{
-		this.month_offset += cfg.auto_scroll_offset;
-	}
-	else
-	{
-		var off = ((cfg.first_month-1) - new Date().getMonth());
-		if (off > 0)
-			off -= 12;
-
-		this.month_offset += off;
+	if (window.opener && window.opener.VpPrintInfo) {
+		vpmonths = window.opener.VpPrintInfo;
+		this.printinfo = true;
 	}
 
-	this.createMonths();
-}
+	this.savePrintInfo = function(pos) {
+		var span = [];
+		var n = Math.floor((vpmonths.length * pos) + 0.6);
+		var c = (n + cfg.month_count)
+		
+		for (var i=n; i < c; i++)
+			span.push(vpmonths[i]);
 
-VpAlmanacSvc.prototype.offsetPage = function(off)
-{
-	this.month_offset += (6*off);
-	this.createMonths();
-}
+		window.VpPrintInfo = span;
+	}
 
-VpAlmanacSvc.prototype.createMonths = function()
-{
-	var cfg = this.vpsettings.vpconfig;
-	
-	VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
-	VpDate.localemonth = cfg.month_names.split('-');
-	
-	var vdt = new VpDate();
-	vdt.toStartOfMonth();
-	vdt.offsetMonth(this.month_offset);
+	this.initPage = function() {
+		month_offset = -6;
+		cfg = vpSettings.vpconfig;
+		
+		if (cfg.auto_scroll) {
+			month_offset += cfg.auto_scroll_offset;
+		}
+		else {
+			var off = ((cfg.first_month-1) - new Date().getMonth());
+			if (off > 0)
+				off -= 12;
 
-	this.vpmonths = [];
-	for (var i=0; i < (this.vpsettings.getMonthCount()+12); i++)
-	{
-		var vpmonth = new VpMonth(vdt.ymd());
-		this.vpmonths.push(vpmonth);
+			month_offset += off;
+		}
 
-		vdt.offsetMonth(1);
+		createMonths();
+	}
+
+	this.offsetPage = function(off) {
+		month_offset += (6*off);
+		createMonths();
+	}
+
+	this.getMonths = function() {
+		return vpmonths;
+	}
+
+	function createMonths() {
+		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
+		VpDate.localemonth = cfg.month_names.split('-');
+		
+		var vdt = new VpDate();
+		vdt.toStartOfMonth();
+		vdt.offsetMonth(month_offset);
+
+		vpmonths = [];
+		for (var i=0; i < (vpSettings.getMonthCount()+12); i++) {
+			vpmonths.push(new VpMonth(vdt.ymd()));
+			vdt.offsetMonth(1);
+		}
 	}
 
 	function VpMonth(ymd) {
@@ -295,27 +306,6 @@ VpAlmanacSvc.prototype.createMonths = function()
 
 		if (VpDate.isToday(ymd))
 			this.today = true;
-	}
-}
-
-VpAlmanacSvc.prototype.savePrintInfo = function(pos)
-{
-	var print_span = [];
-	var n = Math.floor((this.vpmonths.length * pos) + 0.6);
-	var c = (n + this.vpsettings.vpconfig.month_count)
-	
-	for (var i=n; i < c; i++)
-		print_span.push(this.vpmonths[i]);
-
-	window.VpPrintInfo = print_span;
-}
-
-VpAlmanacSvc.prototype.loadPrintInfo = function()
-{
-	if (window.opener && window.opener.VpPrintInfo)
-	{
-		this.vpmonths = window.opener.VpPrintInfo;
-		this.printinfo = true;
 	}
 }
 
