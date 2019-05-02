@@ -35,8 +35,9 @@ function VpSettingsSvc($rootScope)
 
 	var file_id = null;
 	var appdata = null;
-
 	var pub = this;
+	publish(defaults);
+
 	function publish(settings) {
 		pub.planner_title = angular.copy(settings.planner_title);
 		pub.vpconfig = angular.copy(settings.vpconfig);
@@ -64,6 +65,8 @@ function VpSettingsSvc($rootScope)
 	}
 
 	this.save = function() {
+		appdata.planner_title = angular.copy(pub.planner_title);
+		appdata.vpconfig = angular.copy(pub.vpconfig);
 	}
 
 	this.revert = function() {
@@ -113,8 +116,6 @@ function VpSettingsSvc($rootScope)
 
 		return false;
 	}
-
-	publish(defaults);
 }
 
 
