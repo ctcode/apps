@@ -73,8 +73,6 @@ function VpSettingsSvc($rootScope)
 		});
 
 		function onLoad() {
-			logFileInfo();
-			console.log(pub);
 			$rootScope.$broadcast("settings:load");
 		};
 	}
