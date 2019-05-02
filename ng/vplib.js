@@ -33,6 +33,7 @@ function VpSettingsSvc($rootScope)
 		}
 	};
 
+	var file_name = "settings002.json";
 	var file_id = null;
 	var appdata = null;
 	var pub = this;
@@ -41,6 +42,15 @@ function VpSettingsSvc($rootScope)
 	function publish(settings) {
 		pub.planner_title = angular.copy(settings.planner_title);
 		pub.vpconfig = angular.copy(settings.vpconfig);
+	}
+
+	this.revert = function() {
+		publish(appdata ? appdata : defaults);
+	}
+	
+	this.reset = function() {
+		appdata = null;
+		publish(defaults);
 	}
 	
 	this.load = function() {
@@ -54,18 +64,59 @@ function VpSettingsSvc($rootScope)
 				.then(rcv, fail);
 			}
 			else onLoad();
+
+			function rcv(response) {
+				appdata = JSON.parse(response.body);
+				publish(appdata);
+				onLoad();
+			};
 		});
 
-		function rcv(response) {
-			//appdata = JSON.parse(response.body);
-			appdata = {planner_title: "vp-ng", vpconfig: angular.copy(defaults.vpconfig)};
-			publish(appdata);
-			onLoad();
-		};
-
 		function onLoad() {
+			logFileInfo();
+			console.log(pub);
 			$rootScope.$broadcast("settings:load");
 		};
+	}
+
+	this.save = function() {
+		appdata = {
+			planner_title: angular.copy(pub.planner_title),
+			vpconfig: angular.copy(pub.vpconfig)
+		};
+
+		loadFileID(function() {
+			if (file_id) {
+				write();
+			}
+			else {
+				gapi.client.request({
+					path: "https://www.googleapis.com/drive/v3/files",
+					method: "POST",
+					params: {uploadType: "resumable"},
+					body: {name: file_name, mimeType:"application/json", parents: ['appDataFolder']}
+				})
+				.then(rcv, fail);
+			}
+
+			function rcv(response) {
+				file_id = response.result.id;
+				write();
+			};
+		});
+		
+		function write() {
+			gapi.client.request({
+				path: "https://www.googleapis.com/upload/drive/v3/files/" + encodeURIComponent(file_id),
+				method: "PATCH",
+				params: {uploadType: "media"},
+				body: JSON.stringify(appdata)
+			})
+			.then(rcv, fail);
+
+			function rcv(response) {
+			};
+		}
 	}
 	
 	function loadFileID(thenDoThis) {
@@ -77,7 +128,7 @@ function VpSettingsSvc($rootScope)
 		gapi.client.request({
 			path: "https://www.googleapis.com/drive/v3/files",
 			method: "GET",
-			params: {q: "name = 'settings001.json'", spaces: 'appDataFolder'}
+			params: {q: "name = '" + file_name + "'", spaces: 'appDataFolder'}
 		})
 		.then(rcv, fail);
 
@@ -89,45 +140,29 @@ function VpSettingsSvc($rootScope)
 		}
 	}
 
-	this.save = function() {
-		appdata = {
-			planner_title: angular.copy(pub.planner_title),
-			vpconfig: angular.copy(pub.vpconfig)
-		};
-	}
-
-	this.revert = function() {
-		publish(appdata ? appdata : defaults);
-	}
-	
-	this.reset = function() {
-		appdata = null;
-		publish(defaults);
-	}
-
-	this.getMonthCount = function() {
-		return isPortrait() ? this.vpconfig.month_count_portrait : this.vpconfig.month_count;
-	}
-
-	this.logFileInfo = function() {
+	function logFileInfo() {
 		gapi.client.request({
 			path: "https://www.googleapis.com/drive/v3/files",
 			method: "GET",
 			params: {spaces: 'appDataFolder'}
 		})
-		.then(fileinfo, fail);
-	}
+		.then(rcv, fail);
 
-	function fileinfo(response) {
-		var files = response.result.files;
-		console.log(files.length + " files");
+		function rcv(response) {
+			var files = response.result.files;
+			console.log(files.length + " files");
 
-		for (var i=0; i < files.length; i++)
-			console.log(files[i]);
+			for (var i=0; i < files.length; i++)
+				console.log(files[i]);
+		}
 	}
 	
 	function fail(reason) {
 		alert(reason.result.error.message);
+	}
+
+	this.getMonthCount = function() {
+		return isPortrait() ? this.vpconfig.month_count_portrait : this.vpconfig.month_count;
 	}
 
 	function isPortrait()
