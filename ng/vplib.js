@@ -44,24 +44,45 @@ function VpSettingsSvc($rootScope)
 	}
 	
 	this.load = function() {
-		file_id = null;
+		loadFileID(function() {
+			if (file_id) {
+				gapi.client.request({
+					path: "https://www.googleapis.com/drive/v3/files/" + encodeURIComponent(file_id),
+					method: "GET",
+					params: {alt: 'media'}
+				})
+				.then(onLoad, fail);
+			}
+
+			function onLoad(response) {
+				//appdata = JSON.parse(response.body);
+				appdata = {planner_title: "vp-ng", vpconfig: angular.copy(defaults.vpconfig)};
+				publish(appdata);
+			};
+
+			$rootScope.$broadcast("settings:load");
+		});
+	}
+	
+	function loadFileID(thenDoThis) {
+		if (file_id) {
+			thenDoThis();
+			return;
+		}
+
 		gapi.client.request({
 			path: "https://www.googleapis.com/drive/v3/files",
 			method: "GET",
 			params: {q: "name = 'settings001.json'", spaces: 'appDataFolder'}
 		})
-		.then(setFileID, fail);
-	}
+		.then(onLoadFileID, fail);
 
-	function setFileID(response) {
-		console.log(response);
-		appdata = {
-			planner_title: "vp-ng",
-			vpconfig: angular.copy(defaults.vpconfig)
-		};
-		publish(appdata);
+		function onLoadFileID(response) {
+			if (response.result.files.length == 1)
+				file_id = response.result.files[0].id;
 
-		$rootScope.$broadcast("settings:load");
+			thenDoThis();
+		}
 	}
 
 	this.save = function() {
