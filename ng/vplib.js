@@ -65,8 +65,10 @@ function VpSettingsSvc($rootScope)
 	}
 
 	this.save = function() {
-		appdata.planner_title = angular.copy(pub.planner_title);
-		appdata.vpconfig = angular.copy(pub.vpconfig);
+		appdata = {
+			planner_title: angular.copy(pub.planner_title),
+			vpconfig: angular.copy(pub.vpconfig)
+		};
 	}
 
 	this.revert = function() {
