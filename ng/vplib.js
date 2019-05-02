@@ -3,56 +3,45 @@
 
 function VpSettingsSvc($rootScope)
 {
-	var itf = {
-		get planner_title() {
-		},
-		get vpconfig() {
+	var defaults = {
+		planner_title: "visual-planner",
+		vpconfig: {
+			month_count: 6,
+			month_count_portrait: 3,
+			auto_scroll: true,
+			auto_scroll_offset: -1,
+			first_month: 1,
+			weekends: "6,0",
+			align_weekends: true,
+			font_scale_pc: 80,
+			past_opacity: 0.6,
+			month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
+			show_event_time: true,
+			show_event_title: true,
+			show_event_marker: true,
+			colour_event_title: false,
+			proportional_events: false,
+			proportional_start_hour: 8,
+			proportional_end_hour: 20,
+			show_all_day_events: true,
+			single_day_as_multi_day: false,
+			show_timed_events: true,
+			multi_day_as_single_day: false,
+			first_day_only: false,
+			marker_width: 0.85,
+			multi_day_opacity: 0.8
 		}
 	};
-	
-	var defaults = {};
-	defaults.planner_title = "visual-planner";
-	defaults.vpconfig = {
-		month_count: 6,
-		month_count_portrait: 3,
-		auto_scroll: true,
-		auto_scroll_offset: -1,
-		first_month: 1,
-		weekends: "6,0",
-		align_weekends: true,
-		font_scale_pc: 80,
-		past_opacity: 0.6,
-		month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
-		show_event_time: true,
-		show_event_title: true,
-		show_event_marker: true,
-		colour_event_title: false,
-		proportional_events: false,
-		proportional_start_hour: 8,
-		proportional_end_hour: 20,
-		show_all_day_events: true,
-		single_day_as_multi_day: false,
-		show_timed_events: true,
-		multi_day_as_single_day: false,
-		first_day_only: false,
-		marker_width: 0.85,
-		multi_day_opacity: 0.8
-	};
 
-	var appdata = null;
 	var file_id = null;
+	var appdata = null;
+
+	var pub = this;
+	function publish(settings) {
+		pub.planner_title = angular.copy(settings.planner_title);
+		pub.vpconfig = angular.copy(settings.vpconfig);
+	}
 	
-	this.reset = function() {
-		this.planner_title = angular.copy(defaults.planner_title);
-		this.vpconfig = angular.copy(defaults.vpconfig);
-		appdata = angular.copy(defaults);
-	}
-
-	this.revert = function() {
-		this.planner_title = angular.copy(appdata.planner_title);
-		this.vpconfig = angular.copy(appdata.vpconfig);
-	}
-
 	this.load = function() {
 		file_id = null;
 		gapi.client.request({
@@ -65,16 +54,25 @@ function VpSettingsSvc($rootScope)
 
 	function setFileID(response) {
 		console.log(response);
-		appdata.planner_title = "vp-ng";
-		appdata.vpconfig = angular.copy(defaults.vpconfig);
-		this.planner_title = angular.copy(appdata.planner_title);
-		this.vpconfig = angular.copy(appdata.vpconfig);
+		appdata = {
+			planner_title: "vp-ng",
+			vpconfig: angular.copy(defaults.vpconfig)
+		};
+		publish(appdata);
+
 		$rootScope.$broadcast("settings:load");
 	}
 
 	this.save = function() {
-		appdata.planner_title = angular.copy(this.planner_title);
-		appdata.vpconfig = angular.copy(this.vpconfig);
+	}
+
+	this.revert = function() {
+		publish(appdata ? appdata : defaults);
+	}
+	
+	this.reset = function() {
+		appdata = null;
+		publish(defaults);
 	}
 
 	this.getMonthCount = function() {
@@ -116,7 +114,7 @@ function VpSettingsSvc($rootScope)
 		return false;
 	}
 
-	this.reset();
+	publish(defaults);
 }
 
 

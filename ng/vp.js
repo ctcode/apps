@@ -164,7 +164,10 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 function VpAccountSvc($rootScope)
 {
 	var auth = null;
-	var signed_in = false;
+	var status = {
+		signed_in: false,
+		msg: "Connecting..."
+	};
 
 	gapi.load("client:auth2", onLoadAuth);
 
@@ -175,17 +178,26 @@ function VpAccountSvc($rootScope)
 
 	function onInitAuth(au) {
 		auth = au;
-		auth.isSignedIn.listen(onSignStatus);
-		onSignStatus();
+		auth.isSignedIn.listen(onSign);
+		onSign();
 	}
 
-	function onSignStatus() {
-		signed_in = auth.isSignedIn.get();
+	function onSign() {
+		status.signed_in = auth.isSignedIn.get();
 		
-		if (signed_in)
+		if (status.signed_in)
+		{
+			var gu = auth.currentUser.get();
+			var bp = gu.getBasicProfile();
+			status.msg = bp.getEmail();
+
 			$rootScope.$broadcast("account:signin");
+		}
 		else
+		{
+			status.msg = "Signed Out";
 			$rootScope.$broadcast("account:signout");
+		}
 	}
 
 	function onFail(reason) {
@@ -199,28 +211,17 @@ function VpAccountSvc($rootScope)
 				msg += reason.details;
 		}
 
+		status.msg = "Unable to sign in";
 		alert("Account Error : " + msg);
 	}
+
+	this.SignIn = function() {
+		auth.signIn();
+	}
+
+	this.SignOut = function() {
+		auth.signOut();
+	}
 	
-	return {
-		SignIn: function() {auth.signIn();},
-		SignOut: function() {auth.signOut();},
-		get signed_in() {return signed_in;},
-
-		get status_msg() {
-			if (auth)
-			{
-				if (signed_in)
-				{
-					var gu = auth.currentUser.get();
-					var bp = gu.getBasicProfile();
-					return bp.getEmail();
-				}
-
-				return "Signed Out";
-			}
-
-			return "Connecting...";
-		}
-	};
+	this.status = status;
 }

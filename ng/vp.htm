@@ -156,7 +156,7 @@ body {
 	<div id="banner">
 		<div id="bantxt">{{vp.settings.planner_title}}</div>
 		<div id="tools">
-			<div>{{vp.account.status_msg}}</div>
+			<div>{{vp.account.status.msg}}</div>
 			<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
 			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
 			<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vp.onclickView('expand')" ng-class="vp.view.cls.expand"/>
@@ -183,12 +183,12 @@ body {
 		<div ng-show="vp.busy"><i>Saving...</i></div>
 	</div>
 	<div class="sub group"><b>Account</b>
-		<div class="sub">{{vp.account.status_msg}}</div>
+		<div class="sub">{{vp.account.status.msg}}</div>
 		<div class="sub" ng-show="vp.g_signbtn_ok"><div id="g_signbtn" class="g-signin2" data-width="300" data-height="60" data-longtitle="true"></div></div>
-		<div class="sub" ng-show="vp.account.signed_in"><a href="https://myaccount.google.com/permissions" target="_blank">Permissions</a></div>
-		<div class="sub" ng-show="vp.account.signed_in"><a href="https://drive.google.com/drive/my-drive" target="_blank">Manage Application Data</a>  (Drive > Settings > Manage Apps)</div>
-		<div class="sub" ng-hide="vp.account.signed_in || g_signbtn_ok"><button ng-click="vp.account.SignIn();">Sign In</button></div>
-		<div class="sub" ng-show="vp.account.signed_in"><button ng-click="vp.account.SignOut();">Sign Out</button></div>
+		<div class="sub" ng-show="vp.account.status.signed_in"><a href="https://myaccount.google.com/permissions" target="_blank">Permissions</a></div>
+		<div class="sub" ng-show="vp.account.status.signed_in"><a href="https://drive.google.com/drive/my-drive" target="_blank">Manage Application Data</a>  (Drive > Settings > Manage Apps)</div>
+		<div class="sub" ng-hide="vp.account.status.signed_in || g_signbtn_ok"><button ng-click="vp.account.SignIn();">Sign In</button></div>
+		<div class="sub" ng-show="vp.account.status.signed_in"><button ng-click="vp.account.SignOut();">Sign Out</button></div>
 	</div>
 	<form name="vp.form">
 	<div class="sub group"><b>View</b>
