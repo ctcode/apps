@@ -42,7 +42,6 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 	$scope.$on("account:signin", function() {
 		$scope.$apply(function() {
 			vpSettings.load();
-			$scope.vp.show = {planner: true};
 		});
 	});
 
@@ -56,6 +55,7 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 
 	$scope.$on("settings:load", function() {
 		$scope.$apply(function() {
+			$scope.vp.show = {planner: true};
 			$scope.vpscroll.initView();
 		});
 	});
