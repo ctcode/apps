@@ -51,16 +51,20 @@ function VpSettingsSvc($rootScope)
 					method: "GET",
 					params: {alt: 'media'}
 				})
-				.then(onLoad, fail);
+				.then(rcv, fail);
 			}
+			else onLoad();
 
-			function onLoad(response) {
+			function rcv(response) {
 				//appdata = JSON.parse(response.body);
 				appdata = {planner_title: "vp-ng", vpconfig: angular.copy(defaults.vpconfig)};
 				publish(appdata);
+				onLoad();
 			};
 
-			$rootScope.$broadcast("settings:load");
+			function onLoad() {
+				$rootScope.$broadcast("settings:load");
+			};
 		});
 	}
 	
@@ -75,9 +79,9 @@ function VpSettingsSvc($rootScope)
 			method: "GET",
 			params: {q: "name = 'settings001.json'", spaces: 'appDataFolder'}
 		})
-		.then(onLoadFileID, fail);
+		.then(rcv, fail);
 
-		function onLoadFileID(response) {
+		function rcv(response) {
 			if (response.result.files.length == 1)
 				file_id = response.result.files[0].id;
 
