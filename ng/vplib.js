@@ -1,8 +1,15 @@
 
 //////////////////////////////////////////////////////////////////////
 
-function VpSettingsSvc($timeout, $rootScope)
+function VpSettingsSvc($rootScope)
 {
+	var itf = {
+		get planner_title() {
+		},
+		get vpconfig() {
+		}
+	};
+	
 	var defaults = {};
 	defaults.planner_title = "visual-planner";
 	defaults.vpconfig = {
@@ -32,7 +39,8 @@ function VpSettingsSvc($timeout, $rootScope)
 		multi_day_opacity: 0.8
 	};
 
-	var appdata = {};
+	var appdata = null;
+	var file_id = null;
 	
 	this.reset = function() {
 		this.planner_title = angular.copy(defaults.planner_title);
@@ -46,12 +54,22 @@ function VpSettingsSvc($timeout, $rootScope)
 	}
 
 	this.load = function() {
-		$timeout(function() {
-			appdata.planner_title = "vp-ng";
-			appdata.vpconfig = angular.copy(defaults.vpconfig);
-			this.revert();
-			$rootScope.$broadcast("settings:load");
-		}.bind(this), 1000);
+		file_id = null;
+		gapi.client.request({
+			path: "https://www.googleapis.com/drive/v3/files",
+			method: "GET",
+			params: {q: "name = 'settings001.json'", spaces: 'appDataFolder'}
+		})
+		.then(setFileID, fail);
+	}
+
+	function setFileID(response) {
+		console.log(response);
+		appdata.planner_title = "vp-ng";
+		appdata.vpconfig = angular.copy(defaults.vpconfig);
+		this.planner_title = angular.copy(appdata.planner_title);
+		this.vpconfig = angular.copy(appdata.vpconfig);
+		$rootScope.$broadcast("settings:load");
 	}
 
 	this.save = function() {
@@ -61,6 +79,27 @@ function VpSettingsSvc($timeout, $rootScope)
 
 	this.getMonthCount = function() {
 		return isPortrait() ? this.vpconfig.month_count_portrait : this.vpconfig.month_count;
+	}
+
+	this.logFileInfo = function() {
+		gapi.client.request({
+			path: "https://www.googleapis.com/drive/v3/files",
+			method: "GET",
+			params: {spaces: 'appDataFolder'}
+		})
+		.then(fileinfo, fail);
+	}
+
+	function fileinfo(response) {
+		var files = response.result.files;
+		console.log(files.length + " files");
+
+		for (var i=0; i < files.length; i++)
+			console.log(files[i]);
+	}
+	
+	function fail(reason) {
+		alert(reason.result.error.message);
 	}
 
 	function isPortrait()
@@ -76,7 +115,7 @@ function VpSettingsSvc($timeout, $rootScope)
 
 		return false;
 	}
-	
+
 	this.reset();
 }
 

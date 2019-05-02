@@ -201,33 +201,26 @@ function VpAccountSvc($rootScope)
 
 		alert("Account Error : " + msg);
 	}
+	
+	return {
+		SignIn: function() {auth.signIn();},
+		SignOut: function() {auth.signOut();},
+		get signed_in() {return signed_in;},
 
-	this.isSignedIn = function() {
-		return signed_in;
-	}
-
-	this.getStatusMsg = function() {
-		if (auth)
-		{
-			if (signed_in)
+		get status_msg() {
+			if (auth)
 			{
-				var gu = auth.currentUser.get();
-				var bp = gu.getBasicProfile();
+				if (signed_in)
+				{
+					var gu = auth.currentUser.get();
+					var bp = gu.getBasicProfile();
+					return bp.getEmail();
+				}
 
-				return bp.getEmail();
+				return "Signed Out";
 			}
 
-			return "Signed Out";
+			return "Connecting...";
 		}
-
-		return "Connecting...";
-	}
-
-	this.SignIn = function() {
-		auth.signIn();
-	}
-
-	this.SignOut = function() {
-		auth.signOut();
-	}
+	};
 }
