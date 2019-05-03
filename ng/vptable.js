@@ -44,7 +44,7 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 			{
 				var vpmonth = months[m];
 				
-				var cell = {hdr: vpmonth.hdr, cls: {}};
+				var cell = {month: vpmonth, cls: {}};
 				if (vpmonth.past)
 					cell.cls.past = true;
 
@@ -68,6 +68,14 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 					var pos = getPos(m, (d+1) + vpmonth.dayoffset);
 					rows[pos.y].cells[pos.x] = cell;
 				}
+			}
+
+			$scope.vt.onclickHdr = function(vpcell) {
+				window.open("https://www.google.com/calendar/r/month/" + vpcell.month.gcal);
+			}
+
+			$scope.vt.onclickDayNum = function(vpcell) {
+				window.open("https://www.google.com/calendar/r/week/" + vpcell.day.gcal);
 			}
 			
 			$scope.vt.rows = rows;

@@ -275,6 +275,7 @@ function VpAlmanacSvc(vpSettings)
 		var vdt = new VpDate(ymd);
 		
 		this.hdr = vdt.MonthTitle();
+		this.gcal = vdt.GCalURL();
 		
 		if (vdt.isPastMonth())
 			this.past = true;
@@ -300,6 +301,7 @@ function VpAlmanacSvc(vpSettings)
 
 		this.id = ymd;
 		this.num = vdt.DayOfMonth();
+		this.gcal = vdt.GCalURL();
 
 		if (vdt.isWeekend())
 			this.weekend = true;
