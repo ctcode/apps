@@ -29,7 +29,7 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 			var rows = [];
 			var months = vpAlmanac.getMonths();
 
-			var sz = getPos(months.length, 31+6+1);
+			var sz = getPos(months.length, 31+6+1+1);
 			for (var y=0; y < sz.y; y++)
 			{
 				var row = {cells: []};
