@@ -20,6 +20,7 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 
 	this.onclickSettings = function() {
 		this.form.$setPristine(true);
+		this.g_signbtn_ok = (document.getElementById("g_signbtn").textContent.length > 0);
 		this.show = {settings: true};
 	}
 
