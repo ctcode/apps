@@ -8,6 +8,7 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 	this.view = vpViewStorage;
 	this.busy = false;
 	this.month_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
+	var gsignbtn = document.getElementById("g_signbtn");
 
 	this.onclickView = function(name) {
 		vpViewStorage.setName(name);
@@ -19,8 +20,7 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 	}
 
 	this.onclickSettings = function() {
-		console.log(document.getElementById("g_signbtn").hasChildNodes());
-		this.g_signbtn_ok = (document.getElementById("g_signbtn").hasChildNodes());
+		this.g_signbtn_ok = gsignbtn.hasChildNodes();
 		this.form.$setPristine(true);
 		this.show = {settings: true};
 	}
