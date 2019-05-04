@@ -152,9 +152,9 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			var dy = evt.deltaY;
 			if (evt.deltaMode == 1) dy = (dy*30);
 			if (evt.deltaMode == 2) dy = (dy*300);
-
-			evt.target.scrollBy(dy,0);
 			evt.preventDefault();
+
+			div.scrollBy(dy,0);
 		}
 	}
 
