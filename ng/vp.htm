@@ -78,6 +78,13 @@ body {
 	position: absolute;
 	pointer-events: none;
 }
+#gridscrollbar {
+	position: absolute;
+	background-color: black;
+	height: 2px;
+	bottom: 3px;
+	opacity: 0.3;
+}
 #calendarbar {
 	font-size: 0.6em;
 	height: 2.8em;
@@ -168,6 +175,7 @@ body {
 	<div id="grid" tabIndex="1" vp-scroll>
 		<div id="gridcontent">
 			<vp-table></vp-table>
+			<div id="gridscrollbar"></div>
 		</div>
 	</div>
 

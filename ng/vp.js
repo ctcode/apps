@@ -141,6 +141,11 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 		function onScroll(evt) {
 			$timeout.cancel(tmo);
 			tmo = $timeout(pageScroll, 1000);
+
+			var gsb = document.getElementById("gridscrollbar");
+			var scale = (div.clientWidth / div.scrollWidth);
+			gsb.style.width = (div.clientWidth * scale) + "px";
+			gsb.style.left = (div.scrollLeft + (div.scrollLeft * scale)) + "px";
 		}
 
 		function onWheel(evt) {
