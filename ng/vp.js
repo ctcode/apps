@@ -35,7 +35,6 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 		vpSettings.save();
 		$timeout(function() {
 			this.busy = false;
-			this.form.$setPristine(true);
 			this.show = {planner: true};
 			$scope.vpscroll.initView();
 		}.bind(this), 2000)
