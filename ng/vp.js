@@ -73,6 +73,7 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 		scope.vpscroll = {};
 		var div = element[0];
 		var view = {};
+		var gsm = document.getElementById("gridscrollmarker");
 
 		element.on("scroll", onScroll);
 
@@ -83,6 +84,7 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			scope.vp.scroll_size = ((m+12)/m)*100;
 
 			showView(false);
+
 			element.off("wheel");
 			if (view.column)
 				element.on("wheel", onWheel);
@@ -108,7 +110,8 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 		}
 
 		function showView(show) {
-			element.css("visibility", show ? "" : "hidden");
+			div.style.visibility = show ? "" : "hidden";
+			gsm.style.visibility = show ? "" : "hidden";
 		}
 
 		function getScrollPos() {
@@ -142,10 +145,11 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			$timeout.cancel(tmo);
 			tmo = $timeout(pageScroll, 1000);
 
-			var gsm = document.getElementById("gridscrollmarker");
-			var scale = (div.clientWidth / div.scrollWidth);
-			//gsm.style.width = (div.clientWidth * scale) + "px";
-			gsm.style.marginLeft = (div.scrollLeft + (div.scrollLeft * scale)) + "px";
+			var scale = view.column ? (div.clientWidth / div.scrollWidth) : (div.clientHeight / div.scrollHeight);
+			gsm.style.width = view.column ? (div.clientWidth * scale) + "px" : "3px";
+			gsm.style.height = view.column ? "3px" : (div.clientHeight * scale) + "px";
+			gsm.style.left = view.column ? (div.scrollLeft * scale) + "px" : "4px";
+			gsm.style.top = view.column ? "4px" : (div.scrollTop * scale) + "px";
 		}
 
 		function onWheel(evt) {

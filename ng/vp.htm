@@ -77,13 +77,16 @@ body {
 	position: relative;
 }
 #gridcontent {
-	height: 100%;
 	position: absolute;
 	pointer-events: none;
 }
+#gridscrollbox {
+	position: relative;
+}
 #gridscrollmarker {
+	position: absolute;
 	background-color: black;
-	opacity: 0.3;
+	opacity: 0.25;
 }
 #calendarbar {
 	font-size: 0.6em;
@@ -145,9 +148,8 @@ body {
 #gridcontent {
 	width: {{vp.scroll_size}}%;
 }
-#gridscrollmarker {
-	height: 3px;
-	margin: 5px 0px;
+#gridscrollbox {
+	height: 10px;
 }
 </style>
 
@@ -159,17 +161,19 @@ body {
 	width: 0;
 }
 #gridcontent {
-	height:  {{vp.scroll_size}}%;
+	height: {{vp.scroll_size}}%;
 }
-#gridscrollmarker {
-	width: 3px;
-	margin: 0px 5px;
+#gridscrollbox {
+	width: 10px;
 }
 </style>
 
 <style ng-if="vp.view.sel.expand">
 #gridcontent {
-	width:  {{vp.scroll_size}}%;
+	width: {{vp.scroll_size}}%;
+}
+#gridscrollbox {
+	height: 10px;
 }
 #gridscrollmarker {
 	display: none;
@@ -195,7 +199,9 @@ body {
 				<vp-table></vp-table>
 			</div>
 		</div>
-		<div id="gridscrollmarker"></div>
+		<div id="gridscrollbox">
+			<div id="gridscrollmarker"></div>
+		</div>
 	</div>
 	<div id="calendarbar"></div>
 </div>
