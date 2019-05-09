@@ -144,8 +144,8 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 
 			var gsb = document.getElementById("gridscrollbar");
 			var scale = (div.clientWidth / div.scrollWidth);
-			gsb.style.width = (div.clientWidth * scale) + "px";
-			gsb.style.left = (div.scrollLeft + (div.scrollLeft * scale)) + "px";
+			//gsb.style.width = (div.clientWidth * scale) + "px";
+			//gsb.style.left = (div.scrollLeft + (div.scrollLeft * scale)) + "px";
 		}
 
 		function onWheel(evt) {

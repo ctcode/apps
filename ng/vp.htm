@@ -66,11 +66,14 @@ body {
 #banner .toolbtn.checked {
 	opacity: 1;
 }
-#grid {
+#gridbox {
 	display: flex;
-	height: 100%;
+	flex-grow: 1;
 	border: none;
 	outline: none;
+}
+#grid {
+	flex-grow: 1;
 	position: relative;
 }
 #gridcontent {
@@ -78,12 +81,9 @@ body {
 	position: absolute;
 	pointer-events: none;
 }
-#gridscrollbar {
-	position: absolute;
-	background-color: black;
-	height: 2px;
-	bottom: 3px;
-	opacity: 0.3;
+#gridscrollmarker {
+	background-color: gold;
+	opacity: 1;
 }
 #calendarbar {
 	font-size: 0.6em;
@@ -136,26 +136,41 @@ body {
 <title ng-bind="vp.settings.planner_title">Loading...</title>
 
 <style ng-if="vp.view.sel.column">
+#gridbox {
+	flex-direction: column;
+}
 #grid::-webkit-scrollbar {
 	height: 0;
 }
 #gridcontent {
 	width: {{vp.scroll_size}}%;
 }
+#gridscrollmarker {
+	height: 20px;
+}
 </style>
 
 <style ng-if="vp.view.sel.list">
+#gridbox {
+	flex-direction: row;
+}
 #grid::-webkit-scrollbar {
 	width: 0;
 }
 #gridcontent {
 	height:  {{vp.scroll_size}}%;
 }
+#gridscrollmarker {
+	width: 20px;
+}
 </style>
 
 <style ng-if="vp.view.sel.expand">
 #gridcontent {
 	width:  {{vp.scroll_size}}%;
+}
+#gridscrollmarker {
+	display: none;
 }
 </style>
 
@@ -172,13 +187,14 @@ body {
 		</div>
 	</div>
 
-	<div id="grid" tabIndex="1" vp-scroll>
-		<div id="gridcontent">
-			<vp-table></vp-table>
-			<div id="gridscrollbar"></div>
+	<div id="gridbox">
+		<div id="grid" tabIndex="1" vp-scroll>
+			<div id="gridcontent">
+				<vp-table></vp-table>
+			</div>
 		</div>
+		<div id="gridscrollmarker"></div>
 	</div>
-
 	<div id="calendarbar"></div>
 </div>
 
