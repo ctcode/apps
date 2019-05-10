@@ -105,7 +105,8 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 		}
 
 		scope.vpscroll.initPrint = function() {
-			$rootScope.$broadcast("cmd:print", getScrollPos());
+			var printoffset = view.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
+			$rootScope.$broadcast("cmd:print", printoffset);
 		}
 
 		function showView(show) {
@@ -113,25 +114,15 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			gsm.style.visibility = show ? "" : "hidden";
 		}
 
-		function getScrollPos() {
-			return view.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
-		}
-
 		function resetScroll() {
 			div.scrollTop = view.list ? (div.scrollHeight-div.clientHeight)/2 : 0;
 			div.scrollLeft = view.list ? 0 : (div.scrollWidth-div.clientWidth)/2;
 		}
 
-		function pageScroll() {
-			var pos = view.list ? div.scrollTop : div.scrollLeft;
-			var max = view.list ? (div.scrollHeight - div.clientHeight) : (div.scrollWidth - div.clientWidth);
-
-			if (pos > 0 && pos < max)
-				return;
-
+		function pageScroll(off) {
 			showView(false);
 			$timeout(function() {
-				$rootScope.$broadcast("scroll:page", pos == 0 ? -1 : 1);
+				$rootScope.$broadcast("scroll:page", off);
 				$timeout(function() {
 					resetScroll();
 					showView(true);
@@ -142,13 +133,23 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 		var tmo=null;
 		function onScroll(evt) {
 			$timeout.cancel(tmo);
-			tmo = $timeout(pageScroll, 1000);
+			
+			var pos = view.list ? div.scrollTop : div.scrollLeft;
+			var max = view.list ? (div.scrollHeight - div.clientHeight) : (div.scrollWidth - div.clientWidth);
+
+			var pageoffset = false;
+			if (pos == 0) pageoffset = -1;
+			if (pos == max) pageoffset = 1;
+
+			if (pageoffset)
+				tmo = $timeout(pageScroll, 1000, true, pageoffset);
 
 			var scale = view.column ? (div.clientWidth / div.scrollWidth) : (div.clientHeight / div.scrollHeight);
 			gsm.style.width = view.column ? (div.clientWidth * scale) + "px" : "3px";
 			gsm.style.height = view.column ? "3px" : (div.clientHeight * scale) + "px";
 			gsm.style.left = view.column ? (div.scrollLeft * scale) + "px" : "4px";
 			gsm.style.top = view.column ? "4px" : (div.scrollTop * scale) + "px";
+			gsm.style.opacity = pageoffset ? 0.6 : 0.3;
 		}
 
 		function onWheel(evt) {
