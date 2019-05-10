@@ -144,11 +144,11 @@ function VpScrollDirective(vpViewStorage, vpSettings, $rootScope, $timeout)
 			if (pageoffset)
 				tmo = $timeout(pageScroll, 1000, true, pageoffset);
 
-			var scale = view.column ? (div.clientWidth / div.scrollWidth) : (div.clientHeight / div.scrollHeight);
-			gsm.style.width = view.column ? (div.clientWidth * scale) + "px" : "3px";
-			gsm.style.height = view.column ? "3px" : (div.clientHeight * scale) + "px";
-			gsm.style.left = view.column ? (div.scrollLeft * scale) + "px" : "4px";
-			gsm.style.top = view.column ? "4px" : (div.scrollTop * scale) + "px";
+			var scale = view.list ? (div.clientHeight / div.scrollHeight) : (div.clientWidth / div.scrollWidth);
+			gsm.style.width = view.list ? "3px" : (div.clientWidth * scale) + "px";
+			gsm.style.height = view.list ? (div.clientHeight * scale) + "px" : "3px";
+			gsm.style.left = view.list ? "4px" : (div.scrollLeft * scale) + "px";
+			gsm.style.top = view.list ? (div.scrollTop * scale) + "px" : "4px";
 			gsm.style.opacity = pageoffset ? 0.6 : 0.3;
 		}
 
