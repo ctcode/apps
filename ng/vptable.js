@@ -35,7 +35,7 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 				var row = {cells: []};
 
 				for (var x=0; x < sz.x; x++)
-					row.cells.push({empty: true})
+					row.cells.push({empty: true});
 
 				rows.push(row);
 			}
