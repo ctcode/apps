@@ -184,7 +184,7 @@ function VpAccountSvc($rootScope)
 
 	function onLoadAuth() {
 		var oauthScope = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/drive.appdata';
-		gapi.auth2.init({client_id: vp_oauthClientID, scope: oauthScope}).then(onInitAuth, onFail);
+		gapi.auth2.init({client_id: vpAPIClientID, scope: oauthScope}).then(onInitAuth, onFail);
 	}
 
 	function onInitAuth(au) {
