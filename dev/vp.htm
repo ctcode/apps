@@ -189,9 +189,9 @@ div.printevt {
 <body ng-app="vp" ng-controller="main" ng-cloak>
 
 <div id="account" ng-show="view=='init' || view=='home' || view=='settings'" class="noprint">{{sign_msg}}</div>
-<div id="banner" ng-show="view=='init' || view=='home' || view=='settings'">
+<div id="banner" ng-show="view=='init' || view=='home' || view=='settings'" class="noprint">
 	<div id="bantxt">{{settings.banner_text}}</div>
-	<div id="tools" class="noprint">
+	<div id="tools">
 		<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="onclickSettings()">
 		<img class="toolbtn" src="print.png" title="Print View" draggable="false" ng-click="onclickPrintView()">
 		<img class="toolbtn" src="list.png" title="List View" draggable="false" ng-click="onclickListView()">
