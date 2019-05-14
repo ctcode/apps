@@ -485,7 +485,7 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 		controllerAs: "vptable",
 		link: fLink,
 		templateUrl: "vptable.htm",
-		restrict: 'E'
+		restrict: 'A'
 	};
 }
 
