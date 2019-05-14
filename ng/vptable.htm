@@ -3,7 +3,7 @@
 	width: 100%;
 	border-spacing: 1px;
 	table-layout: fixed;
-	--fontscale: {{vt.fontscale}};
+	--fontscale: {{vptable.fontscale}};
 }
 .vphdr {
 	text-align: center;
@@ -32,7 +32,7 @@
 	background-color: red;
 }
 .vpcell.past {
-	opacity: {{vt.past_opacity}};
+	opacity: {{vptable.past_opacity}};
 }
 .vplink {
 	pointer-events: all;
@@ -40,14 +40,14 @@
 }
 </style>
 
-<style ng-if="vt.tableview.sel.column">
+<style ng-if="vptable.tableview.sel.column">
 .vptable {
 	height: 100%;
 	font-size: calc(1.4vh * var(--fontscale));
 }
 </style>
 
-<style ng-if="vt.tableview.sel.list">
+<style ng-if="vptable.tableview.sel.list">
 .vptable {
 	height: 100%;
 	font-size: calc(1.6vh * var(--fontscale));
@@ -66,17 +66,17 @@
 }
 </style>
 
-<style ng-if="vt.tableview.sel.expand">
+<style ng-if="vptable.tableview.sel.expand">
 .vptable {
 	font-size: 1em;
 }
 </style>
 
 <table class="vptable">
-	<tr ng-repeat="row in vt.rows">
-		<td ng-repeat-start="cell in row.cells" ng-if="cell.month" class="vpcell vphdr vplink" ng-class="cell.cls" ng-click="vt.onclickHdr(cell)">{{cell.month.hdr}}</td>
+	<tr ng-repeat="row in vptable.rows">
+		<td ng-repeat-start="cell in row.cells" ng-if="cell.month" class="vpcell vphdr vplink" ng-class="cell.cls" ng-click="vptable.onclickHdr(cell)">{{cell.month.hdr}}</td>
 		<td ng-if="cell.day" class="vpcell vpday" ng-class="cell.cls">
-			<div class="vpnum vplink" ng-click="vt.onclickDayNum(cell)">{{cell.day.num}}</div>
+			<div class="vpnum vplink" ng-click="vptable.onclickDayNum(cell)">{{cell.day.num}}</div>
 			<div ng-repeat="evt in cell.day.evts" class="vpevt">
 				<div ng-if="evt.marker" class="vpevtmarker">&nbsp;</div>
 				<div ng-if="evt.title" class="vpevttitle">{{evt.title}}</div>

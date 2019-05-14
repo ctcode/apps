@@ -1,3 +1,71 @@
+//////////////////////////////////////////////////////////////////////
+
+function VpAccountSvc($rootScope)
+{
+	var auth = null;
+	var status = {
+		signed_in: false,
+		msg: "Connecting..."
+	};
+
+	gapi.load("client:auth2", onLoadAuth);
+
+	function onLoadAuth() {
+		var oauthScope = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/drive.appdata';
+		gapi.auth2.init({client_id: vpAPIClientID, scope: oauthScope}).then(onInitAuth, onFail);
+	}
+
+	function onInitAuth(au) {
+		auth = au;
+		auth.isSignedIn.listen(onSign);
+		onSign();
+	}
+
+	function onSign() {
+		status.signed_in = auth.isSignedIn.get();
+		
+		if (status.signed_in)
+		{
+			var gu = auth.currentUser.get();
+			var bp = gu.getBasicProfile();
+			status.msg = bp.getEmail();
+
+			$rootScope.$broadcast("account:signin");
+		}
+		else
+		{
+			status.msg = "Signed Out";
+			$rootScope.$broadcast("account:signout");
+		}
+	}
+
+	function onFail(reason) {
+		var msg = "";
+		
+		if (reason.error)
+		{
+			msg = "[" + reason.error + "]";
+
+			if (reason.details)
+				msg += reason.details;
+		}
+
+		status.msg = "Unable to sign in";
+		alert("Account Error : " + msg);
+	}
+
+	this.SignIn = function() {
+		auth.signIn();
+	}
+
+	this.SignOut = function() {
+		auth.signOut();
+	}
+	
+	this.status = status;
+}
+
+
 
 //////////////////////////////////////////////////////////////////////
 
@@ -211,6 +279,7 @@ function VpAlmanacSvc(vpSettings)
 {
 	var vpmonths = [];
 	var month_offset;
+	var scroll_buffer=0;
 	var cfg;
 
 	if (window.opener && window.opener.VpPrintInfo) {
@@ -220,7 +289,7 @@ function VpAlmanacSvc(vpSettings)
 
 	this.savePrintInfo = function(pos) {
 		var span = [];
-		var n = Math.floor((vpmonths.length * pos) + 0.6);
+		var n = pos ? Math.floor((vpmonths.length * pos) + 0.6) : 0;
 		var c = (n + cfg.month_count)
 		
 		for (var i=n; i < c; i++)
@@ -230,7 +299,7 @@ function VpAlmanacSvc(vpSettings)
 	}
 
 	this.initPage = function() {
-		month_offset = -6;
+		month_offset = -scroll_buffer;
 		cfg = vpSettings.vpconfig;
 		
 		if (cfg.auto_scroll) {
@@ -256,6 +325,10 @@ function VpAlmanacSvc(vpSettings)
 		return vpmonths;
 	}
 
+	this.setScrollBuffer = function(n) {
+		scroll_buffer = n;
+	}
+
 	function createMonths() {
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
 		VpDate.localemonth = cfg.month_names.split('-');
@@ -265,7 +338,7 @@ function VpAlmanacSvc(vpSettings)
 		vdt.offsetMonth(month_offset);
 
 		vpmonths = [];
-		for (var i=0; i < (vpSettings.getMonthCount()+12); i++) {
+		for (var i=0; i < (vpSettings.getMonthCount()+(scroll_buffer*2)); i++) {
 			vpmonths.push(new VpMonth(vdt.ymd()));
 			vdt.offsetMonth(1);
 		}
@@ -309,6 +382,218 @@ function VpAlmanacSvc(vpSettings)
 		if (VpDate.isToday(ymd))
 			this.today = true;
 	}
+}
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
+{
+	function fCtl($scope) {
+		
+		if (vpAlmanac.printinfo)
+		{
+			initView();
+			return;
+		}
+
+		this.cmdView = function() {
+			vpAlmanac.initPage();
+			initView();
+		}
+
+		this.cmdPrint = function() {
+			vpAlmanac.savePrintInfo();
+			$window.open("vpprint.htm");
+		}
+
+		this.cmdScrollPage = function(off) {
+			vpAlmanac.offsetPage(off);
+			initView();
+		}
+
+		this.onclickHdr = function(vpcell) {
+			window.open("https://www.google.com/calendar/r/month/" + vpcell.month.gcal);
+		}
+
+		this.onclickDayNum = function(vpcell) {
+			window.open("https://www.google.com/calendar/r/week/" + vpcell.day.gcal);
+		}
+
+		function initView() {
+			var rows = [];
+			var months = vpAlmanac.getMonths();
+
+			var sz = getPos(months.length, 31+6+1);
+			for (var y=0; y < sz.y; y++)
+			{
+				var row = {cells: []};
+
+				for (var x=0; x < sz.x; x++)
+					row.cells.push({empty: true});
+
+				rows.push(row);
+			}
+
+			for (var m=0; m < months.length; m++)
+			{
+				var vpmonth = months[m];
+				
+				var cell = {month: vpmonth, cls: {}};
+				if (vpmonth.past)
+					cell.cls.past = true;
+
+				var pos = getPos(m, 0);
+				rows[pos.y].cells[pos.x] = cell;
+
+				for (var d=0; d < vpmonth.vpdays.length; d++)
+				{
+					var vpday = vpmonth.vpdays[d];
+					var cell = {day: vpday, cls: {}};
+
+					if (vpmonth.past)
+						cell.cls.past = true;
+
+					if (vpday.weekend)
+						cell.cls.weekend = true;
+
+					if (vpday.today)
+						cell.cls.today = true;
+
+					var pos = getPos(m, (d+1) + vpmonth.dayoffset);
+					rows[pos.y].cells[pos.x] = cell;
+				}
+			}
+			
+			$scope.vptable.rows = rows;
+			$scope.vptable.fontscale = vpSettings.vpconfig.font_scale_pc/100;
+			$scope.vptable.past_opacity = vpSettings.vpconfig.past_opacity;
+			$scope.vptable.tableview = vpViewStorage;
+		}
+
+		function getPos(xpos, ypos) {
+			return vpViewStorage.sel.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
+		}
+	}
+
+	function fLink(scope, element, attrs) {
+	}
+
+	return {
+		controller: fCtl,
+		controllerAs: "vptable",
+		link: fLink,
+		templateUrl: "vptable.htm",
+		restrict: 'E'
+	};
+}
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $rootScope, $timeout)
+{
+	function fLink(scope, element, attrs) {
+		scope.vpscroll = {};
+		vpAlmanac.setScrollBuffer(6);
+		var div = element[0];
+		var view = {};
+		var gsm = document.getElementById("gridscrollmarker");
+
+		element.on("scroll", onScroll);
+
+		scope.vpscroll.initView = function() {
+			view = vpViewStorage.sel;
+			
+			var m = vpSettings.getMonthCount();
+			scope.vp.scroll_size = ((m+12)/m)*100;
+
+			showView(false);
+
+			element.off("wheel");
+			if (view.column)
+				element.on("wheel", onWheel);
+
+			element.css("overflow", "auto");
+			if (view.column)
+				element.css("overflow-y", "hidden");
+			if (view.list)
+				element.css("overflow-x", "hidden");
+
+			$timeout(function() {
+				$rootScope.$broadcast("cmd:view");
+
+				$timeout(function() {
+					resetScroll();
+					showView(true);
+				});
+			});
+		}
+
+		scope.vpscroll.initPrint = function() {
+			var printoffset = view.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
+			$rootScope.$broadcast("cmd:print", printoffset);
+		}
+
+		function showView(show) {
+			div.style.visibility = show ? "" : "hidden";
+			gsm.style.visibility = show ? "" : "hidden";
+		}
+
+		function resetScroll() {
+			div.scrollTop = view.list ? (div.scrollHeight-div.clientHeight)/2 : 0;
+			div.scrollLeft = view.list ? 0 : (div.scrollWidth-div.clientWidth)/2;
+		}
+
+		function pageScroll(off) {
+			showView(false);
+			$timeout(function() {
+				$rootScope.$broadcast("scroll:page", off);
+				$timeout(function() {
+					resetScroll();
+					showView(true);
+				});
+			});
+		}
+
+		var tmo=null;
+		function onScroll(evt) {
+			$timeout.cancel(tmo);
+			
+			var pos = view.list ? div.scrollTop : div.scrollLeft;
+			var max = view.list ? (div.scrollHeight - div.clientHeight) : (div.scrollWidth - div.clientWidth);
+
+			var pageoffset = false;
+			if (pos == 0) pageoffset = -1;
+			if (pos >= max) pageoffset = 1;
+
+			if (pageoffset)
+				tmo = $timeout(pageScroll, 1000, true, pageoffset);
+
+			var scale = view.list ? (div.clientHeight / div.scrollHeight) : (div.clientWidth / div.scrollWidth);
+			gsm.style.width = view.list ? "3px" : (div.clientWidth * scale) + "px";
+			gsm.style.height = view.list ? (div.clientHeight * scale) + "px" : "3px";
+			gsm.style.left = view.list ? "4px" : (div.scrollLeft * scale) + "px";
+			gsm.style.top = view.list ? (div.scrollTop * scale) + "px" : "4px";
+			gsm.style.opacity = pageoffset ? 0.6 : 0.3;
+		}
+
+		function onWheel(evt) {
+			var dy = evt.deltaY;
+			if (evt.deltaMode == 1) dy = (dy*30);
+			if (evt.deltaMode == 2) dy = (dy*300);
+			evt.preventDefault();
+
+			div.scrollBy(dy,0);
+		}
+	}
+
+	return {
+		link: fLink,
+		restrict: 'A'
+	};
 }
 
 

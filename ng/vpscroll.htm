@@ -1,0 +1,78 @@
+<style>
+#gridbox {
+	display: flex;
+	flex-grow: 1;
+}
+#grid {
+	flex-grow: 1;
+	position: relative;
+	border: none;
+	outline: none;
+}
+#gridcontent {
+	position: absolute;
+	pointer-events: none;
+	height: 100%;
+}
+#gridscrollbox {
+	position: relative;
+}
+#gridscrollmarker {
+	position: absolute;
+	background-color: black;
+	opacity: 0.25;
+}
+</style>
+
+<style ng-if="vp.view.sel.column">
+#gridbox {
+	flex-direction: column;
+}
+#grid::-webkit-scrollbar {
+	height: 0;
+}
+#gridcontent {
+	width: {{vp.scroll_size}}%;
+}
+#gridscrollbox {
+	height: 10px;
+}
+</style>
+
+<style ng-if="vp.view.sel.list">
+#gridbox {
+	flex-direction: row;
+}
+#grid::-webkit-scrollbar {
+	width: 0;
+}
+#gridcontent {
+	height: {{vp.scroll_size}}%;
+}
+#gridscrollbox {
+	width: 10px;
+}
+</style>
+
+<style ng-if="vp.view.sel.expand">
+#gridcontent {
+	width: {{vp.scroll_size}}%;
+}
+#gridscrollbox {
+	height: 10px;
+}
+#gridscrollmarker {
+	display: none;
+}
+</style>
+
+<div id="gridbox">
+	<div id="grid" tabIndex="1" vp-scroll>
+		<div id="gridcontent">
+			<vp-table></vp-table>
+		</div>
+	</div>
+	<div id="gridscrollbox">
+		<div id="gridscrollmarker"></div>
+	</div>
+</div>
