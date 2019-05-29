@@ -129,7 +129,9 @@ body {
 			<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vp.onclickView('column')" ng-class="vp.view.cls.column"/>
 		</div>
 	</div>
-	<div id="grid" vp-table></div>
+	<div id="grid" tabIndex="1">
+		<vp-scroll/>
+	</div>
 	<div id="calendarbar"></div>
 </div>
 
@@ -249,7 +251,7 @@ angular.module("vpapp", [])
 	.service("vpSettings", VpSettingsSvc)
 	.service("vpAlmanac", VpAlmanacSvc)
 	.service("vpViewStorage", VpViewStorageSvc)
-	//.directive("vpScroll", VpScrollDirective)
+	.directive("vpScroll", VpScrollDirective)
 	.directive("vpTable", VpTableDirective)
 	.controller("vpApp", VpAppController)
 ;
@@ -266,11 +268,11 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 
 	this.onclickView = function(name) {
 		vpViewStorage.setName(name);
-		$scope.vptable.cmdView();
+		$scope.vpscroll.initView();
 	}
 
 	this.onclickPrint = function() {
-		$scope.vptable.cmdPrint();
+		$scope.vpscroll.initPrint();
 	}
 
 	this.onclickSettings = function() {
@@ -290,7 +292,7 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 		$timeout(function() {
 			this.busy = false;
 			this.show = {planner: true};
-			$scope.vptable.cmdView();
+			$scope.vpscroll.initView();
 		}.bind(this), 2000)
 	}
 
@@ -304,14 +306,14 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 		$scope.$apply(function() {
 			vpSettings.reset();
 			$scope.vp.show = {planner: true};
-			$scope.vptable.cmdView();
+			$scope.vpscroll.initView();
 		});
 	});
 
 	$scope.$on("settings:load", function() {
 		$scope.$apply(function() {
 			$scope.vp.show = {planner: true};
-			$scope.vptable.cmdView();
+			$scope.vpscroll.initView();
 		});
 	});
 }

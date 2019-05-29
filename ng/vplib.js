@@ -250,7 +250,7 @@ function VpSettingsSvc($rootScope)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpViewStorageSvc($rootScope, $window)
+function VpViewStorageSvc($window)
 {
 	this.load = function() {
 		var stg = $window.localStorage.getItem("vp-viewname");
@@ -403,8 +403,8 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 			initView();
 		}
 
-		this.cmdPrint = function() {
-			vpAlmanac.savePrintInfo();
+		this.cmdPrint = function(pos) {
+			vpAlmanac.savePrintInfo(pos);
 			$window.open("vpprint.htm");
 		}
 
@@ -469,7 +469,7 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 			$scope.vptable.rows = rows;
 			$scope.vptable.fontscale = vpSettings.vpconfig.font_scale_pc/100;
 			$scope.vptable.past_opacity = vpSettings.vpconfig.past_opacity;
-			$scope.vptable.tableview = vpViewStorage;
+			$scope.vptable.view = vpViewStorage;
 		}
 
 		function getPos(xpos, ypos) {
@@ -485,7 +485,7 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 		controllerAs: "vptable",
 		link: fLink,
 		templateUrl: "vptable.htm",
-		restrict: 'A'
+		restrict: 'E'
 	};
 }
 
@@ -493,22 +493,24 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 
 //////////////////////////////////////////////////////////////////////
 
-function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $rootScope, $timeout)
+function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
 {
-	function fLink(scope, element, attrs) {
-		scope.vpscroll = {};
-		vpAlmanac.setScrollBuffer(6);
-		var div = element[0];
-		var view = {};
-		var gsm = document.getElementById("gridscrollmarker");
+	function fCtl($scope) {
+		this.view = vpViewStorage;
 
+		vpAlmanac.setScrollBuffer(6);
+		var div = document.getElementById("vpscrollbox");
+		var mrk = document.getElementById("vpscrollmarker");
+		var element = angular.element(div);
+		var view = {};
+		
 		element.on("scroll", onScroll);
 
-		scope.vpscroll.initView = function() {
+		this.initView = function() {
 			view = vpViewStorage.sel;
 			
 			var m = vpSettings.getMonthCount();
-			scope.vp.scroll_size = ((m+12)/m)*100;
+			this.scroll_size = ((m+12)/m)*100;
 
 			showView(false);
 
@@ -523,7 +525,7 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $rootScope, $ti
 				element.css("overflow-x", "hidden");
 
 			$timeout(function() {
-				$rootScope.$broadcast("cmd:view");
+				$scope.vptable.cmdView();
 
 				$timeout(function() {
 					resetScroll();
@@ -532,14 +534,14 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $rootScope, $ti
 			});
 		}
 
-		scope.vpscroll.initPrint = function() {
+		this.initPrint = function() {
 			var printoffset = view.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
-			$rootScope.$broadcast("cmd:print", printoffset);
+			$scope.vptable.cmdPrint(printoffset);
 		}
 
 		function showView(show) {
 			div.style.visibility = show ? "" : "hidden";
-			gsm.style.visibility = show ? "" : "hidden";
+			mrk.style.visibility = show ? "" : "hidden";
 		}
 
 		function resetScroll() {
@@ -550,7 +552,7 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $rootScope, $ti
 		function pageScroll(off) {
 			showView(false);
 			$timeout(function() {
-				$rootScope.$broadcast("scroll:page", off);
+				$scope.vptable.cmdScrollPage(off);
 				$timeout(function() {
 					resetScroll();
 					showView(true);
@@ -573,11 +575,11 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $rootScope, $ti
 				tmo = $timeout(pageScroll, 1000, true, pageoffset);
 
 			var scale = view.list ? (div.clientHeight / div.scrollHeight) : (div.clientWidth / div.scrollWidth);
-			gsm.style.width = view.list ? "3px" : (div.clientWidth * scale) + "px";
-			gsm.style.height = view.list ? (div.clientHeight * scale) + "px" : "3px";
-			gsm.style.left = view.list ? "4px" : (div.scrollLeft * scale) + "px";
-			gsm.style.top = view.list ? (div.scrollTop * scale) + "px" : "4px";
-			gsm.style.opacity = pageoffset ? 0.6 : 0.3;
+			mrk.style.width = view.list ? "3px" : (div.clientWidth * scale) + "px";
+			mrk.style.height = view.list ? (div.clientHeight * scale) + "px" : "3px";
+			mrk.style.left = view.list ? "4px" : (div.scrollLeft * scale) + "px";
+			mrk.style.top = view.list ? (div.scrollTop * scale) + "px" : "4px";
+			mrk.style.opacity = pageoffset ? 0.6 : 0.3;
 		}
 
 		function onWheel(evt) {
@@ -591,8 +593,10 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $rootScope, $ti
 	}
 
 	return {
-		link: fLink,
-		restrict: 'A'
+		controller: fCtl,
+		controllerAs: "vpscroll",
+		templateUrl: "vpscroll.htm",
+		restrict: 'E'
 	};
 }
 

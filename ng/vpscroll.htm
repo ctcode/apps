@@ -1,78 +1,78 @@
 <style>
-#gridbox {
+#vpscrollcontainer {
 	display: flex;
-	flex-grow: 1;
+	height: 100%;
 }
-#grid {
+#vpscrollbox {
 	flex-grow: 1;
 	position: relative;
 	border: none;
 	outline: none;
 }
-#gridcontent {
+#vpscrollcontent {
 	position: absolute;
 	pointer-events: none;
 	height: 100%;
 }
-#gridscrollbox {
+#vpscrollmarkerbox {
 	position: relative;
 }
-#gridscrollmarker {
+#vpscrollmarker {
 	position: absolute;
 	background-color: black;
 	opacity: 0.25;
 }
 </style>
 
-<style ng-if="vp.view.sel.column">
-#gridbox {
+<style ng-if="vpscroll.view.sel.column">
+#vpscrollcontainer {
 	flex-direction: column;
 }
-#grid::-webkit-scrollbar {
+#vpscrollbox::-webkit-scrollbar {
 	height: 0;
 }
-#gridcontent {
-	width: {{vp.scroll_size}}%;
+#vpscrollcontent {
+	width: {{vpscroll.scroll_size}}%;
 }
-#gridscrollbox {
+#vpscrollmarkerbox {
 	height: 10px;
 }
 </style>
 
-<style ng-if="vp.view.sel.list">
-#gridbox {
+<style ng-if="vpscroll.view.sel.list">
+#vpscrollcontainer {
 	flex-direction: row;
 }
-#grid::-webkit-scrollbar {
+#vpscrollbox::-webkit-scrollbar {
 	width: 0;
 }
-#gridcontent {
-	height: {{vp.scroll_size}}%;
+#vpscrollcontent {
+	height: {{vpscroll.scroll_size}}%;
 }
-#gridscrollbox {
+#vpscrollmarkerbox {
 	width: 10px;
 }
 </style>
 
-<style ng-if="vp.view.sel.expand">
-#gridcontent {
-	width: {{vp.scroll_size}}%;
+<style ng-if="vpscroll.view.sel.expand">
+#vpscrollcontent {
+	width: {{vpscroll.scroll_size}}%;
 }
-#gridscrollbox {
+#vpscrollmarkerbox {
 	height: 10px;
 }
-#gridscrollmarker {
+#vpscrollmarker {
 	display: none;
 }
 </style>
 
-<div id="gridbox">
-	<div id="grid" tabIndex="1" vp-scroll>
-		<div id="gridcontent">
-			<vp-table></vp-table>
+<div id="vpscrollcontainer">
+	<div id="vpscrollbox">
+		<div id="vpscrollcontent">
+			<vp-table/>
 		</div>
 	</div>
-	<div id="gridscrollbox">
-		<div id="gridscrollmarker"></div>
+	<div id="vpscrollmarkerbox">
+		<div id="vpscrollmarker"></div>
 	</div>
 </div>
