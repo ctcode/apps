@@ -1,4 +1,5 @@
 var osMap;
+var mapPoint;
 
 function init_map()
 {
@@ -19,9 +20,10 @@ function init_map()
 
 		var lonlat = new OpenLayers.LonLat(locinfo.lon, locinfo.lat);
 		var gridProjection = new OpenSpace.GridProjection();
-		var mapPoint = gridProjection.getMapPointFromLonLat(lonlat);
+		mapPoint = gridProjection.getMapPointFromLonLat(lonlat);
 		osMap.setCenter(mapPoint, window.devicePixelRatio > 1 ? 8 : 7);
-		osMap.createMarker(mapPoint);
+		var marker = osMap.createMarker(mapPoint);
+		marker.events.register('click', marker, onMarkerClick);
 	}
 	else
 		document.write("Invalid GPS location:  " + gps);
@@ -39,4 +41,13 @@ function parseTrkino(txt)
 	info.lon = parseFloat(csv[4]);
 	
 	return info;
+}
+
+function onMarkerClick(evt)
+{
+	if (evt.ctrlKey)
+	{
+		window.open("http://localhost/apps/osnav/osnav.htm#" + mapPoint.toString());
+		OpenLayers.Event.stop(evt);
+	}
 }
