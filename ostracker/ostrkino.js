@@ -47,7 +47,7 @@ function onMarkerClick(evt)
 {
 	if (evt.ctrlKey)
 	{
-		window.open("http://localhost/apps/osnav/osnav.htm#" + mapPoint.toString());
+		window.location.replace("http://localhost/apps/osnav/osnav.htm#" + mapPoint.toString());
 		OpenLayers.Event.stop(evt);
 	}
 }
