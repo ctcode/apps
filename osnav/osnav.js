@@ -57,6 +57,29 @@ function map_init()
 	LoadPosition(true);
 
 	osMap.events.register("click", this, this.onMapClick);
+	
+	var h = window.location.hash;
+	if (h.contains("eastings"))
+	if (h.contains("northings"))
+	{
+		var e = parseInt(h.substr(h.search("eastings")+9));
+		var n = parseInt(h.substr(h.search("northings")+10));
+		var pos = new OpenSpace.MapPoint(e, n);
+		var size = new OpenLayers.Size(33, 45);
+		var offset = new OpenLayers.Pixel(-16, -37);
+		var icon = new OpenSpace.Icon('http://openspace.ordnancesurvey.co.uk/osmapapi/img_versions/img_1.1/OS/images/markers/marker_green.png', size, offset);
+		var marker = osMap.createMarker(pos, icon);
+		marker.events.register('click', marker, function(evt) {
+			if (evt.ctrlKey)
+			{
+				osMap.removeMarker(marker);
+				CreateMarker(e,n);
+				SaveMarkers();
+			}
+			OpenLayers.Event.stop(evt);
+		});
+		osMap.setCenter(pos, 5);
+	}
 }
 
 function onMapClick(evt)
@@ -122,7 +145,7 @@ function SaveMarkers()
 
 		for (i in lyr.markers)
 		{
-			console.log(lyr.markers[i]);
+			//console.log(lyr.markers[i]);
 			markers.push({lon: lyr.markers[i].lonlat.lon, lat: lyr.markers[i].lonlat.lat});
 		}
 
