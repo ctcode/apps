@@ -402,13 +402,13 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 			$window.open("vpprint.htm");
 		}
 
-		this.cmdInitPrint = function() {
-			vpAlmanac.loadPrintInfo();
+		this.cmdScrollPage = function(off) {
+			vpAlmanac.offsetPage(off);
 			initView();
 		}
 
-		this.cmdScrollPage = function(off) {
-			vpAlmanac.offsetPage(off);
+		this.loadPrint = function() {
+			vpAlmanac.loadPrintInfo();
 			initView();
 		}
 
