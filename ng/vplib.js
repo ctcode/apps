@@ -499,12 +499,12 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
 		this.view = vpViewStorage;
 
 		vpAlmanac.setScrollBuffer(6);
-		var div = document.getElementById("vpscrollbox");
-		var mrk = document.getElementById("vpscrollmarker");
-		var element = angular.element(div);
+		var box = document.getElementById("vpscrollbox");
+		var mkr = document.getElementById("vpscrollmarker");
+		var ng_box = angular.element(box);
 		var view = {};
 		
-		element.on("scroll", onScroll);
+		ng_box.on("scroll", onScroll);
 
 		this.initView = function() {
 			view = vpViewStorage.sel;
@@ -514,15 +514,15 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
 
 			showView(false);
 
-			element.off("wheel");
+			ng_box.off("wheel");
 			if (view.column)
-				element.on("wheel", onWheel);
+				ng_box.on("wheel", onWheel);
 
-			element.css("overflow", "auto");
+			ng_box.css("overflow", "auto");
 			if (view.column)
-				element.css("overflow-y", "hidden");
+				ng_box.css("overflow-y", "hidden");
 			if (view.list)
-				element.css("overflow-x", "hidden");
+				ng_box.css("overflow-x", "hidden");
 
 			$timeout(function() {
 				$scope.vptable.cmdView();
@@ -535,18 +535,18 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
 		}
 
 		this.initPrint = function() {
-			var printoffset = view.list ? (div.scrollTop / div.scrollHeight) : (div.scrollLeft / div.scrollWidth);
+			var printoffset = view.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
 			$scope.vptable.cmdPrint(printoffset);
 		}
 
 		function showView(show) {
-			div.style.visibility = show ? "" : "hidden";
-			mrk.style.visibility = show ? "" : "hidden";
+			box.style.visibility = show ? "" : "hidden";
+			mkr.style.visibility = show ? "" : "hidden";
 		}
 
 		function resetScroll() {
-			div.scrollTop = view.list ? (div.scrollHeight-div.clientHeight)/2 : 0;
-			div.scrollLeft = view.list ? 0 : (div.scrollWidth-div.clientWidth)/2;
+			box.scrollTop = view.list ? (box.scrollHeight-box.clientHeight)/2 : 0;
+			box.scrollLeft = view.list ? 0 : (box.scrollWidth-box.clientWidth)/2;
 		}
 
 		function pageScroll(off) {
@@ -564,8 +564,8 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
 		function onScroll(evt) {
 			$timeout.cancel(tmo);
 			
-			var pos = view.list ? div.scrollTop : div.scrollLeft;
-			var max = view.list ? (div.scrollHeight - div.clientHeight) : (div.scrollWidth - div.clientWidth);
+			var pos = view.list ? box.scrollTop : box.scrollLeft;
+			var max = view.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
 
 			var pageoffset = false;
 			if (pos == 0) pageoffset = -1;
@@ -574,12 +574,12 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
 			if (pageoffset)
 				tmo = $timeout(pageScroll, 1000, true, pageoffset);
 
-			var scale = view.list ? (div.clientHeight / div.scrollHeight) : (div.clientWidth / div.scrollWidth);
-			mrk.style.width = view.list ? "3px" : (div.clientWidth * scale) + "px";
-			mrk.style.height = view.list ? (div.clientHeight * scale) + "px" : "3px";
-			mrk.style.left = view.list ? "4px" : (div.scrollLeft * scale) + "px";
-			mrk.style.top = view.list ? (div.scrollTop * scale) + "px" : "4px";
-			mrk.style.opacity = pageoffset ? 0.6 : 0.3;
+			var scale = view.list ? (box.clientHeight / box.scrollHeight) : (box.clientWidth / box.scrollWidth);
+			mkr.style.width = view.list ? "3px" : (box.clientWidth * scale) + "px";
+			mkr.style.height = view.list ? (box.clientHeight * scale) + "px" : "3px";
+			mkr.style.left = view.list ? "4px" : (box.scrollLeft * scale) + "px";
+			mkr.style.top = view.list ? (box.scrollTop * scale) + "px" : "4px";
+			mkr.style.opacity = pageoffset ? 0.6 : 0.3;
 		}
 
 		function onWheel(evt) {
@@ -588,7 +588,7 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
 			if (evt.deltaMode == 2) dy = (dy*300);
 			evt.preventDefault();
 
-			div.scrollBy(dy,0);
+			box.scrollBy(dy,0);
 		}
 	}
 

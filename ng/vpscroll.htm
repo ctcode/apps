@@ -9,7 +9,7 @@
 	border: none;
 	outline: none;
 }
-#vpscrollcontent {
+#vpscrolltable {
 	position: absolute;
 	pointer-events: none;
 	height: 100%;
@@ -31,7 +31,7 @@
 #vpscrollbox::-webkit-scrollbar {
 	height: 0;
 }
-#vpscrollcontent {
+#vpscrolltable {
 	width: {{vpscroll.scroll_size}}%;
 }
 #vpscrollmarkerbox {
@@ -46,7 +46,7 @@
 #vpscrollbox::-webkit-scrollbar {
 	width: 0;
 }
-#vpscrollcontent {
+#vpscrolltable {
 	height: {{vpscroll.scroll_size}}%;
 }
 #vpscrollmarkerbox {
@@ -55,7 +55,7 @@
 </style>
 
 <style ng-if="vpscroll.view.sel.expand">
-#vpscrollcontent {
+#vpscrolltable {
 	width: {{vpscroll.scroll_size}}%;
 }
 #vpscrollmarkerbox {
@@ -68,7 +68,7 @@
 
 <div id="vpscrollcontainer">
 	<div id="vpscrollbox">
-		<div id="vpscrollcontent">
+		<div id="vpscrolltable">
 			<vp-table/>
 		</div>
 	</div>
