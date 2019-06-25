@@ -282,11 +282,6 @@ function VpAlmanacSvc(vpSettings)
 	var scroll_buffer=0;
 	var cfg;
 
-	if (window.opener && window.opener.VpPrintInfo) {
-		vpmonths = window.opener.VpPrintInfo;
-		this.printinfo = true;
-	}
-
 	this.savePrintInfo = function(pos) {
 		var span = [];
 		var n = pos ? Math.floor((vpmonths.length * pos) + 0.6) : 0;
@@ -296,6 +291,11 @@ function VpAlmanacSvc(vpSettings)
 			span.push(vpmonths[i]);
 
 		window.VpPrintInfo = span;
+	}
+
+	this.loadPrintInfo = function() {
+		if (window.opener && window.opener.VpPrintInfo)
+			vpmonths = window.opener.VpPrintInfo;
 	}
 
 	this.initPage = function() {
@@ -391,12 +391,6 @@ function VpAlmanacSvc(vpSettings)
 function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 {
 	function fCtl($scope) {
-		
-		if (vpAlmanac.printinfo)
-		{
-			initView();
-			return;
-		}
 
 		this.cmdView = function() {
 			vpAlmanac.initPage();
@@ -406,6 +400,11 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 		this.cmdPrint = function(pos) {
 			vpAlmanac.savePrintInfo(pos);
 			$window.open("vpprint.htm");
+		}
+
+		this.cmdInitPrint = function() {
+			vpAlmanac.loadPrintInfo();
+			initView();
 		}
 
 		this.cmdScrollPage = function(off) {
