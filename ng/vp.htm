@@ -9,8 +9,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
 <script src="https://apis.google.com/js/api.js"></script>
 <script src="https://apis.google.com/js/platform.js"></script>
-<script src="vpconfig.js" type='text/javascript'></script>
-<script src="vplib.js" type='text/javascript'></script>
 
 <style>
 body {
@@ -114,7 +112,7 @@ body {
 </style>
 </head>
 
-<body ng-app="vpapp" ng-controller="vpApp as vp" ng-cloak>
+<body ng-app="vpApp" ng-controller="vpAppController as vp" ng-cloak>
 <title ng-bind="vp.settings.planner_title">Loading...</title>
 
 <div id="planner" ng-show="vp.show.planner">
@@ -245,19 +243,11 @@ body {
 
 <h1 id="printmsg" ng-show="vp.show.planner">Print not available</h1>
 
-<script type='text/javascript'>
-angular.module("vpapp", [])
-	.service("vpAccount", VpAccountSvc)
-	.service("vpSettings", VpSettingsSvc)
-	.service("vpAlmanac", VpAlmanacSvc)
-	.service("vpViewStorage", VpViewStorageSvc)
-	.directive("vpScroll", VpScrollDirective)
-	.directive("vpTable", VpTableDirective)
-	.controller("vpApp", VpAppController)
-;
+<script src="vpconfig.js" type='text/javascript'></script>
+<script src="vplib.js" type='text/javascript'></script>
 
-function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
-{
+<script type='text/javascript'>
+vpapp.controller("vpAppController", function(vpViewStorage, vpAccount, vpSettings, $scope, $timeout) {
 	this.show = {planner: true};
 	this.account = vpAccount;
 	this.settings = vpSettings;
@@ -316,7 +306,7 @@ function VpAppController(vpViewStorage, vpAccount, vpSettings, $scope, $timeout)
 			$scope.vpscroll.initView();
 		});
 	});
-}
+});
 </script>
 
 </body>

@@ -1,7 +1,9 @@
+
+var vpapp = angular.module("vpApp", []);
+
 //////////////////////////////////////////////////////////////////////
 
-function VpAccountSvc($rootScope)
-{
+vpapp.service("vpAccount", function($rootScope) {
 	var auth = null;
 	var status = {
 		signed_in: false,
@@ -63,14 +65,13 @@ function VpAccountSvc($rootScope)
 	}
 	
 	this.status = status;
-}
+});
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-function VpSettingsSvc($rootScope)
-{
+vpapp.service("vpSettings", function($rootScope) {
 	var defaults = {
 		planner_title: "visual-planner",
 		vpconfig: {
@@ -244,14 +245,13 @@ function VpSettingsSvc($rootScope)
 
 		return false;
 	}
-}
+});
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-function VpViewStorageSvc($window)
-{
+vpapp.service("vpViewStorage", function($window) {
 	this.load = function() {
 		var stg = $window.localStorage.getItem("vp-viewname");
 		var name = stg ? stg : "column";
@@ -269,14 +269,13 @@ function VpViewStorageSvc($window)
 	}
 
 	this.load();
-}
+});
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-function VpAlmanacSvc(vpSettings)
-{
+vpapp.service("vpAlmanac", function(vpSettings) {
 	var vpmonths = [];
 	var month_offset;
 	var scroll_buffer=0;
@@ -383,14 +382,13 @@ function VpAlmanacSvc(vpSettings)
 		if (VpDate.isToday(ymd))
 			this.today = true;
 	}
-}
+});
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
-{
+vpapp.directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $window) {
 	function fCtl($scope) {
 
 		if (vpAlmanac.printload)
@@ -488,14 +486,13 @@ function VpTableDirective(vpViewStorage, vpSettings, vpAlmanac, $window)
 		templateUrl: "vptable.htm",
 		restrict: 'E'
 	};
-}
+});
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
-{
+vpapp.directive("vpScroll", function(vpViewStorage, vpSettings, vpAlmanac, $timeout) {
 	function fCtl($scope) {
 		this.view = vpViewStorage;
 
@@ -599,7 +596,7 @@ function VpScrollDirective(vpViewStorage, vpSettings, vpAlmanac, $timeout)
 		templateUrl: "vpscroll.htm",
 		restrict: 'E'
 	};
-}
+});
 
 
 

@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto" type="text/css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
 <link href="vp.png" rel="icon">
-<script src="vplib.js" type='text/javascript'></script>
 <style>
 body {
 	font-family: Arial;
@@ -18,18 +17,8 @@ body {
 </style>
 <title>Print</title>
 </head>
-<body ng-app="printapp" ng-cloak>
-
+<body ng-app="vpApp" ng-cloak>
 <vp-table/>
-
-<script type='text/javascript'>
-angular.module("printapp", [])
-	.service("vpViewStorage", VpViewStorageSvc)
-	.service("vpSettings", VpSettingsSvc)
-	.service("vpAlmanac", VpAlmanacSvc)
-	.directive("vpTable", VpTableDirective)
-;
-</script>
-
+<script src="vplib.js" type='text/javascript'></script>
 </body>
 </html>
