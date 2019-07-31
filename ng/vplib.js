@@ -283,12 +283,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 	var scroll_buffer=0;
 	var cfg;
 
-	if (window.opener && window.opener.VpPrintInfo)
-	{
-		vpmonths = window.opener.VpPrintInfo;
-		this.printload = true;
-	}
-
 	this.savePrintInfo = function(pos) {
 		var span = [];
 		var n = pos ? Math.floor((vpmonths.length * pos) + 0.6) : 0;
@@ -298,6 +292,11 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 			span.push(vpmonths[i]);
 
 		window.VpPrintInfo = span;
+	}
+
+	this.loadPrintInfo = function() {
+		if (window.opener && window.opener.VpPrintInfo)
+			vpmonths = window.opener.VpPrintInfo;
 	}
 
 	this.initPage = function() {
@@ -392,11 +391,22 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 
 angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $window) {
 	function fCtl($scope) {
-
-		if (vpAlmanac.printload)
+		if ($scope.vptableconfig)
 		{
+			if ($scope.vptableconfig.defer)
+			{
+			}
+			if ($scope.vptableconfig.print)
+			{
+				vpAlmanac.loadPrintInfo();
+				initView();
+				return;
+			}
+		}
+		else
+		{
+			vpAlmanac.initPage();
 			initView();
-			return;
 		}
 
 		this.cmdView = function() {

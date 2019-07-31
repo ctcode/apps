@@ -306,7 +306,8 @@ angular.module("vpApp").controller("vpController", function(vpViewStorage, vpAcc
 			$scope.vpscroll.initView();
 		});
 	});
-	
+
+	$scope.vptableconfig = {defer: true};
 	vpAccount.init();
 });
 </script>
