@@ -283,22 +283,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 	var scroll_buffer=0;
 	var cfg;
 
-	this.savePrintInfo = function(pos) {
-		var span = [];
-		var n = pos ? Math.floor((vpmonths.length * pos) + 0.6) : 0;
-		var c = (n + cfg.month_count)
-		
-		for (var i=n; i < c; i++)
-			span.push(vpmonths[i]);
-
-		window.VpPrintInfo = span;
-	}
-
-	this.loadPrintInfo = function() {
-		if (window.opener && window.opener.VpPrintInfo)
-			vpmonths = window.opener.VpPrintInfo;
-	}
-
 	this.initPage = function() {
 		month_offset = -scroll_buffer;
 		cfg = vpSettings.vpconfig;
@@ -382,6 +366,22 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 
 		if (VpDate.isToday(ymd))
 			this.today = true;
+	}
+
+	this.savePrintInfo = function(pos) {
+		var span = [];
+		var n = pos ? Math.floor((vpmonths.length * pos) + 0.6) : 0;
+		var c = (n + cfg.month_count)
+		
+		for (var i=n; i < c; i++)
+			span.push(vpmonths[i]);
+
+		window.VpPrintInfo = span;
+	}
+
+	this.loadPrintInfo = function() {
+		if (window.opener && window.opener.VpPrintInfo)
+			vpmonths = window.opener.VpPrintInfo;
 	}
 });
 
