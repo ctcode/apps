@@ -10,7 +10,9 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 		msg: "Connecting..."
 	};
 
-	gapi.load("client:auth2", onLoadAuth);
+	this.init = function() {
+		gapi.load("client:auth2", onLoadAuth);
+	}
 
 	function onLoadAuth() {
 		var oauthScope = 'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/drive.appdata';
