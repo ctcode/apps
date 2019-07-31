@@ -1,9 +1,9 @@
 
-var vpapp = angular.module("vpApp", []);
+angular.module("vpApp", []);
 
 //////////////////////////////////////////////////////////////////////
 
-vpapp.service("vpAccount", function($rootScope) {
+angular.module("vpApp").service("vpAccount", function($rootScope) {
 	var auth = null;
 	var status = {
 		signed_in: false,
@@ -71,7 +71,7 @@ vpapp.service("vpAccount", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-vpapp.service("vpSettings", function($rootScope) {
+angular.module("vpApp").service("vpSettings", function($rootScope) {
 	var defaults = {
 		planner_title: "visual-planner",
 		vpconfig: {
@@ -251,7 +251,7 @@ vpapp.service("vpSettings", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-vpapp.service("vpViewStorage", function($window) {
+angular.module("vpApp").service("vpViewStorage", function($window) {
 	this.load = function() {
 		var stg = $window.localStorage.getItem("vp-viewname");
 		var name = stg ? stg : "column";
@@ -275,7 +275,7 @@ vpapp.service("vpViewStorage", function($window) {
 
 //////////////////////////////////////////////////////////////////////
 
-vpapp.service("vpAlmanac", function(vpSettings) {
+angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 	var vpmonths = [];
 	var month_offset;
 	var scroll_buffer=0;
@@ -388,7 +388,7 @@ vpapp.service("vpAlmanac", function(vpSettings) {
 
 //////////////////////////////////////////////////////////////////////
 
-vpapp.directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $window) {
+angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $window) {
 	function fCtl($scope) {
 
 		if (vpAlmanac.printload)
@@ -492,7 +492,7 @@ vpapp.directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $windo
 
 //////////////////////////////////////////////////////////////////////
 
-vpapp.directive("vpScroll", function(vpViewStorage, vpSettings, vpAlmanac, $timeout) {
+angular.module("vpApp").directive("vpScroll", function(vpViewStorage, vpSettings, vpAlmanac, $timeout) {
 	function fCtl($scope) {
 		this.view = vpViewStorage;
 
