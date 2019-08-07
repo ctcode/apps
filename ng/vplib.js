@@ -555,6 +555,9 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 	}
 
 	function fLink(scope, element, attrs) {
+		if (!attrs.hasOwnProperty("disableAutoload"))
+			scope.vptable.initView();
+		//if (!attrs.hasOwnProperty("disableScrolling"))
 	}
 
 	return {
