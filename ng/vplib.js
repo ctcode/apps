@@ -389,40 +389,105 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $window) {
+angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $window, $timeout) {
 	function fCtl($scope) {
-		if ($scope.vptableconfig)
-		{
-			if ($scope.vptableconfig.defer)
-			{
-			}
-			if ($scope.vptableconfig.print)
-			{
-				vpAlmanac.loadPrintInfo();
-				initView();
-				return;
-			}
-		}
-		else
-		{
-			vpAlmanac.initPage();
-			initView();
+		vpAlmanac.setScrollBuffer(6);
+		var box = document.getElementById("vpscrollbox");
+		var mkr = document.getElementById("vpscrollmarker");
+		var ng_box = angular.element(box);
+		var view = {};
+		
+		ng_box.on("scroll", onScroll);
+
+		this.initView = function() {
+			view = vpViewStorage.sel;
+			
+			var m = vpSettings.getMonthCount();
+			this.scroll_size = ((m+12)/m)*100;
+
+			showView(false);
+
+			ng_box.off("wheel");
+			if (view.column)
+				ng_box.on("wheel", onWheel);
+
+			ng_box.css("overflow", "auto");
+			if (view.column)
+				ng_box.css("overflow-y", "hidden");
+			if (view.list)
+				ng_box.css("overflow-x", "hidden");
+
+			$timeout(function() {
+				vpAlmanac.initPage();
+				initTable();
+
+				$timeout(function() {
+					resetScroll();
+					showView(true);
+				});
+			});
 		}
 
-		this.cmdView = function() {
-			vpAlmanac.initPage();
-			initView();
-		}
-
-		this.cmdPrint = function(pos) {
-			vpAlmanac.savePrintInfo(pos);
+		this.initPrint = function() {
+			var printoffset = view.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
+			vpAlmanac.savePrintInfo(printoffset);
 			$window.open("vpprint.htm");
 		}
 
-		this.cmdScrollPage = function(off) {
-			vpAlmanac.offsetPage(off);
-			initView();
+		function showView(show) {
+			box.style.visibility = show ? "" : "hidden";
+			mkr.style.visibility = show ? "" : "hidden";
 		}
+
+		function resetScroll() {
+			box.scrollTop = view.list ? (box.scrollHeight-box.clientHeight)/2 : 0;
+			box.scrollLeft = view.list ? 0 : (box.scrollWidth-box.clientWidth)/2;
+		}
+
+		function pageScroll(off) {
+			showView(false);
+			$timeout(function() {
+				vpAlmanac.offsetPage(off);
+				initTable();
+				$timeout(function() {
+					resetScroll();
+					showView(true);
+				});
+			});
+		}
+
+		var tmo=null;
+		function onScroll(evt) {
+			$timeout.cancel(tmo);
+			
+			var pos = view.list ? box.scrollTop : box.scrollLeft;
+			var max = view.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
+
+			var pageoffset = false;
+			if (pos == 0) pageoffset = -1;
+			if (pos >= max) pageoffset = 1;
+
+			if (pageoffset)
+				tmo = $timeout(pageScroll, 1000, true, pageoffset);
+
+			var scale = view.list ? (box.clientHeight / box.scrollHeight) : (box.clientWidth / box.scrollWidth);
+			mkr.style.width = view.list ? "3px" : (box.clientWidth * scale) + "px";
+			mkr.style.height = view.list ? (box.clientHeight * scale) + "px" : "3px";
+			mkr.style.left = view.list ? "4px" : (box.scrollLeft * scale) + "px";
+			mkr.style.top = view.list ? (box.scrollTop * scale) + "px" : "4px";
+			mkr.style.opacity = pageoffset ? 0.6 : 0.3;
+		}
+
+		function onWheel(evt) {
+			var dy = evt.deltaY;
+			if (evt.deltaMode == 1) dy = (dy*30);
+			if (evt.deltaMode == 2) dy = (dy*300);
+			evt.preventDefault();
+
+			box.scrollBy(dy,0);
+		}
+
+////////////////////////////////////////////
 
 		this.onclickHdr = function(vpcell) {
 			window.open("https://www.google.com/calendar/r/month/" + vpcell.month.gcal);
@@ -432,7 +497,8 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 			window.open("https://www.google.com/calendar/r/week/" + vpcell.day.gcal);
 		}
 
-		function initView() {
+		function initTable() {
+			view = vpViewStorage.sel;
 			var rows = [];
 			var months = vpAlmanac.getMonths();
 
@@ -484,7 +550,7 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 		}
 
 		function getPos(xpos, ypos) {
-			return vpViewStorage.sel.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
+			return view.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
 		}
 	}
 
@@ -496,116 +562,6 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 		controllerAs: "vptable",
 		link: fLink,
 		templateUrl: "vptable.htm",
-		restrict: 'E'
-	};
-});
-
-
-
-//////////////////////////////////////////////////////////////////////
-
-angular.module("vpApp").directive("vpScroll", function(vpViewStorage, vpSettings, vpAlmanac, $timeout) {
-	function fCtl($scope) {
-		this.view = vpViewStorage;
-
-		vpAlmanac.setScrollBuffer(6);
-		var box = document.getElementById("vpscrollbox");
-		var mkr = document.getElementById("vpscrollmarker");
-		var ng_box = angular.element(box);
-		var view = {};
-		
-		ng_box.on("scroll", onScroll);
-
-		this.initView = function() {
-			view = vpViewStorage.sel;
-			
-			var m = vpSettings.getMonthCount();
-			this.scroll_size = ((m+12)/m)*100;
-
-			showView(false);
-
-			ng_box.off("wheel");
-			if (view.column)
-				ng_box.on("wheel", onWheel);
-
-			ng_box.css("overflow", "auto");
-			if (view.column)
-				ng_box.css("overflow-y", "hidden");
-			if (view.list)
-				ng_box.css("overflow-x", "hidden");
-
-			$timeout(function() {
-				$scope.vptable.cmdView();
-
-				$timeout(function() {
-					resetScroll();
-					showView(true);
-				});
-			});
-		}
-
-		this.initPrint = function() {
-			var printoffset = view.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
-			$scope.vptable.cmdPrint(printoffset);
-		}
-
-		function showView(show) {
-			box.style.visibility = show ? "" : "hidden";
-			mkr.style.visibility = show ? "" : "hidden";
-		}
-
-		function resetScroll() {
-			box.scrollTop = view.list ? (box.scrollHeight-box.clientHeight)/2 : 0;
-			box.scrollLeft = view.list ? 0 : (box.scrollWidth-box.clientWidth)/2;
-		}
-
-		function pageScroll(off) {
-			showView(false);
-			$timeout(function() {
-				$scope.vptable.cmdScrollPage(off);
-				$timeout(function() {
-					resetScroll();
-					showView(true);
-				});
-			});
-		}
-
-		var tmo=null;
-		function onScroll(evt) {
-			$timeout.cancel(tmo);
-			
-			var pos = view.list ? box.scrollTop : box.scrollLeft;
-			var max = view.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
-
-			var pageoffset = false;
-			if (pos == 0) pageoffset = -1;
-			if (pos >= max) pageoffset = 1;
-
-			if (pageoffset)
-				tmo = $timeout(pageScroll, 1000, true, pageoffset);
-
-			var scale = view.list ? (box.clientHeight / box.scrollHeight) : (box.clientWidth / box.scrollWidth);
-			mkr.style.width = view.list ? "3px" : (box.clientWidth * scale) + "px";
-			mkr.style.height = view.list ? (box.clientHeight * scale) + "px" : "3px";
-			mkr.style.left = view.list ? "4px" : (box.scrollLeft * scale) + "px";
-			mkr.style.top = view.list ? (box.scrollTop * scale) + "px" : "4px";
-			mkr.style.opacity = pageoffset ? 0.6 : 0.3;
-		}
-
-		function onWheel(evt) {
-			var dy = evt.deltaY;
-			if (evt.deltaMode == 1) dy = (dy*30);
-			if (evt.deltaMode == 2) dy = (dy*300);
-			evt.preventDefault();
-
-			box.scrollBy(dy,0);
-		}
-	}
-
-	return {
-		controller: fCtl,
-		controllerAs: "vpscroll",
-		templateUrl: "vpscroll.htm",
 		restrict: 'E'
 	};
 });

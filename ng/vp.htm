@@ -128,7 +128,7 @@ body {
 		</div>
 	</div>
 	<div id="grid" tabIndex="1">
-		<vp-scroll/>
+		<vp-table/>
 	</div>
 	<div id="calendarbar"></div>
 </div>
@@ -258,11 +258,11 @@ angular.module("vpApp").controller("vpController", function(vpViewStorage, vpAcc
 
 	this.onclickView = function(name) {
 		vpViewStorage.setName(name);
-		$scope.vpscroll.initView();
+		$scope.vptable.initView();
 	}
 
 	this.onclickPrint = function() {
-		$scope.vpscroll.initPrint();
+		$scope.vptable.initPrint();
 	}
 
 	this.onclickSettings = function() {
@@ -282,7 +282,7 @@ angular.module("vpApp").controller("vpController", function(vpViewStorage, vpAcc
 		$timeout(function() {
 			this.busy = false;
 			this.show = {planner: true};
-			$scope.vpscroll.initView();
+			$scope.vptable.initView();
 		}.bind(this), 2000)
 	}
 
@@ -296,18 +296,17 @@ angular.module("vpApp").controller("vpController", function(vpViewStorage, vpAcc
 		$scope.$apply(function() {
 			vpSettings.reset();
 			$scope.vp.show = {planner: true};
-			$scope.vpscroll.initView();
+			$scope.vptable.initView();
 		});
 	});
 
 	$scope.$on("settings:load", function() {
 		$scope.$apply(function() {
 			$scope.vp.show = {planner: true};
-			$scope.vpscroll.initView();
+			$scope.vptable.initView();
 		});
 	});
 
-	$scope.vptableconfig = {defer: true};
 	vpAccount.init();
 });
 </script>
