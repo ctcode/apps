@@ -306,6 +306,11 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 		createMonths();
 	}
 
+	this.setPage = function(m) {
+		month_offset = m;
+		createMonths();
+	}
+
 	this.getMonths = function() {
 		return vpmonths;
 	}
@@ -314,7 +319,12 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 		scroll_buffer = n;
 	}
 
+	this.getMonthScrollOffset = function(scrolloffset) {
+		return month_offset + Math.floor((vpmonths.length * scrolloffset) + 0.6);
+	}
+
 	function createMonths() {
+		cfg = vpSettings.vpconfig;
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
 		VpDate.localemonth = cfg.month_names.split('-');
 		
@@ -367,29 +377,13 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 		if (VpDate.isToday(ymd))
 			this.today = true;
 	}
-
-	this.savePrintInfo = function(pos) {
-		var span = [];
-		var n = pos ? Math.floor((vpmonths.length * pos) + 0.6) : 0;
-		var c = (n + cfg.month_count)
-		
-		for (var i=n; i < c; i++)
-			span.push(vpmonths[i]);
-
-		window.VpPrintInfo = span;
-	}
-
-	this.loadPrintInfo = function() {
-		if (window.opener && window.opener.VpPrintInfo)
-			vpmonths = window.opener.VpPrintInfo;
-	}
 });
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $window, $timeout) {
+angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $timeout) {
 	function fCtl($scope) {
 		var box = document.getElementById("vpscrollbox");
 		var ng_box = angular.element(box);
@@ -397,7 +391,6 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 
 		this.initView = function() {
 			view = vpViewStorage.sel;
-			
 			if ($scope.vptable.scrolling)
 				view.scrolling = true;
 
@@ -433,9 +426,14 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 			});
 		}
 
-		this.initPrint = function() {
-			//var printoffset = view.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
-			$window.open("vpprint.htm");
+		this.setView = function(month) {
+			vpAlmanac.setPage(month);
+			initTable();
+		}
+
+		this.getScrollPos = function() {
+			var scrolloffset = view.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
+			return vpAlmanac.getMonthScrollOffset(scrolloffset);
 		}
 
 		function showTable(show) {
@@ -503,9 +501,9 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 		}
 
 		function initTable() {
-			view = vpViewStorage.sel;
 			var rows = [];
 			var months = vpAlmanac.getMonths();
+			view = vpViewStorage.sel;
 
 			var sz = getPos(months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
@@ -561,7 +559,6 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 
 	function fLink(scope, element, attrs) {
 		scope.vptable.scrolling = false;
-		vpAlmanac.setScrollBuffer(0);
 		if (!attrs.hasOwnProperty("disableScrolling"))
 		{
 			scope.vptable.scrolling = true;
