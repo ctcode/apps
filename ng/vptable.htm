@@ -40,7 +40,7 @@
 	pointer-events: all;
 	cursor: pointer;
 }
-#vpscrollcontainer {
+#vptablecontainer {
 	display: flex;
 	height: 100%;
 }
@@ -50,7 +50,7 @@
 	border: none;
 	outline: none;
 }
-#vpscrolltable {
+#vpscrollcontent {
 	position: absolute;
 	pointer-events: none;
 	height: 100%;
@@ -70,13 +70,13 @@
 	height: 100%;
 	font-size: calc(1.4vh * var(--fontscale));
 }
-#vpscrollcontainer {
+#vptablecontainer {
 	flex-direction: column;
 }
 #vpscrollbox::-webkit-scrollbar {
 	height: 0;
 }
-#vpscrolltable {
+#vpscrollcontent {
 	width: {{vptable.scroll_size}}%;
 }
 #vpscrollmarkerbox {
@@ -101,13 +101,13 @@
 .vpnum {
 	width: auto;
 }
-#vpscrollcontainer {
+#vptablecontainer {
 	flex-direction: row;
 }
 #vpscrollbox::-webkit-scrollbar {
 	width: 0;
 }
-#vpscrolltable {
+#vpscrollcontent {
 	height: {{vptable.scroll_size}}%;
 }
 #vpscrollmarkerbox {
@@ -118,7 +118,7 @@
 .vptable {
 	font-size: 1em;
 }
-#vpscrolltable {
+#vpscrollcontent {
 	width: {{vptable.scroll_size}}%;
 }
 #vpscrollmarkerbox {
@@ -129,9 +129,12 @@
 }
 </style>
 
-<div id="vpscrollcontainer">
+<style ng-if="vptable.scrolling">
+</style>
+
+<div id="vptablecontainer">
 	<div id="vpscrollbox">
-		<div id="vpscrolltable">
+		<div id="vpscrollcontent">
 			<table class="vptable">
 				<tr ng-repeat="row in vptable.rows">
 					<td ng-repeat-start="cell in row.cells" ng-if="cell.month" class="vpcell vphdr vplink" ng-class="cell.cls" ng-click="vptable.onclickHdr(cell)">{{cell.month.hdr}}</td>
@@ -147,7 +150,7 @@
 			</table>
 		</div>
 	</div>
-	<div id="vpscrollmarkerbox">
+	<div id="vpscrollmarkerbox" ng-if="vptable.scrolling">
 		<div id="vpscrollmarker"></div>
 	</div>
 </div>

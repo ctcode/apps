@@ -391,31 +391,36 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 
 angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $window, $timeout) {
 	function fCtl($scope) {
-		vpAlmanac.setScrollBuffer(6);
 		var box = document.getElementById("vpscrollbox");
-		var mkr = document.getElementById("vpscrollmarker");
 		var ng_box = angular.element(box);
 		var view = {};
-		
-		ng_box.on("scroll", onScroll);
 
 		this.initView = function() {
 			view = vpViewStorage.sel;
 			
-			var m = vpSettings.getMonthCount();
-			this.scroll_size = ((m+12)/m)*100;
+			if ($scope.vptable.scrolling)
+				view.scrolling = true;
 
-			showView(false);
+			this.scroll_size = 100;
+			showTable(false);
 
-			ng_box.off("wheel");
-			if (view.column)
-				ng_box.on("wheel", onWheel);
+			if (view.scrolling)
+			{
+				var m = vpSettings.getMonthCount();
+				this.scroll_size = ((m+12)/m)*100;
 
-			ng_box.css("overflow", "auto");
-			if (view.column)
-				ng_box.css("overflow-y", "hidden");
-			if (view.list)
-				ng_box.css("overflow-x", "hidden");
+				ng_box.on("scroll", onScroll);
+			
+				ng_box.off("wheel");
+				if (view.column)
+					ng_box.on("wheel", onWheel);
+
+				ng_box.css("overflow", "auto");
+				if (view.column)
+					ng_box.css("overflow-y", "hidden");
+				if (view.list)
+					ng_box.css("overflow-x", "hidden");
+			}
 
 			$timeout(function() {
 				vpAlmanac.initPage();
@@ -423,35 +428,36 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 
 				$timeout(function() {
 					resetScroll();
-					showView(true);
+					showTable(true);
 				});
 			});
 		}
 
 		this.initPrint = function() {
-			var printoffset = view.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
-			vpAlmanac.savePrintInfo(printoffset);
+			//var printoffset = view.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
 			$window.open("vpprint.htm");
 		}
 
-		function showView(show) {
-			box.style.visibility = show ? "" : "hidden";
-			mkr.style.visibility = show ? "" : "hidden";
+		function showTable(show) {
+			document.getElementById("vptablecontainer").style.visibility = show ? "" : "hidden";
 		}
 
 		function resetScroll() {
-			box.scrollTop = view.list ? (box.scrollHeight-box.clientHeight)/2 : 0;
-			box.scrollLeft = view.list ? 0 : (box.scrollWidth-box.clientWidth)/2;
+			if (view.scrolling)
+			{
+				box.scrollTop = view.list ? (box.scrollHeight-box.clientHeight)/2 : 0;
+				box.scrollLeft = view.list ? 0 : (box.scrollWidth-box.clientWidth)/2;
+			}
 		}
 
 		function pageScroll(off) {
-			showView(false);
+			showTable(false);
 			$timeout(function() {
 				vpAlmanac.offsetPage(off);
 				initTable();
 				$timeout(function() {
 					resetScroll();
-					showView(true);
+					showTable(true);
 				});
 			});
 		}
@@ -471,6 +477,7 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 				tmo = $timeout(pageScroll, 1000, true, pageoffset);
 
 			var scale = view.list ? (box.clientHeight / box.scrollHeight) : (box.clientWidth / box.scrollWidth);
+			var mkr = document.getElementById("vpscrollmarker");
 			mkr.style.width = view.list ? "3px" : (box.clientWidth * scale) + "px";
 			mkr.style.height = view.list ? (box.clientHeight * scale) + "px" : "3px";
 			mkr.style.left = view.list ? "4px" : (box.scrollLeft * scale) + "px";
@@ -486,8 +493,6 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 
 			box.scrollBy(dy,0);
 		}
-
-////////////////////////////////////////////
 
 		this.onclickHdr = function(vpcell) {
 			window.open("https://www.google.com/calendar/r/month/" + vpcell.month.gcal);
@@ -555,9 +560,16 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 	}
 
 	function fLink(scope, element, attrs) {
+		scope.vptable.scrolling = false;
+		vpAlmanac.setScrollBuffer(0);
+		if (!attrs.hasOwnProperty("disableScrolling"))
+		{
+			scope.vptable.scrolling = true;
+			vpAlmanac.setScrollBuffer(6);
+		}
+
 		if (!attrs.hasOwnProperty("disableAutoload"))
 			scope.vptable.initView();
-		//if (!attrs.hasOwnProperty("disableScrolling"))
 	}
 
 	return {
