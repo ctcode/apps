@@ -2,18 +2,27 @@
 <html>
 <head>
 <meta charset="utf-8">
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>  <!-- angular library -->
 <style>
 #visualplanner {
 	font-family: Arial;
-	height: 80vh;
-	width: 80vw;
+	height: 60vh;
+	width: 60vw;
 }
 </style>
 </head>
-<body ng-app="vpApp" ng-cloak>
+<body ng-app="vpApp" ng-controller="vpController" ng-cloak>  <!-- connect angular module and controller -->
 <h1>visual-planner embedded</h1>
-<div id="visualplanner"><vp-table/></div>
-<script src="vplib.js" type='text/javascript'></script>
+<div id="visualplanner"><vp-table/></div>  <!-- visual-planner element - to disable scrolling, add an attribute as follows: <vp-table disable-scrolling/> -->
+<script src="vplib.js" type='text/javascript'></script>  <!-- vp library -->
+
+<script type='text/javascript'>
+angular.module("vpApp").controller("vpController", function(vpSettings) {
+	// implement the controller
+	console.log(vpSettings.vpconfig);
+	vpSettings.vpconfig.month_count = 8;  // modify the default settings if required
+});
+</script>
+
 </body>
 </html>
