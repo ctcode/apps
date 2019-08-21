@@ -431,7 +431,7 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 		}
 
 		function showTable(show) {
-			document.getElementById("vptablecontainer").style.visibility = show ? "" : "hidden";
+			document.getElementById("vpscrollcontent").style.visibility = show ? "" : "hidden";
 		}
 
 		function resetScroll() {

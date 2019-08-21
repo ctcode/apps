@@ -41,16 +41,13 @@
 	pointer-events: all;
 	cursor: pointer;
 }
-#vptablecontainer {
+#vpscrollbox {
 	display: flex;
 	height: 100%;
-	border: none;
-	outline: none;
-}
-#vpscrollbox {
-	flex-grow: 1;
 	position: relative;
 	overflow: auto;
+	border: none;
+	outline: none;
 }
 #vpscrollcontent {
 	position: absolute;
@@ -62,9 +59,6 @@
 <style ng-if="vptable.view.sel.column">
 .vptable {
 	font-size: calc(1.4vh * var(--fontscale));
-}
-#vptablecontainer {
-	flex-direction: column;
 }
 #vpscrollcontent {
 	width: {{vptable.scroll_size}}%;
@@ -87,9 +81,6 @@
 .vpnum {
 	width: auto;
 }
-#vptablecontainer {
-	flex-direction: row;
-}
 #vpscrollcontent {
 	height: {{vptable.scroll_size}}%;
 }
@@ -104,22 +95,20 @@
 }
 </style>
 
-<div id="vptablecontainer">
-	<div id="vpscrollbox">
-		<div id="vpscrollcontent">
-			<table class="vptable">
-				<tr ng-repeat="row in vptable.rows">
-					<td ng-repeat-start="cell in row.cells" ng-if="cell.month" class="vpcell vphdr vplink" ng-class="cell.cls" ng-click="vptable.onclickHdr(cell)">{{cell.month.hdr}}</td>
-					<td ng-if="cell.day" class="vpcell vpday" ng-class="cell.cls">
-						<div class="vpnum vplink" ng-click="vptable.onclickDayNum(cell)">{{cell.day.num}}</div>
-						<div ng-repeat="evt in cell.day.evts" class="vpevt">
-							<div ng-if="evt.marker" class="vpevtmarker">&nbsp;</div>
-							<div ng-if="evt.title" class="vpevttitle">{{evt.title}}</div>
-						</div>
-					</td>
-					<td ng-if="cell.empty" ng-repeat-end>&nbsp;</td>
-				</tr>
-			</table>
-		</div>
+<div id="vpscrollbox">
+	<div id="vpscrollcontent">
+		<table class="vptable">
+			<tr ng-repeat="row in vptable.rows">
+				<td ng-repeat-start="cell in row.cells" ng-if="cell.month" class="vpcell vphdr vplink" ng-class="cell.cls" ng-click="vptable.onclickHdr(cell)">{{cell.month.hdr}}</td>
+				<td ng-if="cell.day" class="vpcell vpday" ng-class="cell.cls">
+					<div class="vpnum vplink" ng-click="vptable.onclickDayNum(cell)">{{cell.day.num}}</div>
+					<div ng-repeat="evt in cell.day.evts" class="vpevt">
+						<div ng-if="evt.marker" class="vpevtmarker">&nbsp;</div>
+						<div ng-if="evt.title" class="vpevttitle">{{evt.title}}</div>
+					</div>
+				</td>
+				<td ng-if="cell.empty" ng-repeat-end>&nbsp;</td>
+			</tr>
+		</table>
 	</div>
 </div>
