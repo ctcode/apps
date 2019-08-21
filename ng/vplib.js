@@ -407,12 +407,6 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 				ng_box.off("wheel");
 				if (view.column)
 					ng_box.on("wheel", onWheel);
-
-				ng_box.css("overflow", "auto");
-				if (view.column)
-					ng_box.css("overflow-y", "hidden");
-				if (view.list)
-					ng_box.css("overflow-x", "hidden");
 			}
 
 			$timeout(function() {
@@ -473,14 +467,6 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 
 			if (pageoffset)
 				tmo = $timeout(pageScroll, 1000, true, pageoffset);
-
-			var scale = view.list ? (box.clientHeight / box.scrollHeight) : (box.clientWidth / box.scrollWidth);
-			var mkr = document.getElementById("vpscrollmarker");
-			mkr.style.width = view.list ? "3px" : (box.clientWidth * scale) + "px";
-			mkr.style.height = view.list ? (box.clientHeight * scale) + "px" : "3px";
-			mkr.style.left = view.list ? "4px" : (box.scrollLeft * scale) + "px";
-			mkr.style.top = view.list ? (box.scrollTop * scale) + "px" : "4px";
-			mkr.style.opacity = pageoffset ? 0.6 : 0.3;
 		}
 
 		function onWheel(evt) {

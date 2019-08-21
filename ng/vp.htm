@@ -64,6 +64,8 @@ body {
 }
 #grid {
 	flex-grow: 1;
+	border: none;
+	outline: none;
 }
 #calendarbar {
 	font-size: 0.6em;
@@ -173,7 +175,7 @@ body {
 		<div class="sub"><input ng-model="vp.settings.vpconfig.align_weekends" type="checkbox">
 			Align weekends.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.font_scale_pc" type="number" min="50" max="100">
+		<div class="sub"><input ng-model="vp.settings.vpconfig.font_scale_pc" type="number" min="50" max="200">
 			% Font scale.
 		</div>
 		<div class="sub"><input ng-model="vp.settings.vpconfig.past_opacity" type="number" min="0" max="1">

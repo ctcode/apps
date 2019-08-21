@@ -1,5 +1,6 @@
 <style>
 .vptable {
+	height: 100%;
 	width: 100%;
 	border-spacing: 1px;
 	table-layout: fixed;
@@ -43,50 +44,35 @@
 #vptablecontainer {
 	display: flex;
 	height: 100%;
+	border: none;
+	outline: none;
 }
 #vpscrollbox {
 	flex-grow: 1;
 	position: relative;
-	border: none;
-	outline: none;
+	overflow: auto;
 }
 #vpscrollcontent {
 	position: absolute;
 	pointer-events: none;
 	height: 100%;
 }
-#vpscrollmarkerbox {
-	position: relative;
-}
-#vpscrollmarker {
-	position: absolute;
-	background-color: black;
-	opacity: 0.25;
-}
 </style>
 
 <style ng-if="vptable.view.sel.column">
 .vptable {
-	height: 100%;
 	font-size: calc(1.4vh * var(--fontscale));
 }
 #vptablecontainer {
 	flex-direction: column;
 }
-#vpscrollbox::-webkit-scrollbar {
-	height: 0;
-}
 #vpscrollcontent {
 	width: {{vptable.scroll_size}}%;
-}
-#vpscrollmarkerbox {
-	height: 10px;
 }
 </style>
 
 <style ng-if="vptable.view.sel.list">
 .vptable {
-	height: 100%;
 	font-size: calc(1.6vh * var(--fontscale));
 }
 .vphdr {
@@ -104,14 +90,9 @@
 #vptablecontainer {
 	flex-direction: row;
 }
-#vpscrollbox::-webkit-scrollbar {
-	width: 0;
-}
 #vpscrollcontent {
 	height: {{vptable.scroll_size}}%;
 }
-#vpscrollmarkerbox {
-	width: 10px;
 </style>
 
 <style ng-if="vptable.view.sel.expand">
@@ -120,12 +101,6 @@
 }
 #vpscrollcontent {
 	width: {{vptable.scroll_size}}%;
-}
-#vpscrollmarkerbox {
-	height: 10px;
-}
-#vpscrollmarker {
-	display: none;
 }
 </style>
 
@@ -146,8 +121,5 @@
 				</tr>
 			</table>
 		</div>
-	</div>
-	<div id="vpscrollmarkerbox" ng-if="vptable.scrolling">
-		<div id="vpscrollmarker"></div>
 	</div>
 </div>
