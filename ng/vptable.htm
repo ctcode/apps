@@ -54,6 +54,9 @@
 	pointer-events: none;
 	height: 100%;
 }
+@media only print {
+	#vpscrollbox {overflow: visible;}
+}
 </style>
 
 <style ng-if="vptable.view.sel.column">
