@@ -84,7 +84,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 			first_month: 1,
 			weekends: "6,0",
 			align_weekends: true,
-			font_scale_pc: 80,
+			font_scale_pc: 100,
 			past_opacity: 0.6,
 			month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
 			show_event_time: true,
