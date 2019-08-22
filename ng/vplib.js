@@ -75,13 +75,51 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 angular.module("vpApp").service("vpEvents", function(vpSettings) {
 	var calendars = null;
-	
+
 	this.load = function(datespan) {
-/*
-		if () {}
-		loadCalendarList(
-		);
-*/
+		if (calendars) {
+			reqEvents();
+		}
+		else {
+			calendars = {};
+
+			gapi.client.request({
+				path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+				method: "GET",
+				params: {}
+			})
+			.then(rcv, fail);
+		}
+
+		function rcv(response) {
+			for (var i in response.result.items)
+			{
+				var cal = response.result.items[i];
+				
+				if (cal.selected)
+					calendars[cal.id] = {name: cal.summary, colour: cal.backgroundColor, synctok: null};
+			}
+
+			if (response.result.nextPageToken)
+			{
+				gapi.client.request({
+					path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+					method: "GET",
+					params: {pageToken: response.result.nextPageToken}
+				})
+				.then(rcv, fail);
+			}
+			else
+				reqEvents();
+		};
+
+		function reqEvents() {
+			console.log(calendars);
+		}
+	}
+
+	function fail(reason) {
+		alert(reason.result.error.message);
 	}
 });
 
@@ -260,7 +298,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 				console.log(files[i]);
 		}
 	}
-	
+
 	function fail(reason) {
 		alert(reason.result.error.message);
 	}
