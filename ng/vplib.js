@@ -10,7 +10,7 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 		msg: "Connecting..."
 	};
 
-	this.init = function() {
+	this.connect = function() {
 		gapi.load("client:auth2", onLoadAuth);
 	}
 
