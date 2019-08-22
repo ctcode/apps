@@ -73,6 +73,22 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
+angular.module("vpApp").service("vpEvents", function(vpSettings) {
+	var calendars = null;
+	
+	this.load = function(datespan) {
+/*
+		if () {}
+		loadCalendarList(
+		);
+*/
+	}
+});
+
+
+
+//////////////////////////////////////////////////////////////////////
+
 angular.module("vpApp").service("vpSettings", function($rootScope) {
 	var defaults = {
 		planner_title: "visual-planner",
@@ -100,7 +116,8 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 			multi_day_as_single_day: false,
 			first_day_only: false,
 			marker_width: 0.85,
-			multi_day_opacity: 0.8
+			multi_day_opacity: 0.8,
+			time24h: true
 		}
 	};
 
@@ -138,10 +155,28 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 			function rcv(response) {
 				appdata = JSON.parse(response.body);
+				loadGCalSettings();
+			};
+		});
+
+		function loadGCalSettings() {
+			gapi.client.request({
+				path: "https://www.googleapis.com/calendar/v3/users/me/settings/format24HourTime",
+				method: "GET",
+				params: {}
+			})
+			.then(rcv, fail);
+
+			function rcv(response) {
+				if (response.result)
+				if (response.result.kind == "calendar#setting")
+				if (response.result.id == "format24HourTime")
+					appdata.vpconfig.time24h = (response.result.value == "true");
+
 				publish(appdata);
 				onLoad();
 			};
-		});
+		};
 
 		function onLoad() {
 			$rootScope.$broadcast("settings:load");
@@ -277,7 +312,7 @@ angular.module("vpApp").service("vpViewStorage", function($window) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
+angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 	var vpmonths = [];
 	var month_offset;
 	var scroll_buffer=0;
@@ -331,12 +366,17 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings) {
 		var vdt = new VpDate();
 		vdt.toStartOfMonth();
 		vdt.offsetMonth(month_offset);
+		var isoStart = vdt.dt.toISOString();
+		var datespan = {start: vdt.ymd()};
 
 		vpmonths = [];
 		for (var i=0; i < (vpSettings.getMonthCount()+(scroll_buffer*2)); i++) {
 			vpmonths.push(new VpMonth(vdt.ymd()));
 			vdt.offsetMonth(1);
+			datespan.end = vdt.ymd();
 		}
+		
+		vpEvents.load(datespan);
 	}
 
 	function VpMonth(ymd) {
