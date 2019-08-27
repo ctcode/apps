@@ -75,6 +75,7 @@ function map_init()
 				osMap.removeMarker(marker);
 				CreateMarker(e,n);
 				SaveMarkers();
+				alert("Saved marker: Easting=" + e + " Northing=" + n);
 			}
 			OpenLayers.Event.stop(evt);
 		});
