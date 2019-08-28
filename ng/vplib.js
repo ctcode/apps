@@ -110,7 +110,14 @@ angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 		function addcal(cal) {
 			if (cal.selected)
 				//calendarlist.items[cal.id] = {name: cal.summary, colour: cal.backgroundColor, synctok: null};
-				calendarlist.items.push({id: cal.id, name: cal.summary, colour: cal.backgroundColor, synctok: null});
+				calendarlist.items.push({
+					id: cal.id,
+					name: cal.summary,
+					colour: cal.backgroundColor,
+					cls: {checked: false},
+					onclick: function() {console.log(cal.summary);},
+					synctok: null
+				});
 		}
 
 		function reqEvents() {
@@ -121,7 +128,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 		alert(reason.result.error.message);
 	}
 
-	this.calendars = calendarlist.items;
+	this.calinfo = calendarlist.items;
 });
 
 
@@ -649,12 +656,11 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 
 angular.module("vpApp").directive("vpCalbar", function(vpEvents) {
 	function fCtl($scope) {
-		$scope.vpcalbar.calendars = vpEvents.calendars;
+		$scope.vpevents = vpEvents;
 	}
 
 	return {
 		controller: fCtl,
-		controllerAs: "vpcalbar",
 		templateUrl: "vpcalbar.htm",
 		restrict: 'E'
 	};
