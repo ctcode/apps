@@ -74,7 +74,7 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 //////////////////////////////////////////////////////////////////////
 
 angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
-	var calendarlist = {request: true, items: {}};
+	var calendarlist = {request: true, items: []};
 
 	this.load = function(datespan) {
 		if (calendarlist.request) {
@@ -109,7 +109,8 @@ angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 
 		function addcal(cal) {
 			if (cal.selected)
-				calendarlist.items[cal.id] = {name: cal.summary, colour: cal.backgroundColor, synctok: null};
+				//calendarlist.items[cal.id] = {name: cal.summary, colour: cal.backgroundColor, synctok: null};
+				calendarlist.items.push({id: cal.id, name: cal.summary, colour: cal.backgroundColor, synctok: null});
 		}
 
 		function reqEvents() {

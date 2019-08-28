@@ -28,7 +28,7 @@
 </style>
 
 <div id="vpcalbox">
-	<div ng-repeat="cal in vpcalbar.calendars" class="vpcalbtn">
+	<div class="vpcalbtn" ng-repeat="cal in vpcalbar.calendars | orderBy: 'name'">
 		<span class="vpcalmarker" ng-style="{'background-color': cal.colour}"></span>
 		<span>{{cal.name}}</span>
 	</div>
