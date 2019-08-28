@@ -68,8 +68,7 @@ body {
 	outline: none;
 }
 #calendarbar {
-	font-size: 0.6em;
-	height: 2.8em;
+	font-size: 0.65em;
 	background-color: gainsboro;
 }
 #settings {
@@ -129,10 +128,8 @@ body {
 			<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vp.onclickView('column')" ng-class="vp.view.cls.column"/>
 		</div>
 	</div>
-	<div id="grid" tabIndex="1">
-		<vp-table disable-autoload/>
-	</div>
-	<div id="calendarbar"></div>
+	<div id="grid" tabIndex="1"><vp-table disable-autoload/></div>
+	<div id="calendarbar"><vp-calbar></div>
 </div>
 
 <div id="settings" ng-show="vp.show.settings">

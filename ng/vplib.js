@@ -73,32 +73,26 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function(vpSettings) {
-	var calendars = null;
+angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
+	var calendarlist = {request: true, items: {}};
 
 	this.load = function(datespan) {
-		if (calendars) {
-			reqEvents();
-		}
-		else {
-			calendars = {};
-
+		if (calendarlist.request) {
 			gapi.client.request({
 				path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
 				method: "GET",
 				params: {}
 			})
 			.then(rcv, fail);
+
+			calendarlist.request = false;
 		}
+		else
+			reqEvents();
 
 		function rcv(response) {
 			for (var i in response.result.items)
-			{
-				var cal = response.result.items[i];
-				
-				if (cal.selected)
-					calendars[cal.id] = {name: cal.summary, colour: cal.backgroundColor, synctok: null};
-			}
+				$rootScope.$apply(addcal(response.result.items[i]));
 
 			if (response.result.nextPageToken)
 			{
@@ -113,14 +107,20 @@ angular.module("vpApp").service("vpEvents", function(vpSettings) {
 				reqEvents();
 		};
 
+		function addcal(cal) {
+			if (cal.selected)
+				calendarlist.items[cal.id] = {name: cal.summary, colour: cal.backgroundColor, synctok: null};
+		}
+
 		function reqEvents() {
-			console.log(calendars);
 		}
 	}
 
 	function fail(reason) {
 		alert(reason.result.error.message);
 	}
+
+	this.calendars = calendarlist.items;
 });
 
 
@@ -638,6 +638,23 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 		controllerAs: "vptable",
 		link: fLink,
 		templateUrl: "vptable.htm",
+		restrict: 'E'
+	};
+});
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+angular.module("vpApp").directive("vpCalbar", function(vpEvents) {
+	function fCtl($scope) {
+		$scope.vpcalbar.calendars = vpEvents.calendars;
+	}
+
+	return {
+		controller: fCtl,
+		controllerAs: "vpcalbar",
+		templateUrl: "vpcalbar.htm",
 		restrict: 'E'
 	};
 });
