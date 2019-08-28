@@ -334,24 +334,35 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpViewStorage", function($window) {
-	this.load = function() {
-		var stg = $window.localStorage.getItem("vp-viewname");
-		var name = stg ? stg : "column";
+angular.module("vpApp").service("vpStorage", function($window) {
+	var info = {view: {}, cal: {}};
 
-		this.sel = {};
-		this.sel[name] = true;
+	var stg = $window.localStorage.getItem("vp");
+	if (stg)
+		info = JSON.parse(stg);
+	else
+		setViewInfo("column");
 
-		this.cls = {};
-		this.cls[name] = {checked: true};
+	function saveStorage() {
+		$window.localStorage.setItem("vp", JSON.stringify(info));
 	}
 
-	this.setName = function(name) {
-		$window.localStorage.setItem("vp-viewname", name);
-		this.load();
+	function setViewInfo(name) {
+		info.view.sel = {};
+		info.view.sel[name] = true;
+
+		info.view.cls = {};
+		info.view.cls[name] = {checked: true};
+
+		saveStorage();
 	}
 
-	this.load();
+	this.viewinfo = info.view;
+	this.calinfo = info.cal;
+	this.setName = setViewInfo;
+
+	this.toggleCalendar = function(name) {
+	}
 });
 
 
@@ -469,14 +480,16 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings, vpAlmanac, $timeout) {
+angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpAlmanac, $timeout) {
 	function fCtl($scope) {
+		$scope.vpstorage = vpStorage;
+
 		var box = document.getElementById("vpscrollbox");
 		var ng_box = angular.element(box);
 		var view = {};
 
 		this.initView = function() {
-			view = vpViewStorage.sel;
+			view = vpStorage.viewinfo.sel;
 			if ($scope.vptable.scrolling)
 				view.scrolling = true;
 
@@ -575,7 +588,7 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 		function initTable() {
 			var rows = [];
 			var months = vpAlmanac.getMonths();
-			view = vpViewStorage.sel;
+			view = vpStorage.viewinfo.sel;
 
 			var sz = getPos(months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
@@ -621,7 +634,6 @@ angular.module("vpApp").directive("vpTable", function(vpViewStorage, vpSettings,
 			$scope.vptable.rows = rows;
 			$scope.vptable.fontscale = vpSettings.vpconfig.font_scale_pc/100;
 			$scope.vptable.past_opacity = vpSettings.vpconfig.past_opacity;
-			$scope.vptable.view = vpViewStorage;
 		}
 
 		function getPos(xpos, ypos) {
