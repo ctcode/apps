@@ -114,13 +114,13 @@ body {
 </head>
 
 <body ng-app="vpApp" ng-controller="vpController as vp" ng-cloak>
-<title ng-bind="vp.settings.planner_title">Loading...</title>
+<title ng-bind="vpsettings.planner_title">Loading...</title>
 
 <div id="planner" ng-show="vp.show.planner">
 	<div id="banner">
-		<div id="bantxt">{{vp.settings.planner_title}}</div>
+		<div id="bantxt">{{vpsettings.planner_title}}</div>
 		<div id="tools">
-			<div>{{vp.account.status.msg}}</div>
+			<div>{{vpaccount.status.msg}}</div>
 			<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
 			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
 			<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vptable.onclickView('expand')" ng-class="vptable.view.cls.expand"/>
@@ -139,90 +139,90 @@ body {
 		<div ng-show="vp.busy"><i>Saving...</i></div>
 	</div>
 	<div class="sub group"><b>Account</b>
-		<div class="sub">{{vp.account.status.msg}}</div>
+		<div class="sub">{{vpaccount.status.msg}}</div>
 		<div class="sub" ng-show="vp.g_signbtn_ok"><div id="g_signbtn" class="g-signin2" data-width="300" data-height="60" data-longtitle="true"></div></div>
-		<div class="sub" ng-show="vp.account.status.signed_in"><a href="https://myaccount.google.com/permissions" target="_blank">Permissions</a></div>
-		<div class="sub" ng-show="vp.account.status.signed_in"><a href="https://drive.google.com/drive/my-drive" target="_blank">Manage Application Data</a>  (Drive > Settings > Manage Apps)</div>
-		<div class="sub" ng-hide="vp.account.status.signed_in || vp.g_signbtn_ok"><button ng-click="vp.account.SignIn();">Sign In</button></div>
-		<div class="sub" ng-show="vp.account.status.signed_in"><button ng-click="vp.account.SignOut();">Sign Out</button></div>
+		<div class="sub" ng-show="vpaccount.status.signed_in"><a href="https://myaccount.google.com/permissions" target="_blank">Permissions</a></div>
+		<div class="sub" ng-show="vpaccount.status.signed_in"><a href="https://drive.google.com/drive/my-drive" target="_blank">Manage Application Data</a>  (Drive > Settings > Manage Apps)</div>
+		<div class="sub" ng-hide="vpaccount.status.signed_in || vp.g_signbtn_ok"><button ng-click="vpaccount.SignIn();">Sign In</button></div>
+		<div class="sub" ng-show="vpaccount.status.signed_in"><button ng-click="vpaccount.SignOut();">Sign Out</button></div>
 	</div>
 	<form name="vp.form">
 	<div class="sub group"><b>View</b>
-		<div class="sub"><input ng-model="vp.settings.planner_title">
+		<div class="sub"><input ng-model="vpsettings.planner_title">
 			Planner title.
 		</div>
-		<div class="sub"><select ng-model="vp.settings.vpconfig.month_count"  ng-options="x for (x, y) in vp.month_count_options"></select>
+		<div class="sub"><select ng-model="vpsettings.vpconfig.month_count"  ng-options="x for (x, y) in vp.month_count_options"></select>
 			Number of months to display.  More can be scrolled into view using the mouse wheel or cursor keys.
 		</div>
-		<div class="sub"><select ng-model="vp.settings.vpconfig.month_count_portrait"  ng-options="x for (x, y) in vp.month_count_options"></select>
+		<div class="sub"><select ng-model="vpsettings.vpconfig.month_count_portrait"  ng-options="x for (x, y) in vp.month_count_options"></select>
 			Number of months to display in portrait mode on mobile devices.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.auto_scroll" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.auto_scroll" type="checkbox">
 			Auto-scroll to current month.  If not selected, the view will always start at the beginning of the year.
-			<div class="sub"><input ng-model="vp.settings.vpconfig.auto_scroll_offset" type="number" min="-12" max="12">
+			<div class="sub"><input ng-model="vpsettings.vpconfig.auto_scroll_offset" type="number" min="-12" max="12">
 				Auto-scroll offset.  For example, -2 will cause the date range to start from two months ago, 0 will start with the current month.
 			</div>
-			<div class="sub"><input ng-model="vp.settings.vpconfig.first_month" type="number" min="1" max="12">
+			<div class="sub"><input ng-model="vpsettings.vpconfig.first_month" type="number" min="1" max="12">
 				First month of year.
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.weekends">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.weekends">
 			Weekends.  (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.align_weekends" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.align_weekends" type="checkbox">
 			Align weekends.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.font_scale_pc" type="number" min="50" max="200">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.font_scale_pc" type="number" min="50" max="200">
 			% Font scale.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.past_opacity" type="number" min="0" max="1">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.past_opacity" type="number" min="0" max="1">
 			Opacity of past months.  (1 = opaque)
 		</div>
-		<div class="sub"><input class="monthnames" ng-model="vp.settings.vpconfig.month_names">
+		<div class="sub"><input class="monthnames" ng-model="vpsettings.vpconfig.month_names">
 			Month names.
 		</div>
 	</div>
 	<div class="sub group"><b>Events</b>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.show_event_time" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.show_event_time" type="checkbox">
 			Show event time.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.show_event_title" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.show_event_title" type="checkbox">
 			Show event title.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.show_event_marker" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.show_event_marker" type="checkbox">
 			Show event marker.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.colour_event_title" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.colour_event_title" type="checkbox">
 			Use event colour for title text.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.proportional_events" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.proportional_events" type="checkbox">
 			Display event markers in proportion to their actual duration.  Events outside the visible event range will not be shown.
-			<div class="sub"><input ng-model="vp.settings.vpconfig.proportional_start_hour" type="number" min="0" max="24">
+			<div class="sub"><input ng-model="vpsettings.vpconfig.proportional_start_hour" type="number" min="0" max="24">
 				Start hour of visible event range.
 			</div>
-			<div class="sub"><input ng-model="vp.settings.vpconfig.proportional_end_hour" type="number" min="0" max="24">
+			<div class="sub"><input ng-model="vpsettings.vpconfig.proportional_end_hour" type="number" min="0" max="24">
 				End hour of visible event range.
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.show_all_day_events" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.show_all_day_events" type="checkbox">
 			Show 'all day' events.
-			<div class="sub"><input ng-model="vp.settings.vpconfig.single_day_as_multi_day" type="checkbox">
+			<div class="sub"><input ng-model="vpsettings.vpconfig.single_day_as_multi_day" type="checkbox">
 				Single day as multi-day (vertical bar).
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.show_timed_events" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.show_timed_events" type="checkbox">
 			Show 'timed' events.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.multi_day_as_single_day" type="checkbox">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.multi_day_as_single_day" type="checkbox">
 			Show multi-day events as single-day events on each day.
-			<div class="sub"><input ng-model="vp.settings.vpconfig.first_day_only" type="checkbox">
+			<div class="sub"><input ng-model="vpsettings.vpconfig.first_day_only" type="checkbox">
 				First day only.
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.marker_width" type="number" min="0.2">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.marker_width" type="number" min="0.2">
 			Width of event marker.
 		</div>
-		<div class="sub"><input ng-model="vp.settings.vpconfig.multi_day_opacity" type="number" min="0" max="1">
+		<div class="sub"><input ng-model="vpsettings.vpconfig.multi_day_opacity" type="number" min="0" max="1">
 			Opacity of multi-day event.  (1 = opaque)
 		</div>
 	</div>
@@ -247,8 +247,8 @@ body {
 
 <script type='text/javascript'>
 angular.module("vpApp").controller("vpController", function(vpAccount, vpSettings, $scope, $timeout, $window) {
-	this.account = vpAccount;
-	this.settings = vpSettings;
+	$scope.vpaccount = vpAccount;
+	$scope.vpsettings = vpSettings;
 	this.show = {planner: true};
 	this.busy = false;
 	this.month_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
