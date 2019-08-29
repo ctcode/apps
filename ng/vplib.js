@@ -73,7 +73,7 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
+angular.module("vpApp").service("vpEvents", function($rootScope, vpStorage, vpSettings) {
 	var calendarlist = {request: true, items: []};
 
 	this.load = function(datespan) {
@@ -114,8 +114,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 					id: cal.id,
 					name: cal.summary,
 					colour: cal.backgroundColor,
-					cls: {checked: false},
-					onclick: function() {console.log(cal.summary);},
+					onclick: function() {vpStorage.toggleCalendar(cal.summary);},
 					synctok: null
 				});
 		}
@@ -362,6 +361,12 @@ angular.module("vpApp").service("vpStorage", function($window) {
 	this.setName = setViewInfo;
 
 	this.toggleCalendar = function(name) {
+		if (info.cal[name])
+			delete info.cal[name];
+		else
+			info.cal[name] = {checked: true};
+
+		saveStorage();
 	}
 });
 
@@ -666,8 +671,9 @@ angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpA
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpCalbar", function(vpEvents) {
+angular.module("vpApp").directive("vpCalbar", function(vpStorage, vpEvents) {
 	function fCtl($scope) {
+		$scope.vpstorage = vpStorage;
 		$scope.vpevents = vpEvents;
 	}
 
