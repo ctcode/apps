@@ -114,7 +114,6 @@ angular.module("vpApp").service("vpEvents", function($rootScope, vpStorage, vpSe
 					id: cal.id,
 					name: cal.summary,
 					colour: cal.backgroundColor,
-					onclick: function() {vpStorage.toggleCalendar(cal.summary);},
 					synctok: null
 				});
 		}
