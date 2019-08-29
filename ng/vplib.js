@@ -558,11 +558,11 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 		}
 
 		this.onclickHdr = function(vpcell) {
-			window.open("https://www.google.com/calendar/r/month/" + vpcell.month.gcal);
+			$window.open("https://www.google.com/calendar/r/month/" + vpcell.month.gcal);
 		}
 
 		this.onclickDayNum = function(vpcell) {
-			window.open("https://www.google.com/calendar/r/week/" + vpcell.day.gcal);
+			$window.open("https://www.google.com/calendar/r/week/" + vpcell.day.gcal);
 		}
 
 		function initTable() {
