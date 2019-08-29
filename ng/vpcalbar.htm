@@ -30,7 +30,7 @@
 </style>
 
 <div id="vpcalbox">
-	<div class="vpcalbtn" ng-repeat="cal in vpevents.calinfo | orderBy: 'name'" ng-class="vpstorage.calinfo[cal.name]" ng-click="vpstorage.toggleCalendar(cal.name)">
+	<div class="vpcalbtn" ng-repeat="cal in vpevents.calinfo | orderBy: 'name'" ng-class="vpcalbar.calcls[cal.name]" ng-click="vpcalbar.toggleCalendar(cal.name)">
 		<span class="vpcalmarker" ng-style="{'background-color': cal.colour}"></span>
 		<span>{{cal.name}}</span>
 	</div>

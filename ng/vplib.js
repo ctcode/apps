@@ -670,14 +670,30 @@ angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpA
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpCalbar", function(vpStorage, vpEvents) {
-	function fCtl($scope) {
-		$scope.vpstorage = vpStorage;
+angular.module("vpApp").directive("vpCalbar", function() {
+	function fCtl($scope, $window, vpEvents) {
 		$scope.vpevents = vpEvents;
+		var cls = {};
+
+		var stg = $window.localStorage.getItem("vp-calbarinfo");
+		if (stg)
+			cls = JSON.parse(stg);
+
+		this.toggleCalendar = function(name) {
+			if (cls[name])
+				delete cls[name];
+			else
+				cls[name] = {checked: true};
+
+			$window.localStorage.setItem("vp-calbarinfo", JSON.stringify(cls));
+		}
+		
+		this.calcls = cls;
 	}
 
 	return {
 		controller: fCtl,
+		controllerAs: "vpcalbar",
 		templateUrl: "vpcalbar.htm",
 		restrict: 'E'
 	};
