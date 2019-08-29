@@ -73,7 +73,7 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($rootScope, vpStorage, vpSettings) {
+angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 	var calendarlist = {request: true, items: []};
 
 	this.load = function(datespan) {
@@ -332,47 +332,6 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpStorage", function($window) {
-	var info = {view: {}, cal: {}};
-
-	var stg = $window.localStorage.getItem("vp");
-	if (stg)
-		info = JSON.parse(stg);
-	else
-		setViewInfo("column");
-
-	function saveStorage() {
-		$window.localStorage.setItem("vp", JSON.stringify(info));
-	}
-
-	function setViewInfo(name) {
-		info.view.sel = {};
-		info.view.sel[name] = true;
-
-		info.view.cls = {};
-		info.view.cls[name] = {checked: true};
-
-		saveStorage();
-	}
-
-	this.viewinfo = info.view;
-	this.calinfo = info.cal;
-	this.setName = setViewInfo;
-
-	this.toggleCalendar = function(name) {
-		if (info.cal[name])
-			delete info.cal[name];
-		else
-			info.cal[name] = {checked: true};
-
-		saveStorage();
-	}
-});
-
-
-
-//////////////////////////////////////////////////////////////////////
-
 angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 	var vpmonths = [];
 	var month_offset;
@@ -484,31 +443,43 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpAlmanac, $timeout) {
-	function fCtl($scope) {
-		$scope.vpstorage = vpStorage;
+angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $window, $timeout) {
+	var view = {sel: {}, cls: {}};
+	var scrolling = false;
 
+	var stg = $window.localStorage.getItem("vp-viewinfo");
+	if (stg)
+		view = JSON.parse(stg);
+	else
+		setViewInfo("column");
+
+	function setViewInfo(name) {
+		view.sel = {};
+		view.sel[name] = true;
+
+		view.cls = {};
+		view.cls[name] = {checked: true};
+
+		$window.localStorage.setItem("vp-viewinfo", JSON.stringify(view));
+	}
+	
+	function fCtl($scope) {
 		var box = document.getElementById("vpscrollbox");
 		var ng_box = angular.element(box);
-		var view = {};
 
 		this.initView = function() {
-			view = vpStorage.viewinfo.sel;
-			if ($scope.vptable.scrolling)
-				view.scrolling = true;
-
-			this.scroll_size = 100;
+			$scope.vptable.scroll_size = 100;
 			showTable(false);
 
-			if (view.scrolling)
+			if (scrolling)
 			{
 				var m = vpSettings.getMonthCount();
-				this.scroll_size = ((m+12)/m)*100;
+				$scope.vptable.scroll_size = ((m+12)/m)*100;
 
 				ng_box.on("scroll", onScroll);
 			
 				ng_box.off("wheel");
-				if (view.column)
+				if (view.sel.column)
 					ng_box.on("wheel", onWheel);
 			}
 
@@ -528,8 +499,13 @@ angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpA
 			initTable();
 		}
 
+		this.onclickView = function(name) {
+			setViewInfo(name);
+			this.initView();
+		}
+
 		this.getScrollPos = function() {
-			var scrolloffset = view.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
+			var scrolloffset = view.sel.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
 			return vpAlmanac.getMonthScrollOffset(scrolloffset);
 		}
 
@@ -538,10 +514,10 @@ angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpA
 		}
 
 		function resetScroll() {
-			if (view.scrolling)
+			if (scrolling)
 			{
-				box.scrollTop = view.list ? (box.scrollHeight-box.clientHeight)/2 : 0;
-				box.scrollLeft = view.list ? 0 : (box.scrollWidth-box.clientWidth)/2;
+				box.scrollTop = view.sel.list ? (box.scrollHeight-box.clientHeight)/2 : 0;
+				box.scrollLeft = view.sel.list ? 0 : (box.scrollWidth-box.clientWidth)/2;
 			}
 		}
 
@@ -561,8 +537,8 @@ angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpA
 		function onScroll(evt) {
 			$timeout.cancel(tmo);
 			
-			var pos = view.list ? box.scrollTop : box.scrollLeft;
-			var max = view.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
+			var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
+			var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
 
 			var pageoffset = false;
 			if (pos == 0) pageoffset = -1;
@@ -592,7 +568,6 @@ angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpA
 		function initTable() {
 			var rows = [];
 			var months = vpAlmanac.getMonths();
-			view = vpStorage.viewinfo.sel;
 
 			var sz = getPos(months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
@@ -635,21 +610,21 @@ angular.module("vpApp").directive("vpTable", function(vpStorage, vpSettings, vpA
 				}
 			}
 			
+			$scope.vptable.view = view;
 			$scope.vptable.rows = rows;
 			$scope.vptable.fontscale = vpSettings.vpconfig.font_scale_pc/100;
 			$scope.vptable.past_opacity = vpSettings.vpconfig.past_opacity;
 		}
 
 		function getPos(xpos, ypos) {
-			return view.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
+			return view.sel.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
 		}
 	}
 
 	function fLink(scope, element, attrs) {
-		scope.vptable.scrolling = false;
 		if (!attrs.hasOwnProperty("disableScrolling"))
 		{
-			scope.vptable.scrolling = true;
+			scrolling = true;
 			vpAlmanac.setScrollBuffer(6);
 		}
 
