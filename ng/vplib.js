@@ -73,8 +73,13 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
+angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSettings) {
 	var calendarlist = {request: true, items: []};
+	var togInfo = {};
+
+	var stg = $window.localStorage.getItem("vp-calinfo");
+	if (stg)
+		togInfo = JSON.parse(stg);
 
 	this.load = function(datespan) {
 		var isoStart = new Date(datespan.start).toISOString();
@@ -104,13 +109,19 @@ angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 				else
 					reqEvents();
 
-				function addCal(cal) {
-					if (cal.selected)
-						calendarlist.items.push({
-							id: cal.id,
-							name: cal.summary,
-							colour: cal.backgroundColor
-						});
+				function addCal(item) {
+					if (item.selected) {
+						var cal = {
+							id: item.id,
+							name: item.summary,
+							colour: item.backgroundColor
+						};
+						
+						if (togInfo[cal.id])
+							cal.cls = {checked: true};
+
+						calendarlist.items.push(cal);
+					}
 				}
 			};
 		}
@@ -141,7 +152,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 					cal.synctok = response.result.nextSyncToken;
 
 				function addEvt(evt) {
-					console.log(cal.name + "~" + evt.summary);
+					//console.log(cal.name + "~" + evt.summary);
 				}
 			};
 		}
@@ -149,6 +160,19 @@ angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 
 	function fail(reason) {
 		alert(reason.result.error.message);
+	}
+
+	this.toggleCalendar = function(cal) {
+		if (cal.cls)
+			delete cal.cls;
+		else
+			cal.cls = {checked: true};
+
+		delete togInfo[cal.id];
+		if (cal.cls)
+			togInfo[cal.id] = true;
+
+		$window.localStorage.setItem("vp-calinfo", JSON.stringify(togInfo));
 	}
 
 	this.calinfo = calendarlist.items;
@@ -671,39 +695,12 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 //////////////////////////////////////////////////////////////////////
 
 angular.module("vpApp").directive("vpCalbar", function() {
-	function fCtl($scope, $window, vpEvents) {
+	function fCtl($scope, vpEvents) {
 		$scope.vpevents = vpEvents;
-		var info;
-		loadStg();
-
-		function loadStg() {
-			info = {};
-			var stg = $window.localStorage.getItem("vp-calbarinfo");
-
-			if (stg)
-				info = JSON.parse(stg);
-			
-			for (cal of vpEvents.calinfo) {
-				delete cal.cls;
-				if (info[cal.id])
-					cal.cls = {checked: true};
-			}
-		}
-
-		this.toggleCalendar = function(cal) {
-			if (info[cal.id])
-				delete info[cal.id];
-			else
-				info[cal.id] = true;
-
-			$window.localStorage.setItem("vp-calbarinfo", JSON.stringify(info));
-			loadStg();
-		}
 	}
 
 	return {
 		controller: fCtl,
-		controllerAs: "vpcalbar",
 		templateUrl: "vpcalbar.htm",
 		restrict: 'E'
 	};
