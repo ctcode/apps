@@ -75,69 +75,76 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 angular.module("vpApp").service("vpEvents", function($rootScope, vpSettings) {
 	var calendarlist = {request: true, items: []};
-	var isoStart, isoEnd;
 
 	this.load = function(datespan) {
-		isoStart = new Date(datespan.start).toISOString();
-		isoEnd = new Date(datespan.end).toISOString();
+		var isoStart = new Date(datespan.start).toISOString();
+		var isoEnd = new Date(datespan.end).toISOString();
 
 		if (calendarlist.request) {
-			gapi.client.request({
-				path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
-				method: "GET",
-				params: {}
-			})
-			.then(rcv, fail);
-
+			reqCalendars();
 			calendarlist.request = false;
 		}
 		else
 			reqEvents();
 
-		function rcv(response) {
-			for (item of response.result.items)
-				$rootScope.$apply(addcal(item));
-
-			if (response.result.nextPageToken)
-			{
-				gapi.client.request({
-					path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
-					method: "GET",
-					params: {pageToken: response.result.nextPageToken}
-				})
-				.then(rcv, fail);
-			}
-			else
-				reqEvents();
-		};
-
-		function addcal(cal) {
-			console.log(cal);
-			if (cal.selected)
-				//calendarlist.items[cal.id] = {name: cal.summary, colour: cal.backgroundColor, synctok: null};
-				calendarlist.items.push({
-					id: cal.id,
-					name: cal.summary,
-					colour: cal.backgroundColor,
-					synctok: null
-				});
-		}
-	}
-
-	function reqEvents() {
-		for (cal of calendarlist.items)
-		{
+		function reqCalendars(tok) {
 			gapi.client.request({
-				path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(cal.id) + "/events",
+				path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
 				method: "GET",
-				params: {timeMin: isoStart, timeMax: isoEnd, singleEvents: true}
+				params: tok ? {pageToken: tok} : {}
 			})
 			.then(rcv, fail);
+
+			function rcv(response) {
+				for (item of response.result.items)
+					$rootScope.$apply(addCal(item));
+
+				if (response.result.nextPageToken)
+					reqCalendars(response.result.nextPageToken);
+				else
+					reqEvents();
+
+				function addCal(cal) {
+					if (cal.selected)
+						calendarlist.items.push({
+							id: cal.id,
+							name: cal.summary,
+							colour: cal.backgroundColor
+						});
+				}
+			};
 		}
 
-		function rcv(response) {
-			console.log(response.result);
-		};
+		function reqEvents(tok) {
+			var reqparams = {timeMin: isoStart, timeMax: isoEnd, singleEvents: true};
+			if (tok) reqparams.pageToken = tok;
+			
+			for (cal of calendarlist.items) {
+				gapi.client.request({
+					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(cal.id) + "/events",
+					method: "GET",
+					params: reqparams
+				})
+				.then(rcv.bind(cal), fail);
+			}
+
+			function rcv(response) {
+				var cal = this;
+		
+				for (item of response.result.items) {
+					$rootScope.$apply(addEvt(item));
+				}
+
+				if (response.result.nextPageToken)
+					reqEvents(response.result.nextPageToken);
+				else if (response.result.nextSyncToken)
+					cal.synctok = response.result.nextSyncToken;
+
+				function addEvt(evt) {
+					console.log(cal.name + "~" + evt.summary);
+				}
+			};
+		}
 	}
 
 	function fail(reason) {
