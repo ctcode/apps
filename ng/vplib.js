@@ -619,7 +619,6 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 		function initTable() {
 			var rows = [];
 			var page = vpAlmanac.getPage();
-			console.log(page);
 
 			var sz = getPos(page.months.length, 31+6+1);
 			for (var y=0; y < sz.y; y++)
