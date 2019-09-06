@@ -340,18 +340,51 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 
 			function rcv(response) {
 				var cal = this;
+				var vpalmanac = angular.injector(["ng", "vpApp"]).get("vpAlmanac");
 		
 				for (item of response.result.items) {
-					$rootScope.$apply(addEvt(item));
+					var evt = newEvent(cal, item);
+					if (evt)
+						$rootScope.$apply(vpalmanac.addEvt(evt));
 				}
 
 				if (response.result.nextPageToken)
 					reqEvents(response.result.nextPageToken);
 				else if (response.result.nextSyncToken)
 					cal.synctok = response.result.nextSyncToken;
+				
+				function newEvent(cal, item) {
+					if (item.kind != "calendar#event")
+						return null;
+					
+					if (item.status == "cancelled")
+						return {id: item.id, deleted: true};
 
-				function addEvt(evt) {
-					//console.log(cal.name + "~" + evt.summary);
+					if (item.hasOwnProperty("recurrence"))
+						return null;
+
+					if (!item.hasOwnProperty("start"))
+						return null;
+					
+					var evt = {
+						cal: cal,
+						id: item.id,
+						title: item.summary,
+						eid: item.htmlLink
+					};
+					
+					if ("dateTime" in item.start)
+					{
+						evt.timed = true;
+						evt.timespan = {start: item.start.dateTime, end: item.end.dateTime};
+					}
+					else
+					{
+						evt.timed = false;
+						evt.datespan = {start: item.start.date, end: item.end.date};
+					}
+					
+					return evt;
 				}
 			};
 		}
@@ -448,6 +481,10 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 		}
 		
 		vpEvents.load(datespan);
+	}
+
+	this.addEvt = function(evt) {
+		console.log(evt);
 	}
 
 	function VpMonth(ymd) {
