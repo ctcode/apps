@@ -454,7 +454,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 		var vdt = new VpDate(ymd);
 		
 		this.hdr = vdt.MonthTitle();
-		this.gcal = vdt.GCalURL();
 		this.days = {start: vpdays.length, count: 0};
 		
 		if (vdt.isPastMonth())
@@ -473,14 +472,15 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 
 			vdt.offsetDay(1);
 		}
+
+		this.first = vpdays[this.days.start];
 	}
 
 	function VpDay(ymd) {
 		var vdt = new VpDate(ymd);
 
-		this.id = ymd;
+		this.ymd = ymd;
 		this.num = vdt.DayOfMonth();
-		this.gcal = vdt.GCalURL();
 
 		if (vdt.isWeekend())
 			this.weekend = true;
@@ -609,11 +609,11 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 		}
 
 		this.onclickHdr = function(vpcell) {
-			$window.open("https://www.google.com/calendar/r/month/" + vpcell.month.gcal);
+			$window.open("https://www.google.com/calendar/r/month/" + new VpDate(vpcell.month.first.ymd).GCalURL());
 		}
 
 		this.onclickDayNum = function(vpcell) {
-			$window.open("https://www.google.com/calendar/r/week/" + vpcell.day.gcal);
+			$window.open("https://www.google.com/calendar/r/week/" + new VpDate(vpcell.day.ymd).GCalURL());
 		}
 
 		function initTable() {
