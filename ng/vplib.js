@@ -73,115 +73,6 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSettings) {
-	var calendarlist = {request: true, items: []};
-	var togInfo = {};
-
-	var stg = $window.localStorage.getItem("vp-calinfo");
-	if (stg)
-		togInfo = JSON.parse(stg);
-
-	this.load = function(datespan) {
-		var isoStart = new Date(datespan.start).toISOString();
-		var isoEnd = new Date(datespan.end).toISOString();
-
-		if (calendarlist.request) {
-			reqCalendars();
-			calendarlist.request = false;
-		}
-		else
-			reqEvents();
-
-		function reqCalendars(tok) {
-			gapi.client.request({
-				path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
-				method: "GET",
-				params: tok ? {pageToken: tok} : {}
-			})
-			.then(rcv, fail);
-
-			function rcv(response) {
-				for (item of response.result.items)
-					$rootScope.$apply(addCal(item));
-
-				if (response.result.nextPageToken)
-					reqCalendars(response.result.nextPageToken);
-				else
-					reqEvents();
-
-				function addCal(item) {
-					if (item.selected) {
-						var cal = {
-							id: item.id,
-							name: item.summary,
-							colour: item.backgroundColor
-						};
-						
-						if (togInfo[cal.id])
-							cal.cls = {checked: true};
-
-						calendarlist.items.push(cal);
-					}
-				}
-			};
-		}
-
-		function reqEvents(tok) {
-			var reqparams = {timeMin: isoStart, timeMax: isoEnd, singleEvents: true};
-			if (tok) reqparams.pageToken = tok;
-			
-			for (cal of calendarlist.items) {
-				gapi.client.request({
-					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(cal.id) + "/events",
-					method: "GET",
-					params: reqparams
-				})
-				.then(rcv.bind(cal), fail);
-			}
-
-			function rcv(response) {
-				var cal = this;
-		
-				for (item of response.result.items) {
-					$rootScope.$apply(addEvt(item));
-				}
-
-				if (response.result.nextPageToken)
-					reqEvents(response.result.nextPageToken);
-				else if (response.result.nextSyncToken)
-					cal.synctok = response.result.nextSyncToken;
-
-				function addEvt(evt) {
-					//console.log(cal.name + "~" + evt.summary);
-				}
-			};
-		}
-	}
-
-	function fail(reason) {
-		alert(reason.result.error.message);
-	}
-
-	this.toggleCalendar = function(cal) {
-		if (cal.cls)
-			delete cal.cls;
-		else
-			cal.cls = {checked: true};
-
-		delete togInfo[cal.id];
-		if (cal.cls)
-			togInfo[cal.id] = true;
-
-		$window.localStorage.setItem("vp-calinfo", JSON.stringify(togInfo));
-	}
-
-	this.calinfo = calendarlist.items;
-});
-
-
-
-//////////////////////////////////////////////////////////////////////
-
 angular.module("vpApp").service("vpSettings", function($rootScope) {
 	var defaults = {
 		planner_title: "visual-planner",
@@ -375,6 +266,115 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 		return false;
 	}
+});
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSettings) {
+	var calendarlist = {request: true, items: []};
+	var togInfo = {};
+
+	var stg = $window.localStorage.getItem("vp-calinfo");
+	if (stg)
+		togInfo = JSON.parse(stg);
+
+	this.load = function(datespan) {
+		var isoStart = new Date(datespan.start).toISOString();
+		var isoEnd = new Date(datespan.end).toISOString();
+
+		if (calendarlist.request) {
+			reqCalendars();
+			calendarlist.request = false;
+		}
+		else
+			reqEvents();
+
+		function reqCalendars(tok) {
+			gapi.client.request({
+				path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+				method: "GET",
+				params: tok ? {pageToken: tok} : {}
+			})
+			.then(rcv, fail);
+
+			function rcv(response) {
+				for (item of response.result.items)
+					$rootScope.$apply(addCal(item));
+
+				if (response.result.nextPageToken)
+					reqCalendars(response.result.nextPageToken);
+				else
+					reqEvents();
+
+				function addCal(item) {
+					if (item.selected) {
+						var cal = {
+							id: item.id,
+							name: item.summary,
+							colour: item.backgroundColor
+						};
+						
+						if (togInfo[cal.id])
+							cal.cls = {checked: true};
+
+						calendarlist.items.push(cal);
+					}
+				}
+			};
+		}
+
+		function reqEvents(tok) {
+			var reqparams = {timeMin: isoStart, timeMax: isoEnd, singleEvents: true};
+			if (tok) reqparams.pageToken = tok;
+			
+			for (cal of calendarlist.items) {
+				gapi.client.request({
+					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(cal.id) + "/events",
+					method: "GET",
+					params: reqparams
+				})
+				.then(rcv.bind(cal), fail);
+			}
+
+			function rcv(response) {
+				var cal = this;
+		
+				for (item of response.result.items) {
+					$rootScope.$apply(addEvt(item));
+				}
+
+				if (response.result.nextPageToken)
+					reqEvents(response.result.nextPageToken);
+				else if (response.result.nextSyncToken)
+					cal.synctok = response.result.nextSyncToken;
+
+				function addEvt(evt) {
+					//console.log(cal.name + "~" + evt.summary);
+				}
+			};
+		}
+	}
+
+	function fail(reason) {
+		alert(reason.result.error.message);
+	}
+
+	this.toggleCalendar = function(cal) {
+		if (cal.cls)
+			delete cal.cls;
+		else
+			cal.cls = {checked: true};
+
+		delete togInfo[cal.id];
+		if (cal.cls)
+			togInfo[cal.id] = true;
+
+		$window.localStorage.setItem("vp-calinfo", JSON.stringify(togInfo));
+	}
+
+	this.calinfo = calendarlist.items;
 });
 
 
