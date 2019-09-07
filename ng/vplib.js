@@ -280,7 +280,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 	if (stg)
 		togInfo = JSON.parse(stg);
 
-	this.load = function(datespan) {
+	this.load = function(datespan, fAdd) {
 		var isoStart = new Date(datespan.start).toISOString();
 		var isoEnd = new Date(datespan.end).toISOString();
 
@@ -340,12 +340,11 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 
 			function rcv(response) {
 				var cal = this;
-				var vpalmanac = angular.injector(["ng", "vpApp"]).get("vpAlmanac");
 		
 				for (item of response.result.items) {
 					var evt = newEvent(cal, item);
 					if (evt)
-						$rootScope.$apply(vpalmanac.addEvt(evt));
+						$rootScope.$apply(fAdd(evt));
 				}
 
 				if (response.result.nextPageToken)
@@ -480,11 +479,14 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 			datespan.end = vdt.ymd();
 		}
 		
-		vpEvents.load(datespan);
+		vpEvents.load(datespan, addEvt);
 	}
 
-	this.addEvt = function(evt) {
+	function addEvt(evt) {
 		console.log(evt);
+		
+		var i = VpDate.DaySpan(vpdays[0].ymd, evt.datespan.start);
+		console.log(vpdays[i]);
 	}
 
 	function VpMonth(ymd) {
