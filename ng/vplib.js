@@ -274,11 +274,6 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSettings) {
 	var calendarlist = {request: true, items: []};
-	var togInfo = {};
-
-	var stg = $window.localStorage.getItem("vp-calinfo");
-	if (stg)
-		togInfo = JSON.parse(stg);
 
 	this.load = function(datespan, fRcv) {
 		var isoStart = new Date(datespan.start).toISOString();
@@ -317,9 +312,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 			this.id = item.id;
 			this.name = item.summary;
 			this.colour = item.backgroundColor;
-			
-			if (togInfo[this.id])
-				this.cls = {checked: true};
+			syncStg(this, false);
 
 			this.reqEvents = function(tok) {
 				var reqparams = {timeMin: isoStart, timeMax: isoEnd, singleEvents: true};
@@ -352,11 +345,25 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 				else
 					this.cls = {checked: true};
 
-				delete togInfo[this.id];
-				if (this.cls)
-					togInfo[this.id] = true;
+				syncStg(this, true);
+			}
 
-				$window.localStorage.setItem("vp-calinfo", JSON.stringify(togInfo));
+			function syncStg(cal, write) {
+				var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
+				if (!tog)
+					tog = {};
+
+				if (write) {
+					delete tog[cal.id];
+					if (cal.cls)
+						tog[cal.id] = true;
+
+					$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
+				}
+				else {
+					if (tog[cal.id])
+						cal.cls = {checked: true};
+				}
 			}
 			
 			this.reqEvents();
