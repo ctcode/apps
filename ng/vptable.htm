@@ -54,6 +54,7 @@
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	pointer-events: all;
 }
 .vpeventmarker {
 	margin-right: 0.3em;
@@ -123,9 +124,9 @@
 				<td ng-repeat-start="cell in row.cells" ng-if="cell.month" class="vpcell vphdr vplink" ng-class="cell.cls" ng-click="vptable.onclickHdr(cell)">{{cell.month.hdr}}</td>
 				<td ng-if="cell.day" class="vpcell vpday" ng-class="cell.cls">
 					<div class="vpnum vplink" ng-click="vptable.onclickDayNum(cell)">{{cell.day.num}}</div>
-					<div class="vpevents" ng-if="cell.day.events">
-						<div class="vpevent" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls">
-							<span class="vpeventmarker" ng-style="{'background-color': evt.cal.colour}"></span>
+					<div class="vpevents" ng-if="cell.day.evts">
+						<div class="vpevent" ng-repeat="evt in cell.day.evts" ng-class="evt.vpcal.cls" ng-click="evt.edit()">
+							<span class="vpeventmarker" ng-style="{'background-color': evt.vpcal.colour}"></span>
 							<span>{{evt.title}}</span>
 						</div>
 					</div>

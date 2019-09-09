@@ -400,6 +400,10 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 				this.timed = false;
 				this.datespan = {start: item.start.date, end: item.end.date};
 			}
+			
+			this.edit = function() {
+				console.log(this);
+			}
 		}
 	}
 
@@ -414,7 +418,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
+angular.module("vpApp").service("vpAlmanac", function($rootScope, vpSettings, vpEvents) {
 	var vpdays = [];
 	var vpmonths = [];
 	var month_offset;
@@ -484,12 +488,9 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 	}
 
 	function rcvEvent(evt) {
-		console.log(evt);
 		if (evt.timed) return;
-		
 		var i = VpDate.DaySpan(vpdays[0].ymd, evt.datespan.start);
-		//$rootScope.$apply(fAdd(evt));
-		console.log(vpdays[i]);
+		$rootScope.$apply(vpdays[i].addEvent(evt));
 	}
 
 	function VpMonth(ymd) {
@@ -529,6 +530,13 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 
 		if (VpDate.isToday(ymd))
 			this.today = true;
+		
+		this.addEvent = function(evt) {
+			if (!this.evts)
+				this.evts = [];
+			
+			this.evts.push(evt);
+		}
 	}
 });
 
