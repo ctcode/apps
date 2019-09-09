@@ -280,7 +280,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 	if (stg)
 		togInfo = JSON.parse(stg);
 
-	this.load = function(datespan, fAdd) {
+	this.load = function(datespan, fRcv) {
 		var isoStart = new Date(datespan.start).toISOString();
 		var isoEnd = new Date(datespan.end).toISOString();
 
@@ -288,8 +288,10 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 			reqCalendars();
 			calendarlist.request = false;
 		}
-		else
-			reqEvents();
+		else {
+			for (vpcal of calendarlist.items)
+				vpcal.reqEvents();
+		}
 
 		function reqCalendars(tok) {
 			gapi.client.request({
@@ -301,109 +303,101 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 
 			function rcv(response) {
 				for (item of response.result.items)
-					$rootScope.$apply(addCal(item));
+					if (item.selected) {
+						var vpcal = new VpCalendar(item);
+						$rootScope.$apply(calendarlist.items.push(vpcal));
+					}
 
 				if (response.result.nextPageToken)
 					reqCalendars(response.result.nextPageToken);
-				else
-					reqEvents();
-
-				function addCal(item) {
-					if (item.selected) {
-						var cal = {
-							id: item.id,
-							name: item.summary,
-							colour: item.backgroundColor
-						};
-						
-						if (togInfo[cal.id])
-							cal.cls = {checked: true};
-
-						calendarlist.items.push(cal);
-					}
-				}
 			};
 		}
 
-		function reqEvents(tok) {
-			var reqparams = {timeMin: isoStart, timeMax: isoEnd, singleEvents: true};
-			if (tok) reqparams.pageToken = tok;
+		function VpCalendar(item) {
+			this.id = item.id;
+			this.name = item.summary;
+			this.colour = item.backgroundColor;
 			
-			for (cal of calendarlist.items) {
+			if (togInfo[this.id])
+				this.cls = {checked: true};
+
+			this.reqEvents = function(tok) {
+				var reqparams = {timeMin: isoStart, timeMax: isoEnd, singleEvents: true};
+				if (tok) reqparams.pageToken = tok;
+				
 				gapi.client.request({
-					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(cal.id) + "/events",
+					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(this.id) + "/events",
 					method: "GET",
 					params: reqparams
 				})
-				.then(rcv.bind(cal), fail);
+				.then(rcv.bind(this), fail);
+
+				function rcv(response) {
+					for (item of response.result.items) {
+						var evt = new VpEvent(this, item);
+						if (evt.id)
+							fRcv(evt);
+					}
+
+					if (response.result.nextPageToken)
+						this.reqEvents(response.result.nextPageToken);
+					else if (response.result.nextSyncToken)
+						this.synctok = response.result.nextSyncToken;
+				};
 			}
 
-			function rcv(response) {
-				var cal = this;
-		
-				for (item of response.result.items) {
-					var evt = newEvent(cal, item);
-					if (evt)
-						$rootScope.$apply(fAdd(evt));
-				}
+			this.toggle = function() {
+				if (this.cls)
+					delete this.cls;
+				else
+					this.cls = {checked: true};
 
-				if (response.result.nextPageToken)
-					reqEvents(response.result.nextPageToken);
-				else if (response.result.nextSyncToken)
-					cal.synctok = response.result.nextSyncToken;
-				
-				function newEvent(cal, item) {
-					if (item.kind != "calendar#event")
-						return null;
-					
-					if (item.status == "cancelled")
-						return {id: item.id, deleted: true};
+				delete togInfo[this.id];
+				if (this.cls)
+					togInfo[this.id] = true;
 
-					if (item.hasOwnProperty("recurrence"))
-						return null;
+				$window.localStorage.setItem("vp-calinfo", JSON.stringify(togInfo));
+			}
+			
+			this.reqEvents();
+		}
 
-					if (!item.hasOwnProperty("start"))
-						return null;
-					
-					var evt = {
-						cal: cal,
-						id: item.id,
-						title: item.summary,
-						eid: item.htmlLink
-					};
-					
-					if ("dateTime" in item.start)
-					{
-						evt.timed = true;
-						evt.timespan = {start: item.start.dateTime, end: item.end.dateTime};
-					}
-					else
-					{
-						evt.timed = false;
-						evt.datespan = {start: item.start.date, end: item.end.date};
-					}
-					
-					return evt;
-				}
-			};
+		function VpEvent(cal, item) {
+			if (item.kind != "calendar#event")
+				return;
+
+			if (item.hasOwnProperty("recurrence"))
+				return;
+
+			if (!item.hasOwnProperty("start"))
+				return;
+
+			this.id = item.id;
+			
+			if (item.status == "cancelled") {
+				this.deleted = true;
+				return;
+			}
+						
+			this.vpcal = cal;
+			this.title = item.summary;
+			this.eid = item.htmlLink;
+			
+			if ("dateTime" in item.start)
+			{
+				this.timed = true;
+				this.timespan = {start: item.start.dateTime, end: item.end.dateTime};
+			}
+			else
+			{
+				this.timed = false;
+				this.datespan = {start: item.start.date, end: item.end.date};
+			}
 		}
 	}
 
 	function fail(reason) {
 		alert(reason.result.error.message);
-	}
-
-	this.toggleCalendar = function(cal) {
-		if (cal.cls)
-			delete cal.cls;
-		else
-			cal.cls = {checked: true};
-
-		delete togInfo[cal.id];
-		if (cal.cls)
-			togInfo[cal.id] = true;
-
-		$window.localStorage.setItem("vp-calinfo", JSON.stringify(togInfo));
 	}
 
 	this.calinfo = calendarlist.items;
@@ -479,13 +473,15 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 			datespan.end = vdt.ymd();
 		}
 		
-		vpEvents.load(datespan, addEvt);
+		vpEvents.load(datespan, rcvEvent);
 	}
 
-	function addEvt(evt) {
+	function rcvEvent(evt) {
 		console.log(evt);
+		if (evt.timed) return;
 		
 		var i = VpDate.DaySpan(vpdays[0].ymd, evt.datespan.start);
+		//$rootScope.$apply(fAdd(evt));
 		console.log(vpdays[i]);
 	}
 
