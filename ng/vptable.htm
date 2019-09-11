@@ -25,7 +25,6 @@
 	white-space: nowrap;
 }
 .vpday {
-	height: 100%;
 	display: flex;
 }
 .vpnum {
@@ -47,8 +46,11 @@
 	cursor: pointer;
 }
 .vpevents {
+	display: flex;
+	align-items: center;
 }
 .vpevent {
+	display: flex;
 	pointer-events: all;
 }
 .vpeventmarker {
@@ -123,7 +125,7 @@
 						<div class="vpevents" ng-if="cell.day.evts">
 							<div class="vpevent" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-click="evt.edit()">
 								<span class="vpeventmarker" ng-style="{'background-color': evt.cal.colour}"></span>
-								<span>{{evt.title}}</span>
+								<div>{{evt.title}}</div>
 							</div>
 						</div>
 					</div>
