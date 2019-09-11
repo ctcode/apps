@@ -386,7 +386,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 				return;
 			}
 						
-			this.vpcal = cal;
+			this.cal = cal;
 			this.title = item.summary;
 			this.eid = item.htmlLink;
 			
