@@ -658,12 +658,12 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 			box.scrollBy(dy,0);
 		}
 
-		this.onclickHdr = function(vpcell) {
-			$window.open("https://www.google.com/calendar/r/month/" + new VpDate(vpcell.month.first.ymd).GCalURL());
+		this.onclickHdr = function(vpmonth) {
+			$window.open("https://www.google.com/calendar/r/month/" + new VpDate(vpmonth.first.ymd).GCalURL());
 		}
 
-		this.onclickDayNum = function(vpcell) {
-			$window.open("https://www.google.com/calendar/r/week/" + new VpDate(vpcell.day.ymd).GCalURL());
+		this.onclickDayNum = function(vpday) {
+			$window.open("https://www.google.com/calendar/r/week/" + new VpDate(vpday.ymd).GCalURL());
 		}
 
 		function initTable() {
@@ -685,9 +685,9 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 			{
 				var vpmonth = page.months[m];
 				
-				var cell = {month: vpmonth, cls: {}};
+				var cell = {month: vpmonth};
 				if (vpmonth.past)
-					cell.cls.past = true;
+					cell.cls = {past: true};
 
 				var pos = getPos(m, 0);
 				rows[pos.y].cells[pos.x] = cell;

@@ -8,6 +8,12 @@
 	user-select: none;
 	--fontscale: {{vptable.fontscale}};
 }
+.vpcell {
+	padding: 0;
+}
+.vpcell.past {
+	opacity: {{vptable.past_opacity}};
+}
 .vphdr {
 	text-align: center;
 	font-weight: bold;
@@ -16,6 +22,8 @@
 	white-space: nowrap;
 }
 .vpday {
+	height: 100%;
+	display: flex;
 	background-color: #eaeaea;
 }
 .vpday.weekend {
@@ -24,36 +32,24 @@
 .vpnum {
 	font-size: 0.8em;
 	width: 2em;
-	padding-top: 0.2em;
-	padding-bottom: 0.2em;
-	margin: 0.2em;
-	text-align: center;
+	padding: 0.2em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
-.vpday.today .vpnum {
+.vpnum .today {
 	font-weight: bold;
 	color: white;
 	background-color: red;
-}
-.vpcell.past {
-	opacity: {{vptable.past_opacity}};
+	padding: 0.25em;
 }
 .vplink {
 	pointer-events: all;
 	cursor: pointer;
 }
 .vpevents {
-	display: flex;
-	overflow: hidden;
-	user-select: none;
-	-ms-user-select: none;
-	-webkit-user-select: none;
 }
 .vpevent {
-	margin: 0.3em 0;
-	padding: 0.5em;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 	pointer-events: all;
 }
 .vpeventmarker {
@@ -121,17 +117,19 @@
 	<div id="vpscrollcontent">
 		<table class="vptable">
 			<tr ng-repeat="row in vptable.rows">
-				<td ng-repeat-start="cell in row.cells" ng-if="cell.month" class="vpcell vphdr vplink" ng-class="cell.cls" ng-click="vptable.onclickHdr(cell)">{{cell.month.hdr}}</td>
-				<td ng-if="cell.day" class="vpcell vpday" ng-class="cell.cls">
-					<div class="vpnum vplink" ng-click="vptable.onclickDayNum(cell)">{{cell.day.num}}</div>
-					<div class="vpevents" ng-if="cell.day.evts">
-						<div class="vpevent" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-click="evt.edit()">
-							<span class="vpeventmarker" ng-style="{'background-color': evt.cal.colour}"></span>
-							<span>{{evt.title}}</span>
+				<td ng-repeat="cell in row.cells" class="vpcell" ng-class="cell.cls">
+					<div ng-if="cell.month" class="vphdr vplink" ng-click="vptable.onclickHdr(cell.month)">{{cell.month.hdr}}</div>
+					<div ng-if="cell.day" class="vpday" ng-class="cell.cls">
+						<div class="vpnum vplink" ng-click="vptable.onclickDayNum(cell.day)"><span ng-class="cell.cls">{{cell.day.num}}</span></div>
+						<div class="vpevents" ng-if="cell.day.evts">
+							<div class="vpevent" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-click="evt.edit()">
+								<span class="vpeventmarker" ng-style="{'background-color': evt.cal.colour}"></span>
+								<span>{{evt.title}}</span>
+							</div>
 						</div>
 					</div>
+					<div ng-if="cell.empty">&nbsp;</div>
 				</td>
-				<td ng-if="cell.empty" ng-repeat-end>&nbsp;</td>
 			</tr>
 		</table>
 	</div>
