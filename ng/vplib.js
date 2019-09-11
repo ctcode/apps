@@ -702,6 +702,8 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 
 					if (vpday.weekend)
 						cell.cls.weekend = true;
+					else
+						cell.cls.weekday = true;
 
 					if (vpday.today)
 						cell.cls.today = true;
