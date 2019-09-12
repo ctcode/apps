@@ -274,10 +274,11 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettings) {
 	var calendarlist = {request: true, items: []};
+	var isoSpan = {};
 
 	this.load = function(datespan, fRcv) {
-		var isoStart = new Date(datespan.start).toISOString();
-		var isoEnd = new Date(datespan.end).toISOString();
+		isoSpan.start = new Date(datespan.start).toISOString();
+		isoSpan.end = new Date(datespan.end).toISOString();
 
 		if (calendarlist.request) {
 			reqCalendars();
@@ -316,7 +317,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 			syncStg(this, false);
 
 			this.reqEvents = function(tok) {
-				var reqparams = {timeMin: isoStart, timeMax: isoEnd, singleEvents: true};
+				var reqparams = {timeMin: isoSpan.start, timeMax: isoSpan.end, singleEvents: true};
 				if (tok) reqparams.pageToken = tok;
 				
 				gapi.client.request({
