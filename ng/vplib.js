@@ -388,7 +388,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 						
 			this.cal = cal;
 			this.title = item.summary;
-			this.eid = item.htmlLink;
+			this.htmlLink = item.htmlLink;
 			
 			if ("dateTime" in item.start)
 			{
@@ -402,7 +402,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 			}
 			
 			this.edit = function() {
-				console.log(this);
+				$window.open(this.htmlLink.replace("event?eid=", "r/eventedit/"));
 			}
 		}
 	}
