@@ -26,20 +26,18 @@
 }
 .vpday {
 	display: flex;
+	align-items: center;
 }
 .vpnum {
 	font-size: 0.8em;
 	width: 2em;
-	padding: 0.2em;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	text-align: center;
+	padding: 0.25em 0.1em;
 }
-.vpnum .today {
+.vpnum.today {
 	font-weight: bold;
 	color: white;
 	background-color: red;
-	padding: 0.25em;
 }
 .vplink {
 	pointer-events: all;
@@ -47,7 +45,6 @@
 }
 .vpevents {
 	display: flex;
-	align-items: center;
 }
 .vpevent {
 	display: flex;
@@ -125,7 +122,7 @@
 				<td ng-repeat="cell in row.cells" class="vpcell" ng-class="cell.cls">
 					<div ng-if="cell.month" class="vphdr vplink" ng-click="vptable.onclickHdr(cell.month)">{{cell.month.hdr}}</div>
 					<div ng-if="cell.day" class="vpday">
-						<div class="vpnum vplink" ng-click="vptable.onclickDayNum(cell.day)"><span ng-class="cell.cls">{{cell.day.num}}</span></div>
+						<div class="vpnum vplink" ng-class="cell.cls" ng-click="vptable.onclickDayNum(cell.day)">{{cell.day.num}}</div>
 						<div class="vpevents" ng-if="cell.day.evts">
 							<div class="vpevent" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-click="evt.edit()">
 								<span class="vpeventmarker" ng-style="{'background-color': evt.cal.colour}"></span>
