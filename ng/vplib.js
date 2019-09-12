@@ -100,8 +100,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 			multi_day_as_single_day: false,
 			first_day_only: false,
 			marker_width: 0.85,
-			multi_day_opacity: 0.8,
-			time24h: true
+			multi_day_opacity: 0.8
 		}
 	};
 
@@ -155,7 +154,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 				if (response.result)
 				if (response.result.kind == "calendar#setting")
 				if (response.result.id == "format24HourTime")
-					appdata.vpconfig.time24h = (response.result.value == "true");
+					VpDateTime.time24h = (response.result.value == "true");
 
 				publish(appdata);
 				onLoad();
@@ -391,25 +390,26 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 			}
 						
 			this.cal = cal;
-			this.title = item.summary;
 			this.htmlLink = item.htmlLink;
 			
 			if ("dateTime" in item.start)
 			{
 				this.timed = true;
-				this.timespan = {start: item.start.dateTime, end: item.end.dateTime};
+				//this.timespan = {start: item.start.dateTime, end: item.end.dateTime};
 
 				var vdttStart = new VpDateTime(item.start.dateTime);
 				var vdttEnd = new VpDateTime(item.end.dateTime);
 
 				this.start = vdttStart.ymd();
 				this.duration = VpDate.DaySpan(vdttStart.ymd(), vdttEnd.ymd()) + 1;
+				this.title = vdttStart.TimeTitle() + " " + item.summary;
 			}
 			else
 			{
 				this.timed = false;
 				this.start = item.start.date;
 				this.duration = VpDate.DaySpan(item.start.date, item.end.date);
+				this.title = item.summary;
 			}
 			
 			this.edit = function() {
@@ -915,7 +915,7 @@ VpDateTime.prototype.TimeTitle = function()
 	
 	var minutes = fmt((mm < 10) ? "0^" : "^", mm);
 
-	if (VpGrid.time24h)
+	if (VpDateTime.time24h)
 	{
 		return fmt("^:^", hh, minutes);
 	}
@@ -925,6 +925,8 @@ VpDateTime.prototype.TimeTitle = function()
 		return fmt((hh < 12) ? "^:^am" : "^:^pm", hours, minutes);
 	}
 }
+
+VpDateTime.time24h = true;
 
 
 
