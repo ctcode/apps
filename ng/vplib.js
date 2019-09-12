@@ -272,7 +272,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSettings) {
+angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettings) {
 	var calendarlist = {request: true, items: []};
 
 	this.load = function(datespan, fRcv) {
@@ -297,11 +297,12 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 			.then(rcv, fail);
 
 			function rcv(response) {
-				for (item of response.result.items)
-					if (item.selected) {
-						var vpcal = new VpCalendar(item);
-						$rootScope.$apply(calendarlist.items.push(vpcal));
+				$timeout(function(){
+					for (item of response.result.items) {
+						if (item.selected)
+							calendarlist.items.push(new VpCalendar(item));
 					}
+				}.bind(this));
 
 				if (response.result.nextPageToken)
 					reqCalendars(response.result.nextPageToken);
@@ -326,11 +327,13 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 				.then(rcv.bind(this), fail);
 
 				function rcv(response) {
-					for (item of response.result.items) {
-						var evt = new VpEvent(this, item);
-						if (evt.id)
-							fRcv(evt);
-					}
+					$timeout(function(){
+						for (item of response.result.items) {
+							var evt = new VpEvent(this, item);
+							if (evt.id)
+								fRcv(evt);
+						}
+					}.bind(this));
 
 					if (response.result.nextPageToken)
 						this.reqEvents(response.result.nextPageToken);
@@ -394,11 +397,18 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 			{
 				this.timed = true;
 				this.timespan = {start: item.start.dateTime, end: item.end.dateTime};
+
+				var vdttStart = new VpDateTime(item.start.dateTime);
+				var vdttEnd = new VpDateTime(item.end.dateTime);
+
+				this.start = vdttStart.ymd();
+				this.duration = VpDate.DaySpan(vdttStart.ymd(), vdttEnd.ymd()) + 1;
 			}
 			else
 			{
 				this.timed = false;
-				this.datespan = {start: item.start.date, end: item.end.date};
+				this.start = item.start.date;
+				this.duration = VpDate.DaySpan(item.start.date, item.end.date);
 			}
 			
 			this.edit = function() {
@@ -418,7 +428,7 @@ angular.module("vpApp").service("vpEvents", function($rootScope, $window, vpSett
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpAlmanac", function($rootScope, vpSettings, vpEvents) {
+angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 	var vpdays = [];
 	var vpmonths = [];
 	var month_offset;
@@ -488,9 +498,14 @@ angular.module("vpApp").service("vpAlmanac", function($rootScope, vpSettings, vp
 	}
 
 	function rcvEvent(evt) {
-		if (evt.timed) return;
-		var i = VpDate.DaySpan(vpdays[0].ymd, evt.datespan.start);
-		$rootScope.$apply(vpdays[i].addEvent(evt));
+		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
+		for (var c=0; c < evt.duration; c++) {
+			if (d >= 0)
+			if (d < vpdays.length)
+				vpdays[d].addEvent(evt);
+
+			d++;
+		}
 	}
 
 	function VpMonth(ymd) {
@@ -871,7 +886,7 @@ VpDate.isToday = function(ymd)
 
 VpDate.DaySpan = function(ymd1, ymd2)
 {
-	return (Math.abs(Date.parse(ymd1) - Date.parse(ymd2))/86400000);
+	return (Date.parse(ymd2) - Date.parse(ymd1))/86400000;
 }
 
 
