@@ -45,7 +45,6 @@
 	cursor: pointer;
 }
 .vpevents {
-	display: flex;
 	overflow: hidden;
 }
 .vpevent {
@@ -63,11 +62,6 @@
 	width: 0.6em;
 	height: 0.8em;
 	flex-shrink: 0;
-}
-.vpeventtext {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 }
 #vpscrollbox {
 	display: flex;
@@ -94,6 +88,14 @@
 #vpscrollcontent {
 	width: {{vptable.scroll_size}}%;
 }
+.vpevents {
+	display: flex;
+}
+.vpeventtext {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
 </style>
 
 <style ng-if="vptable.view.sel.list">
@@ -119,7 +121,13 @@
 
 <style ng-if="vptable.view.sel.expand">
 .vptable {
-	font-size: 1em;
+	font-size: calc(1.1vh * var(--fontscale));
+}
+.vpevents {
+	padding: 0.2em 0em;
+}
+.vpevent {
+	padding: 0.2em 0em;
 }
 #vpscrollcontent {
 	width: {{vptable.scroll_size}}%;

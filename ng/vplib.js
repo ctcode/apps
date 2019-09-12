@@ -582,7 +582,6 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 	
 	function fCtl($scope) {
 		var box = document.getElementById("vpscrollbox");
-		var ng_box = angular.element(box);
 
 		this.initView = function() {
 			$scope.vptable.scroll_size = 100;
@@ -593,11 +592,14 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 				var m = vpSettings.getMonthCount();
 				$scope.vptable.scroll_size = ((m+12)/m)*100;
 
-				ng_box.on("scroll", onScroll);
+				angular.element(box).on("scroll", onScroll);
 			
-				ng_box.off("wheel");
+/*
+				var ngbox = angular.element(box);
+				ngbox.off("wheel");
 				if (view.sel.column)
-					ng_box.on("wheel", onWheel);
+					ngbox.on("wheel", onWheel);
+*/
 			}
 
 			$timeout(function() {
