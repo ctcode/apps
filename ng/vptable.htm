@@ -33,6 +33,7 @@
 	width: 2em;
 	text-align: center;
 	padding: 0.25em 0.1em;
+	flex-shrink: 0;
 }
 .vpnum.today {
 	font-weight: bold;
@@ -45,10 +46,12 @@
 }
 .vpevents {
 	display: flex;
+	overflow: hidden;
 }
 .vpevent {
 	margin-left: 0.5em;
 	display: flex;
+	overflow: hidden;
 	align-items: center;
 	pointer-events: all;
 }
@@ -59,6 +62,12 @@
 	margin-right: 0.25em;
 	width: 0.6em;
 	height: 0.8em;
+	flex-shrink: 0;
+}
+.vpeventtext {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 #vpscrollbox {
 	display: flex;
@@ -126,9 +135,9 @@
 					<div ng-if="cell.day" class="vpday">
 						<div class="vpnum vplink" ng-class="cell.cls" ng-click="vptable.onclickDayNum(cell.day)">{{cell.day.num}}</div>
 						<div class="vpevents" ng-if="cell.day.evts">
-							<div class="vpevent" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-click="evt.edit()">
+							<div class="vpevent vplink" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-click="evt.edit()">
 								<span class="vpeventmarker" ng-style="{'background-color': evt.cal.colour}"></span>
-								<div>{{evt.title}}</div>
+								<div class="vpeventtext">{{evt.title}}</div>
 							</div>
 						</div>
 					</div>
