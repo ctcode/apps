@@ -312,7 +312,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 		function VpCalendar(item) {
 			this.id = item.id;
 			this.name = item.summary;
-			this.colour = item.backgroundColor;
+			this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
 			syncStg(this, false);
 
 			this.reqEvents = function(tok) {

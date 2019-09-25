@@ -30,9 +30,10 @@
 }
 .vpnum {
 	font-size: 0.8em;
-	width: 2em;
+	width: 1.5em;
 	text-align: center;
-	padding: 0.25em 0.1em;
+	margin: 0 1px;
+	padding: 0.3em;
 	flex-shrink: 0;
 }
 .vpnum.today {
@@ -45,23 +46,15 @@
 	cursor: pointer;
 }
 .vpevents {
-	overflow: hidden;
 }
 .vpevent {
-	margin-left: 0.5em;
-	display: flex;
-	overflow: hidden;
-	align-items: center;
+	border-radius: 0.25em;
+	padding: 0.1em 0.2em;
+	margin: 0 1px;
 	pointer-events: all;
 }
 .vpevent.checked {
 	display: none;
-}
-.vpeventmarker {
-	margin-right: 0.25em;
-	width: 0.6em;
-	height: 0.8em;
-	flex-shrink: 0;
 }
 #vpscrollbox {
 	display: flex;
@@ -85,13 +78,18 @@
 .vptable {
 	font-size: calc(1.1vh * var(--fontscale));
 }
+.vpday {
+	height: 1.5em;
+}
 #vpscrollcontent {
 	width: {{vptable.scroll_size}}%;
 }
 .vpevents {
 	display: flex;
+	align-items: center;
+	overflow: hidden;
 }
-.vpeventtext {
+.vpevent {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -123,11 +121,9 @@
 .vptable {
 	font-size: calc(1.1vh * var(--fontscale));
 }
-.vpevents {
-	padding: 0.2em 0em;
-}
 .vpevent {
-	padding: 0.2em 0em;
+	width: fit-content;
+	margin-top: 1px;
 }
 #vpscrollcontent {
 	width: {{vptable.scroll_size}}%;
@@ -143,10 +139,7 @@
 					<div ng-if="cell.day" class="vpday">
 						<div class="vpnum vplink" ng-class="cell.cls" ng-click="vptable.onclickDayNum(cell.day)">{{cell.day.num}}</div>
 						<div class="vpevents" ng-if="cell.day.evts">
-							<div class="vpevent vplink" title="{{evt.title}}" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-click="evt.edit()">
-								<div class="vpeventmarker" ng-style="{'background-color': evt.cal.colour}"></div>
-								<div class="vpeventtext">{{evt.title}}</div>
-							</div>
+							<div class="vpevent vplink" title="{{evt.title}}" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-style="{'color': evt.cal.colour.fore, 'background-color': evt.cal.colour.back}" ng-click="evt.edit()">{{evt.title}}</div>
 						</div>
 					</div>
 					<div ng-if="cell.empty">&nbsp;</div>

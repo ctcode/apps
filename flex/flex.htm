@@ -27,20 +27,32 @@ td {
 }
 .cell {
 	display: flex;
+	align-items: center;
 }
 .cell .num {
 	font-size: 0.75em;
-	padding: 0.2em;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 2em;
+	margin: 0.5em;
+	padding: 0.5em;
+	width: 2em;
+	flex-shrink: 0;
+	text-align: center;
 }
-.cell .num .today {
+.cell .num.today {
 	font-weight: bold;
 	color: white;
 	background-color: red;
-	padding: 0.2em;
+}
+.evts {
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+}
+.evt {
+	background-color: coral;
+	border-radius: 0.5em;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 </style>
 <head>
@@ -61,8 +73,15 @@ td {
 			<td></td>
 			<td>
 				<div class="cell">
-					<div class="num"><span class="today">22</span></div>
-					<div class="evts"><div class="evt">event one</div><div class="evt">event two</div><div class="evt">event three</div></div>
+					<div class="num today">22</div>
+					<div class="evts">
+						<div class="evt">event one</div>
+						<div class="evt">event two</div>
+						<div class="evt">event three</div>
+						<div class="evt">event four</div>
+						<div class="evt">event five</div>
+						<div class="evt">event -----------------------------------------------------------------------------------------></div>
+					</div>
 				</div>
 			</td>
 			<td></td>
