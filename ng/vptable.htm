@@ -139,7 +139,10 @@
 					<div ng-if="cell.day" class="vpday">
 						<div class="vpnum vplink" ng-class="cell.cls" ng-click="vptable.onclickDayNum(cell.day)">{{cell.day.num}}</div>
 						<div class="vpevents" ng-if="cell.day.evts">
-							<div class="vpevent vplink" title="{{evt.title}}" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-style="{'color': evt.cal.colour.fore, 'background-color': evt.cal.colour.back}" ng-click="evt.edit()">{{evt.title}}</div>
+							<div class="vpevent vplink" title="{{evt.title}}" ng-repeat="evt in cell.day.evts" ng-class="evt.cal.cls" ng-style="{'color': evt.cal.colour.fore, 'background-color': evt.cal.colour.back}" ng-click="evt.edit()">
+								<span ng-if="evt.duration == 1">{{evt.title}}</span>
+								<span ng-if="evt.duration > 1">&nbsp</span>
+							</div>
 						</div>
 					</div>
 					<div ng-if="cell.empty">&nbsp;</div>

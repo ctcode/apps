@@ -1,0 +1,152 @@
+<style>
+.vpgrid {
+	height: 100%;
+	padding-bottom: 1em;
+	box-sizing: border-box;
+	display: grid;
+	grid-gap: 1px;
+	user-select: none;
+	--fontscale: {{vpgrid.fontscale}};
+}
+.vpcell {
+	display: flex;
+	align-items: center;
+}
+.vpcell.weekday {
+	background-color: #eaeaea;
+}
+.vpcell.weekend {
+	background-color: #d8d8d8;
+}
+.vpcell.past {
+	opacity: {{vpgrid.past_opacity}};
+}
+.vpmonth {
+	justify-content: center;
+	font-weight: bold;
+	padding: 1em;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.vpnum {
+	font-size: 0.8em;
+	width: 1.5em;
+	text-align: center;
+	margin: 1px;
+	padding: 0.3em;
+	flex-shrink: 0;
+}
+.today .vpnum {
+	font-weight: bold;
+	color: white;
+	background-color: red;
+}
+.vplink {
+	pointer-events: all;
+	cursor: pointer;
+}
+.vpevents {
+}
+.vpevent {
+	border-radius: 0.25em;
+	padding: 0.1em 0.2em;
+	margin: 0 1px;
+	pointer-events: all;
+}
+.vpevent.checked {
+	display: none;
+}
+#vpscrollbox {
+	display: flex;
+	height: 100%;
+	position: relative;
+	overflow: auto;
+	border: none;
+	outline: none;
+}
+#vpscrollcontent {
+	position: absolute;
+	pointer-events: none;
+	height: 100%;
+}
+@media only print {
+	#vpscrollbox {overflow: visible;}
+}
+</style>
+
+<style ng-if="vpgrid.view.sel.column">
+.vpgrid {
+	font-size: calc(1.1vh * var(--fontscale));
+	grid-auto-flow: column;
+	grid-template-columns: repeat(18, 1fr);
+	grid-template-rows: repeat(38, auto);
+}
+.vpday {
+}
+#vpscrollcontent {
+	width: {{vpgrid.scroll_size}}%;
+}
+.vpevents {
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+}
+.vpevent {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+<style ng-if="vpgrid.view.sel.list">
+.vpgrid {
+	font-size: calc(1.4vh * var(--fontscale));
+	grid-template-columns: 20em repeat(37, 1fr);
+	grid-template-rows: repeat(18, auto);
+}
+.vphdr {
+	width: 10em;
+}
+.vpday {
+	position: relative;
+	vertical-align: top;
+	text-align: center;
+	z-index: 0;
+}
+.vpnum {
+	width: auto;
+}
+#vpscrollcontent {
+	height: {{vpgrid.scroll_size}}%;
+}
+</style>
+
+<style ng-if="vpgrid.view.sel.expand">
+.vpgrid {
+	font-size: 1em;
+	grid-auto-flow: column;
+	grid-template-columns: repeat(18, 1fr);
+	grid-template-rows: repeat(38, auto);
+}
+.vpevent {
+	width: fit-content;
+	margin-top: 1px;
+}
+#vpscrollcontent {
+	width: {{vpgrid.scroll_size}}%;
+}
+</style>
+
+<div id="vpscrollbox">
+	<div id="vpscrollcontent">
+		<div class="vpgrid">
+			<div ng-repeat="cell in vpgrid.cells" class="vpcell" ng-class="cell.cls">
+				<div ng-if="cell.empty">&nbsp;</div>
+				<div ng-if="cell.cls.vpmonth">{{cell.hdr}}</div>
+				<div ng-if="cell.cls.vpday">
+					<div class="vpnum vplink" ng-click="cell.onclickDayNum()">{{cell.num}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
