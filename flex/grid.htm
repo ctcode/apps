@@ -7,15 +7,27 @@
 <style>
 body {
 	font-family: Arial;
+	margin: 0;
+	height: 100vh;
 }
 #gridbox {
 	background-color: grey;
+	height: 100%;
 }
 #grid {
 	display: grid;
+	height: 100%;
 	grid-gap: 5px;
+}
+#grid.column {
+	grid-auto-flow: column;
+	grid-template-columns: repeat(6, 1fr);
+	grid-template-rows: 2fr repeat(10, 1fr);
+}
+#grid.list {
 	grid-auto-flow: row;
-	grid-template-columns: 3fr repeat(30, 1fr);
+	grid-template-rows: repeat(6, 1fr);
+	grid-template-columns: 3fr repeat(10, 1fr);
 }
 .hdr {
 	text-align: center;
@@ -26,8 +38,11 @@ body {
 .cell {
 	padding: 0.2em;
 	background-color: gold;
+}
+.compact .cell {
 	overflow: hidden;
 	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 .cell .num {
 	font-size: 0.75em;
@@ -59,7 +74,7 @@ body {
 <body>
 
 <div id="gridbox">
-	<div id="grid">
+	<div id="grid" class="column">
 		<div class="hdr">col 1</div>
 		<div class="cell">1</div>
 		<div class="cell">2</div>
@@ -71,26 +86,6 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="cell">12</div>
-		<div class="cell">13</div>
-		<div class="cell">14</div>
-		<div class="cell">15</div>
-		<div class="cell">16</div>
-		<div class="cell">17</div>
-		<div class="cell">18</div>
-		<div class="cell">19</div>
-		<div class="cell">20</div>
-		<div class="cell">21</div>
-		<div class="cell">22</div>
-		<div class="cell">23</div>
-		<div class="cell">24</div>
-		<div class="cell">25</div>
-		<div class="cell">26</div>
-		<div class="cell">27</div>
-		<div class="cell">28</div>
-		<div class="cell">29</div>
-		<div class="cell">30</div>
 
 		<div class="hdr">col 2</div>
 		<div class="cell">1</div>
@@ -103,30 +98,10 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="cell">12</div>
-		<div class="cell">13</div>
-		<div class="cell">14</div>
-		<div class="cell">15</div>
-		<div class="cell">16</div>
-		<div class="cell">17</div>
-		<div class="cell">18</div>
-		<div class="cell">19</div>
-		<div class="cell">20</div>
-		<div class="cell">21</div>
-		<div class="cell">22</div>
-		<div class="cell">23</div>
-		<div class="cell">24</div>
-		<div class="cell">25</div>
-		<div class="cell">26</div>
-		<div class="cell">27</div>
-		<div class="cell">28</div>
-		<div class="cell">29</div>
-		<div class="cell">30</div>
 
 		<div class="hdr">col 3</div>
 		<div class="cell">1</div>
-		<div class="cell">2</div>
+		<div class="cell">2 qwertyuip asdfghjkl zxcvbnmm QWERTYUIOP ASDFGHJKL ZXCVBNNM 1234567890</div>
 		<div class="cell">3</div>
 		<div class="cell">4</div>
 		<div class="cell">5</div>
@@ -135,26 +110,6 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="cell">12</div>
-		<div class="cell">13</div>
-		<div class="cell">14</div>
-		<div class="cell">15</div>
-		<div class="cell">16</div>
-		<div class="cell">17</div>
-		<div class="cell">18</div>
-		<div class="cell">19</div>
-		<div class="cell">20</div>
-		<div class="cell">21</div>
-		<div class="cell">22 qwertyuip asdfghjkl zxcvbnmm</div>
-		<div class="cell">23</div>
-		<div class="cell">24</div>
-		<div class="cell">25</div>
-		<div class="cell">26</div>
-		<div class="cell">27</div>
-		<div class="cell">28</div>
-		<div class="cell">29</div>
-		<div class="cell">30</div>
 
 		<div class="hdr">col 4</div>
 		<div class="cell">1</div>
@@ -167,26 +122,6 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="cell">12</div>
-		<div class="cell">13</div>
-		<div class="cell">14</div>
-		<div class="cell">15</div>
-		<div class="cell">16</div>
-		<div class="cell">17</div>
-		<div class="cell">18</div>
-		<div class="cell">19</div>
-		<div class="cell">20</div>
-		<div class="cell">21</div>
-		<div class="cell">22</div>
-		<div class="cell">23</div>
-		<div class="cell">24</div>
-		<div class="cell">25</div>
-		<div class="cell">26</div>
-		<div class="cell">27</div>
-		<div class="cell">28</div>
-		<div class="cell">29</div>
-		<div class="cell">30</div>
 
 		<div class="hdr">col 5</div>
 		<div class="cell">1</div>
@@ -199,26 +134,6 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="cell">12</div>
-		<div class="cell">13</div>
-		<div class="cell">14</div>
-		<div class="cell">15</div>
-		<div class="cell">16</div>
-		<div class="cell">17</div>
-		<div class="cell">18</div>
-		<div class="cell">19</div>
-		<div class="cell">20</div>
-		<div class="cell">21</div>
-		<div class="cell">22</div>
-		<div class="cell">23</div>
-		<div class="cell">24</div>
-		<div class="cell">25</div>
-		<div class="cell">26</div>
-		<div class="cell">27</div>
-		<div class="cell">28</div>
-		<div class="cell">29</div>
-		<div class="cell">30</div>
 
 		<div class="hdr">col 6</div>
 		<div class="cell">1</div>
@@ -231,26 +146,6 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="cell">12</div>
-		<div class="cell">13</div>
-		<div class="cell">14</div>
-		<div class="cell">15</div>
-		<div class="cell">16</div>
-		<div class="cell">17</div>
-		<div class="cell">18</div>
-		<div class="cell">19</div>
-		<div class="cell">20</div>
-		<div class="cell">21</div>
-		<div class="cell">22</div>
-		<div class="cell">23</div>
-		<div class="cell">24</div>
-		<div class="cell">25</div>
-		<div class="cell">26</div>
-		<div class="cell">27</div>
-		<div class="cell">28</div>
-		<div class="cell">29</div>
-		<div class="cell">30</div>
 	</div>
 </div>
 
