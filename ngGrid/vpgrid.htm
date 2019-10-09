@@ -40,13 +40,11 @@
 .vpday.weekend {
 	background-color: #d8d8d8;
 }
-.past .vpday {
+.past * {
 	opacity: {{vpgrid.past_opacity}};
 }
 .vpnum {
 	font-size: 0.8em;
-	width: 1.5em;
-	padding: 0.25em;
 	flex-shrink: 0;
 }
 .today .vpnum {
@@ -96,7 +94,9 @@
 .vpday.dayoffset5 {grid-row-start: 7;}
 .vpday.dayoffset6 {grid-row-start: 8;}
 .vpnum {
+	width: 1.5em;
 	text-align: center;
+	padding: 0.25em;
 	margin: 0.1em 0.1em 0.1em 0.2em;
 }
 .vpevents {
@@ -137,7 +137,8 @@
 .vpday.dayoffset5 {grid-column-start: 7;}
 .vpday.dayoffset6 {grid-column-start: 8;}
 .vpnum {
-	text-align: center;
+	width: fit-content;
+	padding: 0.1em 0.4em;
 }
 </style>
 
