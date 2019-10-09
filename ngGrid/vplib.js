@@ -532,8 +532,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 
 		if (vdt.isWeekend())
 			this.cls.weekend = true;
-		else	
-			this.cls.weekday = true;
 
 		if (VpDate.isToday(this.ymd))
 			this.cls.today = true;
