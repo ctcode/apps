@@ -35,7 +35,6 @@
 }
 .vpday {
 	display: flex;
-	align-items: center;
 	background-color: #eaeaea;
 }
 .vpday.weekend {
@@ -47,9 +46,7 @@
 .vpnum {
 	font-size: 0.8em;
 	width: 1.5em;
-	text-align: center;
-	margin: 1px;
-	padding: 0.3em;
+	padding: 0.25em;
 	flex-shrink: 0;
 }
 .today .vpnum {
@@ -82,11 +79,14 @@
 #vpgrid {
 	font-size: calc(1.1vh * var(--fontscale));
 	grid-auto-flow: column;
-	grid-template-columns: repeat(18, 1fr);
+	grid-template-columns: repeat({{vpgrid.page.length}}, 1fr);
 	grid-template-rows: 2fr repeat(38, 1fr);
 }
 .vphdr {
 	grid-row-start: 1;
+}
+.vpday {
+	align-items: center;
 }
 .vpday.dayoffset0 {grid-row-start: 2;}
 .vpday.dayoffset1 {grid-row-start: 3;}
@@ -95,6 +95,10 @@
 .vpday.dayoffset4 {grid-row-start: 6;}
 .vpday.dayoffset5 {grid-row-start: 7;}
 .vpday.dayoffset6 {grid-row-start: 8;}
+.vpnum {
+	text-align: center;
+	margin: 0.1em 0.1em 0.1em 0.2em;
+}
 .vpevents {
 	display: flex;
 	align-items: center;
@@ -115,17 +119,15 @@
 #vpgrid {
 	font-size: calc(1.4vh * var(--fontscale));
 	grid-auto-flow: row;
-	grid-template-rows: repeat(18, 1fr);
+	grid-template-rows: repeat({{vpgrid.page.length}}, 1fr);
 	grid-template-columns: 5fr repeat(38, 1fr);
 }
 .vphdr {
 	grid-column-start: 1;
 }
 .vpday {
-	position: relative;
-	vertical-align: top;
-	text-align: center;
-	z-index: 0;
+	flex-direction: column;
+	padding: 0.1em;
 }
 .vpday.dayoffset0 {grid-column-start: 2;}
 .vpday.dayoffset1 {grid-column-start: 3;}
@@ -135,6 +137,7 @@
 .vpday.dayoffset5 {grid-column-start: 7;}
 .vpday.dayoffset6 {grid-column-start: 8;}
 .vpnum {
+	text-align: center;
 }
 </style>
 
@@ -145,7 +148,7 @@
 	<div id="vpcontent">
 		<div id="vpgrid">
 			<div ng-repeat="month in vpgrid.page" class="vpmonth" ng-class="month.cls">
-				<div class="vphdr">{{month.hdr}}</div>
+				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
 					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
 				</div>

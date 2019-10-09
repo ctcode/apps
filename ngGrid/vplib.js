@@ -429,7 +429,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
+angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $window) {
 	var vpmonths = [];
 	var offset;
 	var buffer=0;
@@ -517,6 +517,10 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 			vdt.offsetDay(1);
 		}
 	}
+	
+	VpMonth.prototype.onclickHdr = function() {
+		$window.open("https://www.google.com/calendar/r/month/" + new VpDate(this.vpdays[0].ymd).GCalURL());
+	}
 
 	function VpDay(vdt) {
 		var cfg = vpSettings.vpconfig;
@@ -545,7 +549,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 	}
 	
 	VpDay.prototype.onclickNum = function() {
-		console.log(this);
+		$window.open("https://www.google.com/calendar/r/week/" + new VpDate(this.ymd).GCalURL());
 	}
 
 	function rcvEvent(evt) {
