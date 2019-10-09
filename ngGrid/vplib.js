@@ -601,7 +601,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 	}
 	
 	function fCtl($scope) {
-		var box = document.getElementById("vpscrollbox");
+		var box = document.getElementById("vpbox");
 
 		this.initView = function() {
 			$scope.vpgrid.scroll_size = 100;
@@ -654,7 +654,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 		}
 
 		function showGrid(show) {
-			document.getElementById("vpscrollbox").style.visibility = show ? "" : "hidden";
+			document.getElementById("vpbox").style.visibility = show ? "" : "hidden";
 		}
 
 		function resetScroll() {
