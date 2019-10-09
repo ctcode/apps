@@ -16,32 +16,35 @@
 }
 #vpgrid {
 	height: 100%;
-	padding-bottom: 1em;
 	box-sizing: border-box;
 	display: grid;
 	grid-gap: 1px;
 	user-select: none;
 	--fontscale: {{vpgrid.fontscale}};
 }
-.vpcell {
+.vpmonth {
+	display: contents;
+}
+.vphdr {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.vpday {
 	display: flex;
 	align-items: center;
 }
-.vpcell.weekday {
+.vpday.weekday {
 	background-color: #eaeaea;
 }
-.vpcell.weekend {
+.vpday.weekend {
 	background-color: #d8d8d8;
 }
-.vpcell.past {
+.past .vpday {
 	opacity: {{vpgrid.past_opacity}};
-}
-.vpmonth {
-	justify-content: center;
-	font-weight: bold;
-	padding: 1em;
-	overflow: hidden;
-	white-space: nowrap;
 }
 .vpnum {
 	font-size: 0.8em;
@@ -81,8 +84,19 @@
 #vpgrid {
 	font-size: calc(1.1vh * var(--fontscale));
 	grid-auto-flow: column;
-	grid-template-rows: 2fr repeat(37, 1fr);
+	grid-template-columns: repeat(18, 1fr);
+	grid-template-rows: 2fr repeat(38, 1fr);
 }
+.vphdr {
+	grid-row-start: 1;
+}
+.vpday.dayoffset0 {grid-row-start: 2;}
+.vpday.dayoffset1 {grid-row-start: 3;}
+.vpday.dayoffset2 {grid-row-start: 4;}
+.vpday.dayoffset3 {grid-row-start: 5;}
+.vpday.dayoffset4 {grid-row-start: 6;}
+.vpday.dayoffset5 {grid-row-start: 7;}
+.vpday.dayoffset6 {grid-row-start: 8;}
 .vpevents {
 	display: flex;
 	align-items: center;
@@ -103,10 +117,11 @@
 #vpgrid {
 	font-size: calc(1.4vh * var(--fontscale));
 	grid-auto-flow: row;
-	grid-template-columns: 5fr repeat(37, 1fr);
+	grid-template-rows: repeat(18, 1fr);
+	grid-template-columns: 5fr repeat(38, 1fr);
 }
 .vphdr {
-	width: 10em;
+	grid-column-start: 1;
 }
 .vpday {
 	position: relative;
@@ -114,8 +129,14 @@
 	text-align: center;
 	z-index: 0;
 }
+.vpday.dayoffset0 {grid-column-start: 2;}
+.vpday.dayoffset1 {grid-column-start: 3;}
+.vpday.dayoffset2 {grid-column-start: 4;}
+.vpday.dayoffset3 {grid-column-start: 5;}
+.vpday.dayoffset4 {grid-column-start: 6;}
+.vpday.dayoffset5 {grid-column-start: 7;}
+.vpday.dayoffset6 {grid-column-start: 8;}
 .vpnum {
-	width: auto;
 }
 </style>
 
@@ -125,11 +146,10 @@
 <div id="vpbox">
 	<div id="vpcontent">
 		<div id="vpgrid">
-			<div ng-repeat="cell in vpgrid.cells" class="vpcell" ng-class="cell.cls">
-				<div ng-if="cell.empty">&nbsp;</div>
-				<div ng-if="cell.cls.vpmonth">{{cell.hdr}}</div>
-				<div ng-if="cell.cls.vpday">
-					<div class="vpnum vplink" ng-click="cell.onclickDayNum()">{{cell.num}}</div>
+			<div ng-repeat="month in vpgrid.page" class="vpmonth" ng-class="month.cls">
+				<div class="vphdr">{{month.hdr}}</div>
+				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
+					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
 				</div>
 			</div>
 		</div>

@@ -431,67 +431,43 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 
 angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 	var vpmonths = [];
-	var vpdays = [];
-	var cells = [];
-	var month_offset;
-	var scroll_buffer=0;
-	var cfg;
+	var offset;
+	var buffer=0;
 
 	this.initPage = function() {
-		month_offset = -scroll_buffer;
-		cfg = vpSettings.vpconfig;
-		
-		if (cfg.auto_scroll) {
-			month_offset += cfg.auto_scroll_offset;
-		}
-		else {
-			var off = ((cfg.first_month-1) - new Date().getMonth());
-			if (off > 0)
-				off -= 12;
-
-			month_offset += off;
-		}
-
-		create();
+		initOffset();
+		createPage();
 	}
 
 	this.offsetPage = function(off) {
-		month_offset += (6*off);
-		create();
+		offset += (6*off);
+		createPage();
 	}
 
-	this.setPage = function(m) {
-		month_offset = m;
-		create();
+	this.setPage = function(off) {
+		offset = off;
+		createPage();
 	}
 
 	this.getPage = function() {
-		return {months: vpmonths, days: vpdays, cells: cells};
+		return vpmonths;
 	}
 
-	this.setScrollBuffer = function(n) {
-		scroll_buffer = n;
-	}
-
-	this.getMonthScrollOffset = function(scrolloffset) {
-		return month_offset + Math.floor((vpmonths.length * scrolloffset) + 0.6);
-	}
-
-	function create() {
-		cfg = vpSettings.vpconfig;
+	function createPage() {
+		var cfg = vpSettings.vpconfig;
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
 		VpDate.localemonth = cfg.month_names.split('-');
 		
 		var vdt = new VpDate();
 		vdt.toStartOfMonth();
-		vdt.offsetMonth(month_offset);
+		vdt.offsetMonth(offset);
 		var isoStart = vdt.dt.toISOString();
 		var datespan = {start: vdt.ymd()};
 
 		vpmonths = [];
 		vpdays = [];
 		cells = [];
-		for (var i=0; i < (vpSettings.getMonthCount()+(scroll_buffer*2)); i++) {
+		for (var i=0; i < (vpSettings.getMonthCount()+(buffer*2)); i++) {
 			vpmonths.push(new VpMonth(vdt.ymd()));
 			vdt.offsetMonth(1);
 			datespan.end = vdt.ymd();
@@ -500,67 +476,67 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 		//vpEvents.load(datespan, rcvEvent);
 	}
 
-	function rcvEvent(evt) {
-		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
-		for (var c=0; c < evt.duration; c++) {
-			if (d >= 0)
-			if (d < vpdays.length)
-				vpdays[d].addEvent(evt);
-
-			d++;
+	function initOffset() {
+		var cfg = vpSettings.vpconfig;
+		offset = -buffer;
+		
+		if (cfg.auto_scroll) {
+			offset += cfg.auto_scroll_offset;
 		}
+		else {
+			var off = ((cfg.first_month-1) - new Date().getMonth());
+			if (off > 0)
+				off -= 12;
+
+			offset += off;
+		}
+	}
+
+	this.enableScroll = function() {
+		buffer = 6;
+	}
+
+	this.getMonthScrollOffset = function(scrolloffset) {
+		return offset + Math.floor((vpmonths.length * scrolloffset) + 0.6);
 	}
 
 	function VpMonth(ymd) {
+		var cfg = vpSettings.vpconfig;
 		var vdt = new VpDate(ymd);
 		
-		this.cls = {vpmonth: true};
 		this.hdr = vdt.MonthTitle();
+		this.vpdays = [];
+		this.cls = {};
 		
 		if (vdt.isPastMonth())
 			this.cls.past = true;
-		
-		var dayoffset = 0;
-		if (cfg.align_weekends)
-			dayoffset = vdt.DayOfWeek();
-
-		cells.push(this);
-
-		for (var d=0; d < dayoffset; d++)
-			cells.push({empty: true});
 
 		var m = vdt.getMonth();
-		var c = dayoffset;
 		while (m == vdt.getMonth()) {
-			var vpday = new VpDay(vdt.ymd(), this.cls.past);
-			vpdays.push(vpday);
-			cells.push(vpday);
-			c++;
-
+			this.vpdays.push(new VpDay(vdt));
 			vdt.offsetDay(1);
 		}
-
-		for (var d=0; d < 37-c; d++)
-			cells.push({empty: true});
 	}
 
-	function VpDay(ymd, past) {
-		var vdt = new VpDate(ymd);
+	function VpDay(vdt) {
+		var cfg = vpSettings.vpconfig;
 
-		this.cls = {vpday: true};
-		this.ymd = ymd;
+		this.cls = {};
+		this.ymd = vdt.ymd();
 		this.num = vdt.DayOfMonth();
+
+		if (this.num == 1) {
+			var off = cfg.align_weekends ? vdt.DayOfWeek() : 0;
+			this.cls["dayoffset" + off] = true;
+		}
 
 		if (vdt.isWeekend())
 			this.cls.weekend = true;
 		else	
 			this.cls.weekday = true;
 
-		if (VpDate.isToday(ymd))
+		if (VpDate.isToday(this.ymd))
 			this.cls.today = true;
-
-		if (past)
-			this.cls.past = true;
 	}
 	
 	VpDay.prototype.addEvent = function(evt) {
@@ -570,8 +546,21 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 		this.evts.push(evt);
 	}
 	
-	VpDay.prototype.onclickDayNum = function() {
+	VpDay.prototype.onclickNum = function() {
 		console.log(this);
+	}
+
+	function rcvEvent(evt) {
+/*
+		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
+		for (var c=0; c < evt.duration; c++) {
+			if (d >= 0)
+			if (d < vpdays.length)
+				vpdays[d].addEvent(evt);
+
+			d++;
+		}
+*/
 	}
 });
 			
@@ -711,9 +700,10 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 
 		function initGrid() {
 			$scope.vpgrid.view = view;
-			$scope.vpgrid.cells = vpAlmanac.getPage().cells;
+			$scope.vpgrid.page = vpAlmanac.getPage();
 			$scope.vpgrid.fontscale = vpSettings.vpconfig.font_scale_pc/100;
 			$scope.vpgrid.past_opacity = vpSettings.vpconfig.past_opacity;
+			console.log($scope.vpgrid);
 		}
 	}
 
@@ -721,7 +711,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 		if (!attrs.hasOwnProperty("disableScrolling"))
 		{
 			scrolling = true;
-			vpAlmanac.setScrollBuffer(6);
+			vpAlmanac.enableScroll();
 		}
 
 		if (!attrs.hasOwnProperty("disableAutoload"))
