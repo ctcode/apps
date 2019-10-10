@@ -75,44 +75,43 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 angular.module("vpApp").service("vpSettings", function($rootScope) {
 	var defaults = {
-		planner_title: "visual-planner",
-		vpconfig: {
-			month_count: 6,
-			month_count_portrait: 3,
-			auto_scroll: true,
-			auto_scroll_offset: -1,
-			first_month: 1,
-			weekends: "6,0",
-			align_weekends: true,
-			font_scale_pc: 100,
-			past_opacity: 0.6,
-			month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
-			show_event_time: true,
-			show_event_title: true,
-			show_event_marker: true,
-			colour_event_title: false,
-			proportional_events: false,
-			proportional_start_hour: 8,
-			proportional_end_hour: 20,
-			show_all_day_events: true,
-			single_day_as_multi_day: false,
-			show_timed_events: true,
-			multi_day_as_single_day: false,
-			first_day_only: false,
-			marker_width: 0.85,
-			multi_day_opacity: 0.8
-		}
+		title: "visual-planner",
+		month_count: 6,
+		month_count_portrait: 3,
+		auto_scroll: true,
+		auto_scroll_offset: -1,
+		first_month: 1,
+		weekends: "6,0",
+		align_weekends: true,
+		font_scale_pc: 100,
+		past_opacity: 0.6,
+		month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
+		show_event_time: true,
+		show_event_title: true,
+		show_event_marker: true,
+		colour_event_title: false,
+		proportional_events: false,
+		proportional_start_hour: 8,
+		proportional_end_hour: 20,
+		show_all_day_events: true,
+		single_day_as_multi_day: false,
+		show_timed_events: true,
+		multi_day_as_single_day: false,
+		first_day_only: false,
+		marker_width: 0.85,
+		multi_day_opacity: 0.8
 	};
 
+	var cfg = {};
+	this.config = cfg;
+	publish(defaults);
+	
 	var file_name = "settings002.json";
 	var file_id = null;
 	var appdata = null;
-	var pub = this;
-	publish(defaults);
 
 	function publish(settings) {
-		pub.planner_title = angular.copy(settings.planner_title);
-		pub.vpconfig = angular.copy(settings.vpconfig);
+		angular.copy(settings, cfg);
 	}
 
 	this.revert = function() {
@@ -167,10 +166,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	}
 
 	this.save = function() {
-		appdata = {
-			planner_title: angular.copy(pub.planner_title),
-			vpconfig: angular.copy(pub.vpconfig)
-		};
+		angular.copy(cfg, appdata);
 
 		loadFileID(function() {
 			if (file_id) {
@@ -249,7 +245,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	}
 
 	this.getMonthCount = function() {
-		return isPortrait() ? this.vpconfig.month_count_portrait : this.vpconfig.month_count;
+		return isPortrait() ? this.config.month_count_portrait : this.config.month_count;
 	}
 
 	function isPortrait()
@@ -430,6 +426,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 //////////////////////////////////////////////////////////////////////
 
 angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $window) {
+	var cfg = vpSettings.config;
 	var vpmonths = [];
 	var offset;
 	var buffer=0;
@@ -454,7 +451,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 
 	function createPage() {
-		var cfg = vpSettings.vpconfig;
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
 		VpDate.localemonth = cfg.month_names.split('-');
 		
@@ -477,7 +473,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 
 	function initOffset() {
-		var cfg = vpSettings.vpconfig;
 		offset = -buffer;
 		
 		if (cfg.auto_scroll) {
@@ -501,7 +496,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 
 	function VpMonth(ymd) {
-		var cfg = vpSettings.vpconfig;
 		var vdt = new VpDate(ymd);
 		
 		this.hdr = vdt.MonthTitle();
@@ -523,8 +517,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 
 	function VpDay(vdt) {
-		var cfg = vpSettings.vpconfig;
-
 		this.cls = {};
 		this.ymd = vdt.ymd();
 		this.num = vdt.DayOfMonth();
@@ -692,20 +684,11 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			box.scrollBy(dy,0);
 		}
 
-		this.onclickHdr = function(vpmonth) {
-			//$window.open("https://www.google.com/calendar/r/month/" + new VpDate(vpmonth.first.ymd).GCalURL());
-		}
-
-		this.onclickDayNum = function(vpday) {
-			$window.open("https://www.google.com/calendar/r/week/" + new VpDate(vpday.ymd).GCalURL());
-		}
-
 		function initGrid() {
 			$scope.vpgrid.view = view;
 			$scope.vpgrid.page = vpAlmanac.getPage();
-			$scope.vpgrid.fontscale = vpSettings.vpconfig.font_scale_pc/100;
-			$scope.vpgrid.past_opacity = vpSettings.vpconfig.past_opacity;
-			console.log($scope.vpgrid);
+			$scope.vpgrid.fontscale = vpSettings.config.font_scale_pc/100;
+			$scope.vpgrid.past_opacity = vpSettings.config.past_opacity;
 		}
 	}
 
