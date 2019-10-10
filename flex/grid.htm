@@ -22,12 +22,12 @@ body {
 #grid.column {
 	grid-auto-flow: column;
 	grid-template-columns: repeat(6, 1fr);
-	grid-template-rows: 2fr repeat(10, 1fr);
+	grid-template-rows: 2fr repeat(20, 1fr);
 }
 #grid.list {
 	grid-auto-flow: row;
 	grid-template-rows: repeat(6, 1fr);
-	grid-template-columns: 3fr repeat(10, 1fr);
+	grid-template-columns: 3fr repeat(20, 1fr);
 }
 .hdr {
 	text-align: center;
@@ -35,6 +35,13 @@ body {
 	font-weight: bold;
 	padding: 0.2em;
 }
+.column .hdr {
+	grid-row-start: 1;
+}
+.list .hdr {
+	grid-column-start: 1;
+}
+
 .cell {
 	padding: 0.2em;
 	background-color: gold;
@@ -57,6 +64,19 @@ body {
 	color: white;
 	background-color: red;
 }
+.column .cell.offset0 {grid-row-start: 2;}
+.column .cell.offset1 {grid-row-start: 3;}
+.column .cell.offset2 {grid-row-start: 4;}
+.column .cell.offset3 {grid-row-start: 5;}
+.column .cell.offset4 {grid-row-start: 6;}
+.column .cell.offset5 {grid-row-start: 7;}
+.list .cell.offset0 {grid-column-start: 2;}
+.list .cell.offset1 {grid-column-start: 3;}
+.list .cell.offset2 {grid-column-start: 4;}
+.list .cell.offset3 {grid-column-start: 5;}
+.list .cell.offset4 {grid-column-start: 6;}
+.list .cell.offset5 {grid-column-start: 7;}
+
 .evts {
 	display: flex;
 	align-items: center;
@@ -69,6 +89,11 @@ body {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
+@media only screen and (orientation: portrait) {
+	.cell {
+		background-color: red;
+	}
+}
 </style>
 <head>
 <body>
@@ -76,7 +101,7 @@ body {
 <div id="gridbox">
 	<div id="grid" class="column compact">
 		<div class="hdr">col 1</div>
-		<div class="cell">1</div>
+		<div class="cell offset3">1</div>
 		<div class="cell">2</div>
 		<div class="cell">3</div>
 		<div class="cell">4</div>
@@ -85,10 +110,9 @@ body {
 		<div class="cell">7</div>
 		<div class="cell">8</div>
 		<div class="cell">9</div>
-		<div class="cell">10</div>
 
 		<div class="hdr">col 2</div>
-		<div class="cell">1</div>
+		<div class="cell offset2">1</div>
 		<div class="cell">2</div>
 		<div class="cell">3</div>
 		<div class="cell">4</div>
@@ -98,21 +122,18 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
+		<div class="cell">11</div>
 
 		<div class="hdr">col 3</div>
-		<div class="cell">1</div>
+		<div class="cell offset4">1</div>
 		<div class="cell">2 qwertyuip asdfghjkl zxcvbnmm QWERTYUIOP ASDFGHJKL ZXCVBNNM 1234567890</div>
 		<div class="cell">3</div>
 		<div class="cell">4</div>
 		<div class="cell">5</div>
 		<div class="cell">6</div>
-		<div class="cell">7</div>
-		<div class="cell">8</div>
-		<div class="cell">9</div>
-		<div class="cell">10</div>
 
 		<div class="hdr">col 4</div>
-		<div class="cell">1</div>
+		<div class="cell offset5">1</div>
 		<div class="cell">2</div>
 		<div class="cell">3</div>
 		<div class="cell">4</div>
@@ -122,9 +143,11 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
+		<div class="cell">11</div>
+		<div class="cell">12</div>
 
 		<div class="hdr">col 5</div>
-		<div class="cell">1</div>
+		<div class="cell offset0">1</div>
 		<div class="cell">2</div>
 		<div class="cell">3</div>
 		<div class="cell">4</div>
@@ -134,18 +157,18 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
+		<div class="cell">11</div>
+		<div class="cell">12</div>
+		<div class="cell">13</div>
 
 		<div class="hdr">col 6</div>
-		<div class="cell">1</div>
+		<div class="cell offset2">1</div>
 		<div class="cell">2</div>
 		<div class="cell">3</div>
 		<div class="cell">4</div>
 		<div class="cell">5</div>
 		<div class="cell">6</div>
 		<div class="cell">7</div>
-		<div class="cell">8</div>
-		<div class="cell">9</div>
-		<div class="cell">10</div>
 	</div>
 </div>
 
