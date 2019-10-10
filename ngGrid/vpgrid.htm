@@ -74,6 +74,11 @@
 	height: 100%;
 	width: {{vpgrid.scroll_size}}%;
 }
+@media only screen and (orientation: portrait) {
+	#vpcontent {
+		width: {{vpgrid.scroll_size_portrait}}%;
+	}
+}
 #vpgrid {
 	font-size: calc(1.1vh * var(--fontscale));
 	grid-auto-flow: column;
