@@ -114,7 +114,7 @@ body {
 </head>
 
 <body ng-app="vpApp" ng-controller="vpController as vp" ng-cloak>
-<title ng-bind="vpsettings.planner_title">Loading...</title>
+<title ng-bind="vpsettings.config.title">Loading...</title>
 
 <div id="planner" ng-show="vp.show.planner">
 	<div id="banner">
@@ -153,9 +153,6 @@ body {
 		</div>
 		<div class="sub"><select ng-model="vpsettings.config.month_count"  ng-options="x for (x, y) in vp.month_count_options"></select>
 			Number of months to display.  More can be scrolled into view using the mouse wheel or cursor keys.
-		</div>
-		<div class="sub"><select ng-model="vpsettings.config.month_count_portrait"  ng-options="x for (x, y) in vp.month_count_options"></select>
-			Number of months to display in portrait mode on mobile devices.
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.auto_scroll" type="checkbox">
 			Auto-scroll to current month.  If not selected, the view will always start at the beginning of the year.
@@ -242,7 +239,7 @@ body {
 
 <h1 id="printmsg" ng-show="vp.show.planner">Print not available</h1>
 
-<script src="config.js" type='text/javascript'></script>
+<script src="vpconfig.js" type='text/javascript'></script>
 <script src="vplib.js" type='text/javascript'></script>
 
 <script type='text/javascript'>
@@ -300,8 +297,7 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 		});
 	});
 
-	//vpAccount.connect();
-	vpSettings.planner_title = "vp-ngGrid"
+	vpAccount.connect();
 });
 </script>
 

@@ -136,6 +136,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 			function rcv(response) {
 				appdata = JSON.parse(response.body);
+				publish(appdata);
 				loadGCalSettings();
 			};
 		});
@@ -154,7 +155,6 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 				if (response.result.id == "format24HourTime")
 					VpDateTime.time24h = (response.result.value == "true");
 
-				publish(appdata);
 				onLoad();
 			};
 		};
@@ -165,7 +165,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	}
 
 	this.save = function() {
-		angular.copy(cfg, appdata);
+		appdata = angular.copy(cfg);
 
 		loadFileID(function() {
 			if (file_id) {
@@ -570,9 +570,10 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 	
 	function fCtl($scope) {
 		var box = document.getElementById("vpbox");
+		$scope.vpgrid.scroll_size = 100;
+		$scope.vpgrid.scroll_size_portrait = 100;
 
 		this.initView = function() {
-			$scope.vpgrid.scroll_size = 100;
 			showGrid(false);
 
 			if (scrolling) {
@@ -670,8 +671,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 
 		if (!attrs.hasOwnProperty("disableAutoload"))
 			scope.vpgrid.initView();
-
-		scope.vpgrid.initView();
 	}
 
 	return {

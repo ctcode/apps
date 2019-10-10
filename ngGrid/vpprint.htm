@@ -19,7 +19,7 @@ body {
 <title>Print</title>
 </head>
 <body ng-app="vpApp" ng-controller="vpPrintController" ng-cloak>
-<vp-table disable-autoload disable-scrolling/>
+<vp-grid disable-autoload disable-scrolling/>
 <script src="vpconfig.js" type='text/javascript'></script>
 <script src="vplib.js" type='text/javascript'></script>
 <script type='text/javascript'>
@@ -32,7 +32,7 @@ angular.module("vpApp").controller("vpPrintController", function($scope, vpAccou
 
 	$scope.$on("settings:load", function() {
 		$scope.$apply(function() {
-			$scope.vptable.setView(parseInt(window.location.hash.substr(1)));
+			$scope.vpgrid.setView(parseInt(window.location.hash.substr(1)));
 		});
 	});
 
