@@ -541,9 +541,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			
 			page.length = page.buffer + cfg.month_count + page.buffer;
 
-			$scope.vpgrid.scroll_size = 100;
-			$scope.vpgrid.scroll_size_portrait = 100;
-
 			if (scrolling)
 				angular.element(box).on("scroll", onScroll);
 		}
