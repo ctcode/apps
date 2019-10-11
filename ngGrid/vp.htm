@@ -122,7 +122,7 @@ body {
 		<div id="tools">
 			<div>{{vpaccount.status.msg}}</div>
 			<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
-			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vp.onclickPrint()"/>
+			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vpgrid.onclickPrint()"/>
 			<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vpgrid.onclickView('expand')" ng-class="vpgrid.view.cls.expand"/>
 			<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vpgrid.onclickView('list')" ng-class="vpgrid.view.cls.list"/>
 			<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vpgrid.onclickView('column')" ng-class="vpgrid.view.cls.column"/>
@@ -243,17 +243,13 @@ body {
 <script src="vplib.js" type='text/javascript'></script>
 
 <script type='text/javascript'>
-angular.module("vpApp").controller("vpController", function(vpAccount, vpSettings, $scope, $timeout, $window) {
+angular.module("vpApp").controller("vpController", function(vpAccount, vpSettings, $scope, $timeout) {
 	$scope.vpaccount = vpAccount;
 	$scope.vpsettings = vpSettings;
 	this.show = {planner: true};
 	this.busy = false;
 	this.month_count_options = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 8, 10: 10, 12: 12};
 	var gsignbtn = document.getElementById("g_signbtn");
-
-	this.onclickPrint = function() {
-		$window.open("vpprint.htm#" + $scope.vpgrid.getScrollPos());
-	}
 
 	this.onclickSettings = function() {
 		this.g_signbtn_ok = gsignbtn.hasChildNodes();
@@ -272,7 +268,7 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 		$timeout(function() {
 			this.busy = false;
 			this.show = {planner: true};
-			$scope.vpgrid.initView();
+			$scope.vpgrid.reset();
 		}.bind(this), 2000)
 	}
 
@@ -286,14 +282,14 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 		$scope.$apply(function() {
 			vpSettings.reset();
 			$scope.vp.show = {planner: true};
-			$scope.vpgrid.initView();
+			$scope.vpgrid.reset();
 		});
 	});
 
 	$scope.$on("settings:load", function() {
 		$scope.$apply(function() {
 			$scope.vp.show = {planner: true};
-			$scope.vpgrid.initView();
+			$scope.vpgrid.reset();
 		});
 	});
 
