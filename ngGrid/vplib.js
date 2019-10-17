@@ -454,9 +454,9 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		this.ymd = vdt.ymd();
 		this.num = vdt.DayOfMonth();
 
-		if (this.num == 1) {
-			var off = cfg.align_weekends ? vdt.DayOfWeek() : 0;
-			this.cls["dayoffset" + off] = true;
+		if (cfg.align_weekends) {
+			if (this.num == 1)
+				this.cls["dayoffset" + vdt.DayOfWeek()] = true;
 		}
 
 		if (vdt.isWeekend())
