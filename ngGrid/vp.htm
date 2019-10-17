@@ -245,7 +245,8 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 
 	this.onclickSave = function() {
 		this.busy = true;
-		vpSettings.save();
+		if (vpAccount.status.signed_in)
+			vpSettings.save();
 		$timeout(function() {
 			this.busy = false;
 			this.show = {planner: true};
