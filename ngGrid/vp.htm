@@ -123,7 +123,6 @@ body {
 			<div>{{vpaccount.status.msg}}</div>
 			<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
 			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vpgrid.onclickPrint()"/>
-			<img class="toolbtn" src="expand.png" title="Expand" draggable="false" ng-click="vpgrid.onclickView('expand')" ng-class="vpgrid.view.cls.expand"/>
 			<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vpgrid.onclickView('list')" ng-class="vpgrid.view.cls.list"/>
 			<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vpgrid.onclickView('column')" ng-class="vpgrid.view.cls.column"/>
 		</div>
@@ -163,11 +162,14 @@ body {
 				First month of year.
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.weekends">
-			Weekends.  (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
+		<div class="sub"><input ng-model="vpsettings.config.hide_scrollbars" type="checkbox">
+			Hide scrollbars.
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.align_weekends" type="checkbox">
 			Align weekends.
+		</div>
+		<div class="sub"><input ng-model="vpsettings.config.weekends">
+			Weekends.  (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.font_scale_pc" type="number" min="50" max="200">
 			% Font scale.
@@ -180,19 +182,7 @@ body {
 		</div>
 	</div>
 	<div class="sub group"><b>Events</b>
-		<div class="sub"><input ng-model="vpsettings.config.show_event_time" type="checkbox">
-			Show event time.
-		</div>
-		<div class="sub"><input ng-model="vpsettings.config.show_event_title" type="checkbox">
-			Show event title.
-		</div>
-		<div class="sub"><input ng-model="vpsettings.config.show_event_marker" type="checkbox">
-			Show event marker.
-		</div>
-		<div class="sub"><input ng-model="vpsettings.config.colour_event_title" type="checkbox">
-			Use event colour for title text.
-		</div>
-		<div class="sub"><input ng-model="vpsettings.config.proportional_events" type="checkbox">
+		<div ng-hide="true" class="sub"><input ng-model="vpsettings.config.proportional_events" type="checkbox">
 			Display event markers in proportion to their actual duration.  Events outside the visible event range will not be shown.
 			<div class="sub"><input ng-model="vpsettings.config.proportional_start_hour" type="number" min="0" max="24">
 				Start hour of visible event range.
@@ -209,15 +199,6 @@ body {
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.show_timed_events" type="checkbox">
 			Show 'timed' events.
-		</div>
-		<div class="sub"><input ng-model="vpsettings.config.multi_day_as_single_day" type="checkbox">
-			Show multi-day events as single-day events on each day.
-			<div class="sub"><input ng-model="vpsettings.config.first_day_only" type="checkbox">
-				First day only.
-			</div>
-		</div>
-		<div class="sub"><input ng-model="vpsettings.config.marker_width" type="number" min="0.2">
-			Width of event marker.
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.multi_day_opacity" type="number" min="0" max="1">
 			Opacity of multi-day event.  (1 = opaque)

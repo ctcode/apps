@@ -80,24 +80,18 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		auto_scroll: true,
 		auto_scroll_offset: -1,
 		first_month: 1,
-		weekends: "6,0",
+		hide_scrollbars: false,
 		align_weekends: true,
+		weekends: "6,0",
 		font_scale_pc: 100,
 		past_opacity: 0.6,
 		month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
-		show_event_time: true,
-		show_event_title: true,
-		show_event_marker: true,
-		colour_event_title: false,
 		proportional_events: false,
 		proportional_start_hour: 8,
 		proportional_end_hour: 20,
 		show_all_day_events: true,
 		single_day_as_multi_day: false,
 		show_timed_events: true,
-		multi_day_as_single_day: false,
-		first_day_only: false,
-		marker_width: 0.85,
 		multi_day_opacity: 0.8
 	};
 
@@ -541,6 +535,10 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			
 			page.length = page.buffer + cfg.month_count + page.buffer;
 			page.visoffset = page.offset + page.buffer;
+
+			angular.element(box).removeClass("hidescroll");
+			if (cfg.hide_scrollbars)
+				angular.element(box).addClass("hidescroll");
 		}
 
 		function updatePage() {

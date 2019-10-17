@@ -10,6 +10,12 @@
 @media only print {
 	#vpbox {overflow: visible;}
 }
+.hidescroll {
+	scrollbar-width: none;
+}
+.hidescroll::-webkit-scrollbar {
+	display: none;
+}
 #vpcontent {
 	position: absolute;
 	pointer-events: none;
@@ -147,9 +153,6 @@
 	width: fit-content;
 	padding: 0.1em 0.2em;
 }
-</style>
-
-<style ng-if="vpgrid.view.sel.expand">
 </style>
 
 <div id="vpbox">
