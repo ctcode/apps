@@ -32,7 +32,7 @@ angular.module("vpApp").controller("vpPrintController", function($scope, vpAccou
 
 	$scope.$on("settings:load", function() {
 		$scope.$apply(function() {
-			$scope.vpgrid.reset(parseInt(window.location.hash.substr(1)));
+			$scope.vpgrid.set(parseInt(window.location.hash.substr(1)));
 		});
 	});
 
