@@ -421,7 +421,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			datespan.end = vdt.ymd();
 		}
 		
-		//vpEvents.load(datespan, rcvEvent);
+		vpEvents.load(datespan, rcvEvent);
 	}
 
 	this.getPage = function() {

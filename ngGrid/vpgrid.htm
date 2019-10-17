@@ -26,7 +26,6 @@
 	display: grid;
 	grid-gap: 1px;
 	user-select: none;
-	--fontscale: {{vpgrid.fontscale}};
 }
 .vpmonth {
 	display: contents;
@@ -87,7 +86,7 @@
 	}
 }
 #vpgrid {
-	font-size: calc(1.1vh * var(--fontscale));
+	font-size: calc(1.1vh * {{vpgrid.fontscale}});
 	grid-auto-flow: column;
 	grid-template-columns: repeat({{vpgrid.page.length}}, 1fr);
 	grid-template-rows: 2fr repeat(38, 1fr);
@@ -129,7 +128,7 @@
 	height: {{vpgrid.scroll_size}}%;
 }
 #vpgrid {
-	font-size: calc(1.4vh * var(--fontscale));
+	font-size: calc(1.4vh * {{vpgrid.fontscale}});
 	grid-auto-flow: row;
 	grid-template-rows: repeat({{vpgrid.page.length}}, 1fr);
 	grid-template-columns: 5fr repeat(38, 1fr);
