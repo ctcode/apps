@@ -161,6 +161,11 @@
 				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
 					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
+					<div class="vpevents" ng-if="day.evts">
+						<div class="vpevent vplink" title="{{evt.title}}" ng-repeat="evt in day.evts" ng-class="evt.cal.cls" ng-style="{'color': evt.cal.colour.fore, 'background-color': evt.cal.colour.back}" ng-click="evt.edit()">
+							<span>{{evt.title}}</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -403,6 +403,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $window) {
 	var cfg = vpSettings.config;
 	var vpmonths = [];
+	var vpdays = [];
 
 	this.makePage = function(pageoffset, pagelength) {
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
@@ -415,6 +416,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		var datespan = {start: vdt.ymd()};
 
 		vpmonths = [];
+		vpdays = [];
 		for (var i=0; i < pagelength; i++) {
 			vpmonths.push(new VpMonth(vdt.ymd()));
 			vdt.offsetMonth(1);
@@ -440,7 +442,9 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 		var m = vdt.getMonth();
 		while (m == vdt.getMonth()) {
-			this.vpdays.push(new VpDay(vdt));
+			var vpday = new VpDay(vdt);
+			this.vpdays.push(vpday);
+			vpdays.push(vpday);
 			vdt.offsetDay(1);
 		}
 	}
@@ -478,19 +482,16 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 
 	function rcvEvent(evt) {
-/*
 		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
 		for (var c=0; c < evt.duration; c++) {
-			if (d >= 0)
-			if (d < vpdays.length)
+			if (vpdays[d])
 				vpdays[d].addEvent(evt);
 
 			d++;
 		}
-*/
 	}
 });
-			
+
 
 
 
