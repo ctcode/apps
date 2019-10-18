@@ -321,24 +321,6 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 
 				syncStg(this, true);
 			}
-
-			function syncStg(cal, write) {
-				var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
-				if (!tog)
-					tog = {};
-
-				if (write) {
-					delete tog[cal.id];
-					if (cal.cls)
-						tog[cal.id] = true;
-
-					$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
-				}
-				else {
-					if (tog[cal.id])
-						cal.cls = {checked: true};
-				}
-			}
 			
 			this.reqEvents();
 		}
@@ -391,6 +373,24 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 
 	function fail(reason) {
 		alert(reason.result.error.message);
+	}
+
+	function syncStg(cal, write) {
+		var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
+		if (!tog)
+			tog = {};
+
+		if (write) {
+			delete tog[cal.id];
+			if (cal.cls)
+				tog[cal.id] = true;
+
+			$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
+		}
+		else {
+			if (tog[cal.id])
+				cal.cls = {checked: true};
+		}
 	}
 
 	this.calinfo = calendarlist.items;
