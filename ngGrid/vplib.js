@@ -284,9 +284,11 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 		function VpCalendar(item) {
 			var id = item.id;
 			var synctok = null;
+			var cls = {};
 			this.name = item.summary;
 			this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
-			syncStg(this, false);
+			this.cls = cls;
+			syncStg(false);
 
 			this.reqEvents = function(tok) {
 				var reqparams = {timeMin: isoSpan.start, timeMax: isoSpan.end, singleEvents: true};
@@ -316,29 +318,25 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 			}
 
 			this.toggle = function() {
-				if (this.cls)
-					delete this.cls;
-				else
-					this.cls = {checked: true};
-
-				syncStg(this, true);
+				this.cls.checked = this.cls.checked ? false : true;
+				syncStg(true);
 			}
 
-			function syncStg(cal, write) {
+			function syncStg(write) {
 				var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
 				if (!tog)
 					tog = {};
 
 				if (write) {
 					delete tog[id];
-					if (cal.cls)
+					if (cls.checked)
 						tog[id] = true;
 
 					$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
 				}
 				else {
 					if (tog[id])
-						cal.cls = {checked: true};
+						cls.checked = true;
 				}
 			}
 			
