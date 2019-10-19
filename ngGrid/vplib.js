@@ -318,7 +318,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 			}
 
 			this.toggle = function() {
-				this.cls.checked = this.cls.checked ? false : true;
+				cls.checked = cls.checked ? false : true;
 				syncStg(true);
 			}
 
