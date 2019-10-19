@@ -244,9 +244,10 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettings) {
 	var calendarlist = {request: true, items: []};
-	var isoSpan = {};
+	this.calinfo = calendarlist.items;
 
 	this.load = function(datespan, fRcv) {
+		var isoSpan = {};
 		isoSpan.start = new Date(datespan.start).toISOString();
 		isoSpan.end = new Date(datespan.end).toISOString();
 
@@ -255,8 +256,8 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 			calendarlist.request = false;
 		}
 		else {
-			for (vpcal of calendarlist.items)
-				vpcal.reqEvents();
+			for (cal of calendarlist.items)
+				cal.reqEvents();
 		}
 
 		function reqCalendars(tok) {
@@ -273,7 +274,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 						if (item.selected)
 							calendarlist.items.push(new VpCalendar(item));
 					}
-				}.bind(this));
+				});
 
 				if (response.result.nextPageToken)
 					reqCalendars(response.result.nextPageToken);
@@ -281,7 +282,8 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 		}
 
 		function VpCalendar(item) {
-			this.id = item.id;
+			var id = item.id;
+			var synctok = null;
 			this.name = item.summary;
 			this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
 			syncStg(this, false);
@@ -291,7 +293,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 				if (tok) reqparams.pageToken = tok;
 				
 				gapi.client.request({
-					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(this.id) + "/events",
+					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events",
 					method: "GET",
 					params: reqparams
 				})
@@ -307,9 +309,9 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 					}.bind(this));
 
 					if (response.result.nextPageToken)
-						this.reqEvents(response.result.nextPageToken);
+						reqEvents(response.result.nextPageToken);
 					else if (response.result.nextSyncToken)
-						this.synctok = response.result.nextSyncToken;
+						synctok = response.result.nextSyncToken;
 				};
 			}
 
@@ -320,6 +322,24 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 					this.cls = {checked: true};
 
 				syncStg(this, true);
+			}
+
+			function syncStg(cal, write) {
+				var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
+				if (!tog)
+					tog = {};
+
+				if (write) {
+					delete tog[id];
+					if (cal.cls)
+						tog[id] = true;
+
+					$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
+				}
+				else {
+					if (tog[id])
+						cal.cls = {checked: true};
+				}
 			}
 			
 			this.reqEvents();
@@ -374,26 +394,6 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 	function fail(reason) {
 		alert(reason.result.error.message);
 	}
-
-	function syncStg(cal, write) {
-		var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
-		if (!tog)
-			tog = {};
-
-		if (write) {
-			delete tog[cal.id];
-			if (cal.cls)
-				tog[cal.id] = true;
-
-			$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
-		}
-		else {
-			if (tog[cal.id])
-				cal.cls = {checked: true};
-		}
-	}
-
-	this.calinfo = calendarlist.items;
 });
 
 
