@@ -248,6 +248,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 
 	this.load = function(datespan, fRcv) {
 		var isoSpan = {};
+		var tmo=null;
 		isoSpan.start = new Date(datespan.start).toISOString();
 		isoSpan.end = new Date(datespan.end).toISOString();
 
@@ -269,15 +270,16 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 			.then(rcv, fail);
 
 			function rcv(response) {
-				$timeout(function(){
-					for (item of response.result.items) {
-						if (item.selected)
-							calendarlist.items.push(new VpCalendar(item));
-					}
-				});
+				$timeout.cancel(tmo);
+				for (item of response.result.items) {
+					if (item.selected)
+						calendarlist.items.push(new VpCalendar(item));
+				}
 
 				if (response.result.nextPageToken)
 					reqCalendars(response.result.nextPageToken);
+
+				tmo = $timeout(1000);
 			};
 		}
 
@@ -302,18 +304,20 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 				.then(rcv.bind(this), fail);
 
 				function rcv(response) {
-					$timeout(function(){
-						for (item of response.result.items) {
-							var evt = new VpEvent(this, item);
-							if (evt.id)
-								fRcv(evt);
-						}
-					}.bind(this));
+					$timeout.cancel(tmo);
+
+					for (item of response.result.items) {
+						var evt = new VpEvent(this, item);
+						if (evt.id)
+							fRcv(evt);
+					}
 
 					if (response.result.nextPageToken)
 						reqEvents(response.result.nextPageToken);
 					else if (response.result.nextSyncToken)
 						synctok = response.result.nextSyncToken;
+
+					tmo = $timeout(1000);
 				};
 			}
 
