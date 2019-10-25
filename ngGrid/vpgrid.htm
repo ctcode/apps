@@ -21,6 +21,7 @@
 	pointer-events: none;
 }
 #vpgrid {
+	font-size: calc(1.1vh * {{vpgrid.fontscale}});
 	height: 100%;
 	box-sizing: border-box;
 	display: grid;
@@ -86,7 +87,6 @@
 	}
 }
 #vpgrid {
-	font-size: calc(1.1vh * {{vpgrid.fontscale}});
 	grid-auto-flow: column;
 	grid-template-columns: repeat({{vpgrid.page.length}}, 1fr);
 	grid-template-rows: 2fr repeat(38, 1fr);
@@ -128,7 +128,6 @@
 	height: {{vpgrid.scroll_size}}%;
 }
 #vpgrid {
-	font-size: calc(1.4vh * {{vpgrid.fontscale}});
 	grid-auto-flow: row;
 	grid-template-rows: repeat({{vpgrid.page.length}}, 1fr);
 	grid-template-columns: 5fr repeat(38, 1fr);
