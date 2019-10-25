@@ -522,6 +522,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 	
 	function fCtl($scope) {
 		var box = document.getElementById("vpbox");
+		var ngbox = angular.element(box);
 		var page;
 
 		function resetPage() {
@@ -539,14 +540,14 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			page.length = page.buffer + cfg.month_count + page.buffer;
 			page.visoffset = page.offset + page.buffer;
 
-			angular.element(box).removeClass("hidescroll");
+			ngbox.removeClass("hidescroll");
 			if (cfg.hide_scrollbars)
-				angular.element(box).addClass("hidescroll");
+				ngbox.addClass("hidescroll");
 		}
 
 		function updatePage() {
-			showGrid(false);
-			angular.element(box).off("scroll");
+			box.style.visibility = "hidden";
+			ngbox.off("scroll");
 
 			$timeout(function() {
 				vpAlmanac.makePage(page.offset, page.length);
@@ -559,10 +560,10 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 
 				$timeout(function() {
 					updateScrollPos();
-					showGrid(true);
+					box.style.visibility = "";
 
 					if (scrolling)
-						angular.element(box).on("scroll", onScroll);
+						ngbox.on("scroll", onScroll);
 				});
 			});
 
@@ -612,10 +613,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			function offsetPage(off) {
 				page.offset += (off * page.buffer);
 				updatePage();
-			}
-
-			function showGrid(show) {
-				document.getElementById("vpbox").style.visibility = show ? "" : "hidden";
 			}
 		}
 
