@@ -71,9 +71,8 @@
 	pointer-events: all;
 	cursor: pointer;
 }
-.vpevents {
-}
 .vpevent {
+	width: fit-content;
 	border-radius: 0.25em;
 	padding: 0.1em 0.2em;
 	margin: 0 1px;
@@ -121,12 +120,12 @@
 	padding: 0.25em;
 	margin: 0.1em 0.1em 0.1em 0.2em;
 }
-.vpevents {
+.vpeventsingleline .vpevents {
 	display: flex;
 	align-items: center;
 	overflow: hidden;
 }
-.vpevent {
+.vpeventsingleline .vpevent {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -169,7 +168,7 @@
 
 <div id="vpbox">
 	<div id="vpcontent">
-		<div id="vpgrid">
+		<div id="vpgrid" ng-class="vpgrid.cls">
 			<div ng-repeat="month in vpgrid.page" class="vpmonth" ng-class="month.cls">
 				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">

@@ -79,6 +79,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		month_count: 6,
 		auto_scroll: true,
 		auto_scroll_offset: -1,
+		auto_page: true,
 		first_month: 1,
 		hide_scrollbars: false,
 		align_weekends: true,
@@ -92,6 +93,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		show_all_day_events: true,
 		single_day_as_multi_day: false,
 		show_timed_events: true,
+		event_on_separate_line: false,
 		multi_day_opacity: 0.8
 	};
 
@@ -557,6 +559,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 				$scope.vpgrid.past_opacity = vpSettings.config.past_opacity;
 				$scope.vpgrid.scroll_size = scrolling ? (page.length / cfg.month_count)*100 : 100;
 				$scope.vpgrid.scroll_size_portrait = scrolling ? $scope.vpgrid.scroll_size * 2 : 100;
+				$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
 
 				$timeout(function() {
 					updateScrollPos();
@@ -599,15 +602,17 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 					page.visoffset = page.offset + Math.ceil((box.scrollTop-1) / dim);
 				}
 				
-				var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
-				var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
+				if (cfg.auto_page) {
+					var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
+					var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
 
-				var off = false;
-				if (pos == 0) off = -1;
-				if (pos >= max) off = 1;
+					var off = false;
+					if (pos == 0) off = -1;
+					if (pos >= max) off = 1;
 
-				if (off)
-					tmo = $timeout(offsetPage, 1000, true, off);
+					if (off)
+						tmo = $timeout(offsetPage, 1000, true, off);
+				}
 			}
 
 			function offsetPage(off) {
