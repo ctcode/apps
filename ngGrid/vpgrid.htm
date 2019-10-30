@@ -39,6 +39,9 @@
 .vpmonth {
 	display: contents;
 }
+.vpmonth.past {
+	opacity: {{vpgrid.past_opacity}};
+}
 .vphdr {
 	display: flex;
 	align-items: center;
@@ -47,19 +50,15 @@
 	overflow: hidden;
 	white-space: nowrap;
 	min-width: 10em;
-}
-.past .vphdr {
-	opacity: {{vpgrid.past_opacity}};
+	opacity: inherit;
 }
 .vpday {
 	display: flex;
 	background-color: #eaeaea;
+	opacity: inherit;
 }
 .vpday.weekend {
 	background-color: #d8d8d8;
-}
-.past .vpday {
-	opacity: {{vpgrid.past_opacity}};
 }
 .vpnum {
 	font-size: 0.8em;
