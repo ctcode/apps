@@ -439,9 +439,10 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		
 		this.hdr = vdt.MonthTitle();
 		this.vpdays = [];
+		this.cls = {};
 		
 		if (vdt.isPastMonth())
-			this.past = true;
+			this.cls.past = true;
 
 		var m = vdt.getMonth();
 		while (m == vdt.getMonth()) {
@@ -457,9 +458,9 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 
 	function VpDay(vpmonth, vdt) {
-		this.cls = {};
 		this.ymd = vdt.ymd();
 		this.num = vdt.DayOfMonth();
+		this.cls = {};
 
 		if (cfg.align_weekends) {
 			if (this.num == 1)
@@ -471,9 +472,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 		if (VpDate.isToday(this.ymd))
 			this.cls.today = true;
-
-		if (vpmonth.past)
-			this.cls.past = true;
 	}
 	
 	VpDay.prototype.addEvent = function(evt) {

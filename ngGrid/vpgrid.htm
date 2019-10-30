@@ -48,6 +48,9 @@
 	white-space: nowrap;
 	min-width: 10em;
 }
+.past .vphdr {
+	opacity: {{vpgrid.past_opacity}};
+}
 .vpday {
 	display: flex;
 	background-color: #eaeaea;
@@ -55,7 +58,7 @@
 .vpday.weekend {
 	background-color: #d8d8d8;
 }
-.vpday.past {
+.past .vpday {
 	opacity: {{vpgrid.past_opacity}};
 }
 .vpnum {
@@ -169,7 +172,7 @@
 <div id="vpbox">
 	<div id="vpcontent">
 		<div id="vpgrid" ng-class="vpgrid.cls">
-			<div ng-repeat="month in vpgrid.page" class="vpmonth">
+			<div ng-repeat="month in vpgrid.page" class="vpmonth" ng-class="month.cls">
 				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
 					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
