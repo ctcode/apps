@@ -73,8 +73,15 @@
 	pointer-events: all;
 	cursor: pointer;
 }
+.vpevents {
+	overflow: hidden;
+}
 .vpevent {
 	width: fit-content;
+	max-width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	border-radius: 0.25em;
 	padding: 0.1em 0.2em;
 	margin: 1px;
@@ -125,12 +132,9 @@
 .vpeventsingleline .vpevents {
 	display: flex;
 	align-items: center;
-	overflow: hidden;
 }
 .vpeventsingleline .vpevent {
-	overflow: hidden;
 	white-space: nowrap;
-	text-overflow: ellipsis;
 }
 </style>
 
