@@ -439,14 +439,13 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		
 		this.hdr = vdt.MonthTitle();
 		this.vpdays = [];
-		this.cls = {};
 		
 		if (vdt.isPastMonth())
-			this.cls.past = true;
+			this.past = true;
 
 		var m = vdt.getMonth();
 		while (m == vdt.getMonth()) {
-			var vpday = new VpDay(vdt);
+			var vpday = new VpDay(this, vdt);
 			this.vpdays.push(vpday);
 			vpdays.push(vpday);
 			vdt.offsetDay(1);
@@ -457,7 +456,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		$window.open("https://www.google.com/calendar/r/month/" + new VpDate(this.vpdays[0].ymd).GCalURL());
 	}
 
-	function VpDay(vdt) {
+	function VpDay(vpmonth, vdt) {
 		this.cls = {};
 		this.ymd = vdt.ymd();
 		this.num = vdt.DayOfMonth();
@@ -472,6 +471,9 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 		if (VpDate.isToday(this.ymd))
 			this.cls.today = true;
+
+		if (vpmonth.past)
+			this.cls.past = true;
 	}
 	
 	VpDay.prototype.addEvent = function(evt) {
@@ -555,8 +557,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 				vpAlmanac.makePage(page.offset, page.length);
 				$scope.vpgrid.view = view;
 				$scope.vpgrid.page = vpAlmanac.getPage();
-				$scope.vpgrid.fontscale = vpSettings.config.font_scale_pc/100;
-				$scope.vpgrid.past_opacity = vpSettings.config.past_opacity;
+				$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
+				$scope.vpgrid.past_opacity = cfg.past_opacity;
 				$scope.vpgrid.scroll_size = scrolling ? (page.length / cfg.month_count)*100 : 100;
 				$scope.vpgrid.scroll_size_portrait = scrolling ? $scope.vpgrid.scroll_size * 2 : 100;
 				$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
