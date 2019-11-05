@@ -24,24 +24,24 @@ body {
 <script src="vpconfig.js" type='text/javascript'></script>
 <script src="vplib.js" type='text/javascript'></script>
 <script type='text/javascript'>
-angular.module("vpApp").controller("vpPrintController", function($scope, vpAccount, vpSettings) {
+angular.module("vpApp").controller("vpPrintController", function($scope, $timeout, vpAccount, vpSettings) {
 	$scope.vpaccount = vpAccount;
 	$scope.show = {};
 
 	$scope.$on("account:signin", function() {
-		$scope.$apply(function() {
+		$timeout(function() {
 			vpSettings.load();
 		});
 	});
 
 	$scope.$on("account:signout", function() {
-		$scope.$apply(function() {
+		$timeout(function() {
 			$scope.show = {};
 		});
 	});
 
 	$scope.$on("settings:load", function() {
-		$scope.$apply(function() {
+		$timeout(function() {
 			$scope.vpgrid.init(parseInt(window.location.hash.substr(1)));
 			$scope.show = {grid: true};
 		});
