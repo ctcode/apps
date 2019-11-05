@@ -422,7 +422,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		vpmonths = [];
 		vpdays = [];
 		for (var i=0; i < pagelength; i++) {
-			vpmonths.push(new VpMonth(vdt.ymd()));
+			vpmonths.push(new VpMonth(vdt.ymd(), pageoffset + i));
 			vdt.offsetMonth(1);
 			datespan.end = vdt.ymd();
 		}
@@ -434,9 +434,10 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		return vpmonths;
 	}
 
-	function VpMonth(ymd) {
+	function VpMonth(ymd, off) {
 		var vdt = new VpDate(ymd);
-		
+
+		this.offset = off;
 		this.hdr = vdt.MonthTitle();
 		this.vpdays = [];
 		this.cls = {};
@@ -525,122 +526,141 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 	function fCtl($scope) {
 		var box = document.getElementById("vpbox");
 		var ngbox = angular.element(box);
-		var page;
+		var grid;
 
-		function resetPage() {
-			page = {buffer: scrolling ? 6 : 0};
+		function reset() {
+			grid = {buffer: 0, offset: 0, length: 0, pos: 0};
+			
+			if (scrolling)
+				grid.buffer = 6;
 			
 			if (cfg.auto_scroll) {
-				page.offset = cfg.auto_scroll_offset - page.buffer;
+				grid.offset = cfg.auto_scroll_offset - grid.buffer;
 			}
 			else {
 				var off = ((cfg.first_month-1) - new Date().getMonth());
 				if (off > 0) off -= 12;
-				page.offset = off - page.buffer;
+				grid.offset = off - grid.buffer;
 			}
 			
-			page.length = page.buffer + cfg.month_count + page.buffer;
-			page.visoffset = page.offset + page.buffer;
+			grid.length = grid.buffer + cfg.month_count + grid.buffer;
+			grid.pos = grid.offset + grid.buffer;
 
 			ngbox.removeClass("hidescroll");
 			if (cfg.hide_scrollbars)
 				ngbox.addClass("hidescroll");
 		}
 
-		function updatePage() {
+		function updateUI() {
 			box.style.visibility = "hidden";
 			ngbox.off("scroll");
 
 			$timeout(function() {
-				vpAlmanac.makePage(page.offset, page.length);
+				vpAlmanac.makePage(grid.offset, grid.length);
 				$scope.vpgrid.view = view;
 				$scope.vpgrid.page = vpAlmanac.getPage();
 				$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
 				$scope.vpgrid.past_opacity = cfg.past_opacity;
-				$scope.vpgrid.scroll_size = scrolling ? (page.length / cfg.month_count)*100 : 100;
+				$scope.vpgrid.scroll_size = scrolling ? (grid.length / cfg.month_count)*100 : 100;
 				$scope.vpgrid.scroll_size_portrait = scrolling ? $scope.vpgrid.scroll_size * 2 : 100;
 				$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
 
 				$timeout(function() {
-					updateScrollPos();
+					setScrollIndex(grid.pos - grid.offset);
 					box.style.visibility = "";
 
 					if (scrolling)
 						ngbox.on("scroll", onScroll);
 				});
 			});
+		}
 
-			function updateScrollPos() {
-				box.scrollTop = 0;
-				box.scrollLeft = 0;
-				
-				if (!scrolling)
-					return;
+		var tmo=null;
+		function onScroll(evt) {
+			$timeout.cancel(tmo);
 
-				if (view.sel.column) {
-					var dim = (box.scrollWidth / page.length);
-					box.scrollLeft = (page.visoffset - page.offset) * dim;
-				}
+			grid.pos = vpAlmanac.getPage()[getScrollIndex()].offset;
+			
+			if (cfg.auto_page) {
+				var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
+				var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
 
-				if (view.sel.list) {
-					var dim = (box.scrollHeight / page.length);
-					box.scrollTop = (page.visoffset - page.offset) * dim;
-				}
-			}
+				var off = false;
+				if (pos == 0) off = -1;
+				if (pos >= max) off = 1;
 
-			var tmo=null;
-			function onScroll(evt) {
-				$timeout.cancel(tmo);
-
-				if (view.sel.column) {
-					var dim = (box.scrollWidth / page.length);
-					page.visoffset = page.offset + Math.ceil((box.scrollLeft-1) / dim);
-				}
-
-				if (view.sel.list) {
-					var dim = (box.scrollHeight / page.length);
-					page.visoffset = page.offset + Math.ceil((box.scrollTop-1) / dim);
-				}
-				
-				if (cfg.auto_page) {
-					var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
-					var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
-
-					var off = false;
-					if (pos == 0) off = -1;
-					if (pos >= max) off = 1;
-
-					if (off)
-						tmo = $timeout(offsetPage, 1000, true, off);
-				}
-			}
-
-			function offsetPage(off) {
-				page.offset += (off * page.buffer);
-				updatePage();
+				if (off)
+					tmo = $timeout(offsetPage, 1000, true, off);
 			}
 		}
 
-		this.reset = function() {
-			resetPage();
-			updatePage();
+		function offsetPage(off) {
+			grid.offset += (off * grid.buffer);
+			updateUI();
+		}
+
+		function getScrollIndex() {
+			if (!scrolling)
+				return 0;
+			
+			var monthdiv = document.getElementById("vpgrid").firstElementChild;
+			for (var i=0 ; monthdiv; i++) {
+				if (view.sel.column)
+				if (monthdiv.firstElementChild.offsetLeft >= box.scrollLeft)
+					return i;
+
+				if (view.sel.list)
+				if (monthdiv.firstElementChild.offsetTop >= box.scrollTop)
+					return i;
+
+				monthdiv = monthdiv.nextElementSibling;
+			}
+		}
+
+		function setScrollIndex(idx) {
+			if (!scrolling) {
+				box.scrollTo(0, 0);
+				return;
+			}
+			
+			var monthdiv = document.getElementById("vpgrid").firstElementChild;
+			for (var i=0 ; monthdiv; i++) {
+				if (i == idx) {
+					if (view.sel.column) {
+						box.scrollTo(monthdiv.firstElementChild.offsetLeft, 0);
+						return;
+					}
+
+					if (view.sel.list) {
+						box.scrollTo(0, monthdiv.firstElementChild.offsetTop);
+						return;
+					}
+				}
+
+				monthdiv = monthdiv.nextElementSibling;
+			}
+		}
+
+		this.init = function() {
+			reset();
+			updateUI();
 		}
 
 		this.set = function(off) {
-			resetPage();
-			page.offset = off;
-			page.visoffset = page.offset + page.buffer;
-			updatePage();
+			reset();
+			grid.offset = off;
+			grid.pos = grid.offset + grid.buffer;
+			updateUI();
 		}
 
 		this.onclickView = function(name) {
 			setViewInfo(name);
-			resetPage();
-			updatePage();
+			reset();
+			updateUI();
 		}
 
 		this.onclickPrint = function() {
-			$window.open("vpprint.htm#" + page.visoffset);
+			$window.open("vpprint.htm#" + grid.pos);
 		}
 	}
 
@@ -649,7 +669,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			scrolling = true;
 
 		if (!attrs.hasOwnProperty("disableAutoload"))
-			scope.vpgrid.reset();
+			scope.vpgrid.init();
 	}
 
 	return {

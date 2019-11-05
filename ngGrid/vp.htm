@@ -250,7 +250,7 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 		$timeout(function() {
 			this.busy = false;
 			this.show = {planner: true};
-			$scope.vpgrid.reset();
+			$scope.vpgrid.init();
 		}.bind(this), 2000)
 	}
 
@@ -264,14 +264,14 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 		$scope.$apply(function() {
 			vpSettings.reset();
 			$scope.vp.show = {planner: true};
-			$scope.vpgrid.reset();
+			$scope.vpgrid.init();
 		});
 	});
 
 	$scope.$on("settings:load", function() {
 		$scope.$apply(function() {
 			$scope.vp.show = {planner: true};
-			$scope.vpgrid.reset();
+			$scope.vpgrid.init();
 		});
 	});
 
