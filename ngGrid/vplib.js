@@ -592,11 +592,11 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 				if (off)
 					tmo = $timeout(offsetPage, 1000, true, off);
 			}
-		}
 
-		function offsetPage(off) {
-			grid.offset += (off * grid.buffer);
-			updateUI();
+			function offsetPage(off) {
+				grid.offset += (off * grid.buffer);
+				updateUI();
+			}
 		}
 
 		function getScrollIndex() {
@@ -641,15 +641,14 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			}
 		}
 
-		this.init = function() {
+		this.init = function(initpos) {
 			reset();
-			updateUI();
-		}
-
-		this.set = function(off) {
-			reset();
-			grid.offset = off;
-			grid.pos = grid.offset + grid.buffer;
+			
+			if (initpos) {
+				grid.pos = initpos;
+				grid.offset = initpos - grid.buffer;
+			}
+			
 			updateUI();
 		}
 
