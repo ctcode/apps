@@ -19,20 +19,31 @@ body {
 <title>Print</title>
 </head>
 <body ng-app="vpApp" ng-controller="vpPrintController" ng-cloak>
-<vp-grid disable-autoload disable-scrolling/>
+<div ng-hide="show.grid">{{vpaccount.status.msg}}</div>
+<vp-grid disable-autoload disable-scrolling ng-show="show.grid"/>
 <script src="vpconfig.js" type='text/javascript'></script>
 <script src="vplib.js" type='text/javascript'></script>
 <script type='text/javascript'>
 angular.module("vpApp").controller("vpPrintController", function($scope, vpAccount, vpSettings) {
+	$scope.vpaccount = vpAccount;
+	$scope.show = {};
+
 	$scope.$on("account:signin", function() {
 		$scope.$apply(function() {
 			vpSettings.load();
 		});
 	});
 
+	$scope.$on("account:signout", function() {
+		$scope.$apply(function() {
+			$scope.show = {};
+		});
+	});
+
 	$scope.$on("settings:load", function() {
 		$scope.$apply(function() {
 			$scope.vpgrid.set(parseInt(window.location.hash.substr(1)));
+			$scope.show = {grid: true};
 		});
 	});
 
