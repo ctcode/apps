@@ -246,17 +246,19 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount) {
 	var calendarlist = {request: true, items: []};
+	var isoSpan = {};
+
+	this.calinfo = calendarlist.items;
 
 	this.reset = function() {
-		calendarlist = {request: true, items: []};
-		this.calinfo = calendarlist.items;
+		calendarlist.request = true;
+		calendarlist.items = [];
 	}
 
 	this.load = function(datespan, fRcv) {
 		if (!vpAccount.status.signed_in)
 			return;
 
-		var isoSpan = {};
 		var tmo=null;
 		isoSpan.start = new Date(datespan.start).toISOString();
 		isoSpan.end = new Date(datespan.end).toISOString();
