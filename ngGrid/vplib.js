@@ -245,8 +245,14 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 //////////////////////////////////////////////////////////////////////
 
 angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettings) {
-	var calendarlist = {request: true, items: []};
-	this.calinfo = calendarlist.items;
+	var calendarlist;
+
+	this.reset = function() {
+		calendarlist = {request: true, items: []};
+		this.calinfo = calendarlist.items;
+	}
+
+	this.reset();
 
 	this.load = function(datespan, fRcv) {
 		var isoSpan = {};
@@ -502,7 +508,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $window, $timeout) {
+angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEvents, $window, $timeout) {
 	var cfg = vpSettings.config;
 	var view = {sel: {}, cls: {}};
 	var scrolling = false;
@@ -528,7 +534,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 		var ngbox = angular.element(box);
 		var grid;
 
-		function reset() {
+		function initUI() {
 			grid = {buffer: 0, offset: 0, length: 0, pos: 0};
 			
 			if (scrolling)
@@ -642,7 +648,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 		}
 
 		this.init = function(initpos) {
-			reset();
+			initUI();
 			
 			if (initpos) {
 				grid.pos = initpos;
@@ -652,9 +658,15 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			updateUI();
 		}
 
+		this.reset = function() {
+			vpEvents.reset();
+			initUI();
+			updateUI();
+		}
+
 		this.onclickView = function(name) {
 			setViewInfo(name);
-			reset();
+			initUI();
 			updateUI();
 		}
 

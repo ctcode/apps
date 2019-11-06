@@ -263,8 +263,8 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 	$scope.$on("account:signout", function() {
 		$scope.$apply(function() {
 			vpSettings.reset();
+			$scope.vpgrid.reset();
 			$scope.vp.show = {planner: true};
-			$scope.vpgrid.init();
 		});
 	});
 
