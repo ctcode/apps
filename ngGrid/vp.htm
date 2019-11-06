@@ -224,7 +224,7 @@ body {
 <script src="vplib.js" type='text/javascript'></script>
 
 <script type='text/javascript'>
-angular.module("vpApp").controller("vpController", function(vpAccount, vpSettings, $scope, $timeout) {
+angular.module("vpApp").controller("vpController", function(vpAccount, vpSettings, vpEvents, $scope, $timeout) {
 	$scope.vpaccount = vpAccount;
 	$scope.vpsettings = vpSettings;
 	this.show = {planner: true};
@@ -263,7 +263,8 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 	$scope.$on("account:signout", function() {
 		$scope.$apply(function() {
 			vpSettings.reset();
-			$scope.vpgrid.reset();
+			vpEvents.reset();
+			$scope.vpgrid.init();
 			$scope.vp.show = {planner: true};
 		});
 	});

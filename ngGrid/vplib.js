@@ -244,17 +244,18 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettings) {
-	var calendarlist;
+angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount) {
+	var calendarlist = {request: true, items: []};
 
 	this.reset = function() {
 		calendarlist = {request: true, items: []};
 		this.calinfo = calendarlist.items;
 	}
 
-	this.reset();
-
 	this.load = function(datespan, fRcv) {
+		if (!vpAccount.status.signed_in)
+			return;
+
 		var isoSpan = {};
 		var tmo=null;
 		isoSpan.start = new Date(datespan.start).toISOString();
@@ -508,7 +509,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEvents, $window, $timeout) {
+angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $window, $timeout) {
 	var cfg = vpSettings.config;
 	var view = {sel: {}, cls: {}};
 	var scrolling = false;
@@ -655,12 +656,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				grid.offset = initpos - grid.buffer;
 			}
 			
-			updateUI();
-		}
-
-		this.reset = function() {
-			vpEvents.reset();
-			initUI();
 			updateUI();
 		}
 
