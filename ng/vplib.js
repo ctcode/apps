@@ -75,44 +75,39 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 angular.module("vpApp").service("vpSettings", function($rootScope) {
 	var defaults = {
-		planner_title: "visual-planner",
-		vpconfig: {
-			month_count: 6,
-			month_count_portrait: 3,
-			auto_scroll: true,
-			auto_scroll_offset: -1,
-			first_month: 1,
-			weekends: "6,0",
-			align_weekends: true,
-			font_scale_pc: 100,
-			past_opacity: 0.6,
-			month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
-			show_event_time: true,
-			show_event_title: true,
-			show_event_marker: true,
-			colour_event_title: false,
-			proportional_events: false,
-			proportional_start_hour: 8,
-			proportional_end_hour: 20,
-			show_all_day_events: true,
-			single_day_as_multi_day: false,
-			show_timed_events: true,
-			multi_day_as_single_day: false,
-			first_day_only: false,
-			marker_width: 0.85,
-			multi_day_opacity: 0.8
-		}
+		title: "visual-planner",
+		month_count: 6,
+		auto_scroll: true,
+		auto_scroll_offset: -1,
+		auto_page: true,
+		first_month: 1,
+		hide_scrollbars: false,
+		align_weekends: true,
+		weekends: "6,0",
+		first_day_of_week: 1,
+		font_scale_pc: 100,
+		past_opacity: 0.6,
+		month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
+		proportional_events: false,
+		proportional_start_hour: 8,
+		proportional_end_hour: 20,
+		show_all_day_events: true,
+		single_day_as_multi_day: false,
+		show_timed_events: true,
+		event_on_separate_line: false,
+		multi_day_opacity: 0.8
 	};
 
+	var cfg = {};
+	this.config = cfg;
+	publish(defaults);
+	
 	var file_name = "settings002.json";
 	var file_id = null;
 	var appdata = null;
-	var pub = this;
-	publish(defaults);
 
 	function publish(settings) {
-		pub.planner_title = angular.copy(settings.planner_title);
-		pub.vpconfig = angular.copy(settings.vpconfig);
+		angular.copy(settings, cfg);
 	}
 
 	this.revert = function() {
@@ -138,6 +133,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 			function rcv(response) {
 				appdata = JSON.parse(response.body);
+				publish(appdata);
 				loadGCalSettings();
 			};
 		});
@@ -156,7 +152,6 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 				if (response.result.id == "format24HourTime")
 					VpDateTime.time24h = (response.result.value == "true");
 
-				publish(appdata);
 				onLoad();
 			};
 		};
@@ -167,10 +162,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	}
 
 	this.save = function() {
-		appdata = {
-			planner_title: angular.copy(pub.planner_title),
-			vpconfig: angular.copy(pub.vpconfig)
-		};
+		appdata = angular.copy(cfg);
 
 		loadFileID(function() {
 			if (file_id) {
@@ -247,35 +239,29 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	function fail(reason) {
 		alert(reason.result.error.message);
 	}
-
-	this.getMonthCount = function() {
-		return isPortrait() ? this.vpconfig.month_count_portrait : this.vpconfig.month_count;
-	}
-
-	function isPortrait()
-	{
-		var so = "";
-		if (screen.orientation && screen.orientation.type)
-			so = screen.orientation.type;
-		if (screen.msOrientation)  // edge, ie
-			so = screen.msOrientation;
-
-		if (so.includes("portrait"))
-			return true;
-
-		return false;
-	}
 });
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettings) {
-	var calendarlist = {request: true, items: []};
+angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount) {
+	var calendarlist = {};
 	var isoSpan = {};
 
+	this.reset = function() {
+		calendarlist.request = true;
+		calendarlist.items = [];
+		this.calinfo = calendarlist.items;
+	}
+
+	this.reset();
+
 	this.load = function(datespan, fRcv) {
+		if (!vpAccount.status.signed_in)
+			return;
+
+		var tmo=null;
 		isoSpan.start = new Date(datespan.start).toISOString();
 		isoSpan.end = new Date(datespan.end).toISOString();
 
@@ -284,8 +270,8 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 			calendarlist.request = false;
 		}
 		else {
-			for (vpcal of calendarlist.items)
-				vpcal.reqEvents();
+			for (cal of calendarlist.items)
+				cal.reqEvents();
 		}
 
 		function reqCalendars(tok) {
@@ -297,75 +283,77 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 			.then(rcv, fail);
 
 			function rcv(response) {
-				$timeout(function(){
-					for (item of response.result.items) {
-						if (item.selected)
-							calendarlist.items.push(new VpCalendar(item));
-					}
-				}.bind(this));
+				$timeout.cancel(tmo);
+				for (item of response.result.items) {
+					if (item.selected)
+						calendarlist.items.push(new VpCalendar(item));
+				}
 
 				if (response.result.nextPageToken)
 					reqCalendars(response.result.nextPageToken);
+
+				tmo = $timeout(1000);
 			};
 		}
 
 		function VpCalendar(item) {
-			this.id = item.id;
+			var id = item.id;
+			var synctok = null;
+			var cls = {};
 			this.name = item.summary;
 			this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
-			syncStg(this, false);
+			this.cls = cls;
+			syncStg(false);
 
 			this.reqEvents = function(tok) {
 				var reqparams = {timeMin: isoSpan.start, timeMax: isoSpan.end, singleEvents: true};
 				if (tok) reqparams.pageToken = tok;
 				
 				gapi.client.request({
-					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(this.id) + "/events",
+					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events",
 					method: "GET",
 					params: reqparams
 				})
 				.then(rcv.bind(this), fail);
 
 				function rcv(response) {
-					$timeout(function(){
-						for (item of response.result.items) {
-							var evt = new VpEvent(this, item);
-							if (evt.id)
-								fRcv(evt);
-						}
-					}.bind(this));
+					$timeout.cancel(tmo);
+
+					for (item of response.result.items) {
+						var evt = new VpEvent(this, item);
+						if (evt.id)
+							fRcv(evt);
+					}
 
 					if (response.result.nextPageToken)
-						this.reqEvents(response.result.nextPageToken);
+						reqEvents(response.result.nextPageToken);
 					else if (response.result.nextSyncToken)
-						this.synctok = response.result.nextSyncToken;
+						synctok = response.result.nextSyncToken;
+
+					tmo = $timeout(1000);
 				};
 			}
 
 			this.toggle = function() {
-				if (this.cls)
-					delete this.cls;
-				else
-					this.cls = {checked: true};
-
-				syncStg(this, true);
+				cls.checked = cls.checked ? false : true;
+				syncStg(true);
 			}
 
-			function syncStg(cal, write) {
+			function syncStg(write) {
 				var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
 				if (!tog)
 					tog = {};
 
 				if (write) {
-					delete tog[cal.id];
-					if (cal.cls)
-						tog[cal.id] = true;
+					delete tog[id];
+					if (cls.checked)
+						tog[id] = true;
 
 					$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
 				}
 				else {
-					if (tog[cal.id])
-						cal.cls = {checked: true};
+					if (tog[id])
+						cls.checked = true;
 				}
 			}
 			
@@ -421,76 +409,31 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpSettin
 	function fail(reason) {
 		alert(reason.result.error.message);
 	}
-
-	this.calinfo = calendarlist.items;
 });
 
 
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
-	var vpdays = [];
+angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $window) {
+	var cfg = vpSettings.config;
 	var vpmonths = [];
-	var month_offset;
-	var scroll_buffer=0;
-	var cfg;
+	var vpdays = [];
 
-	this.initPage = function() {
-		month_offset = -scroll_buffer;
-		cfg = vpSettings.vpconfig;
-		
-		if (cfg.auto_scroll) {
-			month_offset += cfg.auto_scroll_offset;
-		}
-		else {
-			var off = ((cfg.first_month-1) - new Date().getMonth());
-			if (off > 0)
-				off -= 12;
-
-			month_offset += off;
-		}
-
-		create();
-	}
-
-	this.offsetPage = function(off) {
-		month_offset += (6*off);
-		create();
-	}
-
-	this.setPage = function(m) {
-		month_offset = m;
-		create();
-	}
-
-	this.getPage = function() {
-		return {days: vpdays, months: vpmonths};
-	}
-
-	this.setScrollBuffer = function(n) {
-		scroll_buffer = n;
-	}
-
-	this.getMonthScrollOffset = function(scrolloffset) {
-		return month_offset + Math.floor((vpmonths.length * scrolloffset) + 0.6);
-	}
-
-	function create() {
-		cfg = vpSettings.vpconfig;
+	this.makePage = function(pageoffset, pagelength) {
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
 		VpDate.localemonth = cfg.month_names.split('-');
 		
 		var vdt = new VpDate();
 		vdt.toStartOfMonth();
-		vdt.offsetMonth(month_offset);
+		vdt.offsetMonth(pageoffset);
 		var isoStart = vdt.dt.toISOString();
 		var datespan = {start: vdt.ymd()};
 
-		vpdays = [];
 		vpmonths = [];
-		for (var i=0; i < (vpSettings.getMonthCount()+(scroll_buffer*2)); i++) {
-			vpmonths.push(new VpMonth(vdt.ymd()));
+		vpdays = [];
+		for (var i=0; i < pagelength; i++) {
+			vpmonths.push(new VpMonth(vdt.ymd(), pageoffset + i));
 			vdt.offsetMonth(1);
 			datespan.end = vdt.ymd();
 		}
@@ -498,69 +441,86 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents) {
 		vpEvents.load(datespan, rcvEvent);
 	}
 
+	this.getPage = function() {
+		return vpmonths;
+	}
+
+	function VpMonth(ymd, off) {
+		var vdt = new VpDate(ymd);
+
+		this.offset = off;
+		this.hdr = vdt.MonthTitle();
+		this.vpdays = [];
+		this.cls = {};
+		
+		if (vdt.isPastMonth())
+			this.cls.past = true;
+
+		var m = vdt.getMonth();
+		while (m == vdt.getMonth()) {
+			var vpday = new VpDay(this, vdt);
+			this.vpdays.push(vpday);
+			vpdays.push(vpday);
+			vdt.offsetDay(1);
+		}
+	}
+	
+	VpMonth.prototype.onclickHdr = function() {
+		$window.open("https://www.google.com/calendar/r/month/" + new VpDate(this.vpdays[0].ymd).GCalURL());
+	}
+
+	function VpDay(vpmonth, vdt) {
+		this.ymd = vdt.ymd();
+		this.num = vdt.DayOfMonth();
+		this.cls = {};
+
+		if (cfg.align_weekends) {
+			if (this.num == 1) {
+				var dayoffset = vdt.DayOfWeek() - cfg.first_day_of_week;
+				
+				if (dayoffset < 0)
+					dayoffset += 7;
+
+				this.cls["dayoffset" + dayoffset] = true;
+			}
+		}
+
+		if (vdt.isWeekend())
+			this.cls.weekend = true;
+
+		if (VpDate.isToday(this.ymd))
+			this.cls.today = true;
+	}
+	
+	VpDay.prototype.addEvent = function(evt) {
+		if (!this.evts)
+			this.evts = [];
+		
+		this.evts.push(evt);
+	}
+	
+	VpDay.prototype.onclickNum = function() {
+		$window.open("https://www.google.com/calendar/r/week/" + new VpDate(this.ymd).GCalURL());
+	}
+
 	function rcvEvent(evt) {
 		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
 		for (var c=0; c < evt.duration; c++) {
-			if (d >= 0)
-			if (d < vpdays.length)
+			if (vpdays[d])
 				vpdays[d].addEvent(evt);
 
 			d++;
-		}
-	}
-
-	function VpMonth(ymd) {
-		var vdt = new VpDate(ymd);
-		
-		this.hdr = vdt.MonthTitle();
-		this.days = {start: vpdays.length, count: 0};
-		
-		if (vdt.isPastMonth())
-			this.past = true;
-		
-		this.dayoffset = 0;
-		if (cfg.align_weekends)
-			this.dayoffset = vdt.DayOfWeek();
-
-		var m = vdt.getMonth();
-		while (m == vdt.getMonth())
-		{
-			var vpday = new VpDay(vdt.ymd());
-			vpdays.push(vpday);
-			this.days.count++;
-
-			vdt.offsetDay(1);
-		}
-
-		this.first = vpdays[this.days.start];
-	}
-
-	function VpDay(ymd) {
-		var vdt = new VpDate(ymd);
-
-		this.ymd = ymd;
-		this.num = vdt.DayOfMonth();
-
-		if (vdt.isWeekend())
-			this.weekend = true;
-
-		if (VpDate.isToday(ymd))
-			this.today = true;
-		
-		this.addEvent = function(evt) {
-			if (!this.evts)
-				this.evts = [];
-			
-			this.evts.push(evt);
 		}
 	}
 });
 
 
 
+
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $window, $timeout) {
+angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $window, $timeout) {
+	var cfg = vpSettings.config;
 	var view = {sel: {}, cls: {}};
 	var scrolling = false;
 
@@ -581,73 +541,53 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 	}
 	
 	function fCtl($scope) {
-		var box = document.getElementById("vpscrollbox");
+		var box = document.getElementById("vpbox");
+		var ngbox = angular.element(box);
+		var grid;
 
-		this.initView = function() {
-			$scope.vptable.scroll_size = 100;
-			showTable(false);
-
-			if (scrolling)
-			{
-				var m = vpSettings.getMonthCount();
-				$scope.vptable.scroll_size = ((m+12)/m)*100;
-
-				angular.element(box).on("scroll", onScroll);
+		function initUI() {
+			grid = {buffer: 0, offset: 0, length: 0, pos: 0};
 			
-/*
-				var ngbox = angular.element(box);
-				ngbox.off("wheel");
-				if (view.sel.column)
-					ngbox.on("wheel", onWheel);
-*/
-			}
-
-			$timeout(function() {
-				vpAlmanac.initPage();
-				initTable();
-
-				$timeout(function() {
-					resetScroll();
-					showTable(true);
-				});
-			});
-		}
-
-		this.setView = function(month) {
-			vpAlmanac.setPage(month);
-			initTable();
-		}
-
-		this.onclickView = function(name) {
-			setViewInfo(name);
-			this.initView();
-		}
-
-		this.getScrollPos = function() {
-			var scrolloffset = view.sel.list ? (box.scrollTop / box.scrollHeight) : (box.scrollLeft / box.scrollWidth);
-			return vpAlmanac.getMonthScrollOffset(scrolloffset);
-		}
-
-		function showTable(show) {
-			document.getElementById("vpscrollbox").style.visibility = show ? "" : "hidden";
-		}
-
-		function resetScroll() {
 			if (scrolling)
-			{
-				box.scrollTop = view.sel.list ? (box.scrollHeight-box.clientHeight)/2 : 0;
-				box.scrollLeft = view.sel.list ? 0 : (box.scrollWidth-box.clientWidth)/2;
+				grid.buffer = 6;
+			
+			if (cfg.auto_scroll) {
+				grid.offset = cfg.auto_scroll_offset - grid.buffer;
 			}
+			else {
+				var off = ((cfg.first_month-1) - new Date().getMonth());
+				if (off > 0) off -= 12;
+				grid.offset = off - grid.buffer;
+			}
+			
+			grid.length = grid.buffer + cfg.month_count + grid.buffer;
+			grid.pos = grid.offset + grid.buffer;
+
+			ngbox.removeClass("hidescroll");
+			if (cfg.hide_scrollbars)
+				ngbox.addClass("hidescroll");
 		}
 
-		function pageScroll(off) {
-			showTable(false);
+		function updateUI() {
+			box.style.visibility = "hidden";
+			ngbox.off("scroll");
+
 			$timeout(function() {
-				vpAlmanac.offsetPage(off);
-				initTable();
+				vpAlmanac.makePage(grid.offset, grid.length);
+				$scope.vpgrid.view = view;
+				$scope.vpgrid.page = vpAlmanac.getPage();
+				$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
+				$scope.vpgrid.past_opacity = cfg.past_opacity;
+				$scope.vpgrid.scroll_size = scrolling ? (grid.length / cfg.month_count)*100 : 100;
+				$scope.vpgrid.scroll_size_portrait = scrolling ? $scope.vpgrid.scroll_size * 2 : 100;
+				$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
+
 				$timeout(function() {
-					resetScroll();
-					showTable(true);
+					setScrollIndex(grid.pos - grid.offset);
+					box.style.visibility = "";
+
+					if (scrolling)
+						ngbox.on("scroll", onScroll);
 				});
 			});
 		}
@@ -655,109 +595,104 @@ angular.module("vpApp").directive("vpTable", function(vpSettings, vpAlmanac, $wi
 		var tmo=null;
 		function onScroll(evt) {
 			$timeout.cancel(tmo);
+
+			grid.pos = vpAlmanac.getPage()[getScrollIndex()].offset;
 			
-			var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
-			var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
+			if (cfg.auto_page) {
+				var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
+				var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
 
-			var pageoffset = false;
-			if (pos == 0) pageoffset = -1;
-			if (pos >= max) pageoffset = 1;
+				var off = false;
+				if (pos == 0) off = -1;
+				if (pos >= max) off = 1;
 
-			if (pageoffset)
-				tmo = $timeout(pageScroll, 1000, true, pageoffset);
-		}
-
-		function onWheel(evt) {
-			var dy = evt.deltaY;
-			if (evt.deltaMode == 1) dy = (dy*30);
-			if (evt.deltaMode == 2) dy = (dy*300);
-			evt.preventDefault();
-
-			box.scrollBy(dy,0);
-		}
-
-		this.onclickHdr = function(vpmonth) {
-			$window.open("https://www.google.com/calendar/r/month/" + new VpDate(vpmonth.first.ymd).GCalURL());
-		}
-
-		this.onclickDayNum = function(vpday) {
-			$window.open("https://www.google.com/calendar/r/week/" + new VpDate(vpday.ymd).GCalURL());
-		}
-
-		function initTable() {
-			var rows = [];
-			var page = vpAlmanac.getPage();
-
-			var sz = getPos(page.months.length, 31+6+1);
-			for (var y=0; y < sz.y; y++)
-			{
-				var row = {cells: []};
-
-				for (var x=0; x < sz.x; x++)
-					row.cells.push({empty: true});
-
-				rows.push(row);
+				if (off)
+					tmo = $timeout(offsetPage, 1000, true, off);
 			}
 
-			for (var m=0; m < page.months.length; m++)
-			{
-				var vpmonth = page.months[m];
-				
-				var cell = {month: vpmonth};
-				if (vpmonth.past)
-					cell.cls = {past: true};
+			function offsetPage(off) {
+				grid.offset += (off * grid.buffer);
+				updateUI();
+			}
+		}
 
-				var pos = getPos(m, 0);
-				rows[pos.y].cells[pos.x] = cell;
+		function getScrollIndex() {
+			if (!scrolling)
+				return 0;
+			
+			var monthdiv = document.getElementById("vpgrid").firstElementChild;
+			for (var i=0 ; monthdiv; i++) {
+				if (view.sel.column)
+				if (monthdiv.firstElementChild.offsetLeft >= box.scrollLeft)
+					return i;
 
-				for (var d=0; d < vpmonth.days.count; d++)
-				{
-					var vpday = page.days[vpmonth.days.start + d];
-					var cell = {day: vpday, cls: {}};
+				if (view.sel.list)
+				if (monthdiv.firstElementChild.offsetTop >= box.scrollTop)
+					return i;
 
-					if (vpmonth.past)
-						cell.cls.past = true;
+				monthdiv = monthdiv.nextElementSibling;
+			}
+		}
 
-					if (vpday.weekend)
-						cell.cls.weekend = true;
-					else
-						cell.cls.weekday = true;
+		function setScrollIndex(idx) {
+			if (!scrolling) {
+				box.scrollTo(0, 0);
+				return;
+			}
+			
+			var monthdiv = document.getElementById("vpgrid").firstElementChild;
+			for (var i=0 ; monthdiv; i++) {
+				if (i == idx) {
+					if (view.sel.column) {
+						box.scrollTo(monthdiv.firstElementChild.offsetLeft, 0);
+						return;
+					}
 
-					if (vpday.today)
-						cell.cls.today = true;
-
-					var pos = getPos(m, (d+1) + vpmonth.dayoffset);
-					rows[pos.y].cells[pos.x] = cell;
+					if (view.sel.list) {
+						box.scrollTo(0, monthdiv.firstElementChild.offsetTop);
+						return;
+					}
 				}
+
+				monthdiv = monthdiv.nextElementSibling;
 			}
-			
-			$scope.vptable.view = view;
-			$scope.vptable.rows = rows;
-			$scope.vptable.fontscale = vpSettings.vpconfig.font_scale_pc/100;
-			$scope.vptable.past_opacity = vpSettings.vpconfig.past_opacity;
 		}
 
-		function getPos(xpos, ypos) {
-			return view.sel.list ? {x: ypos, y: xpos} : {x: xpos, y: ypos};
+		this.init = function(initpos) {
+			initUI();
+			
+			if (initpos) {
+				grid.pos = initpos;
+				grid.offset = initpos - grid.buffer;
+			}
+			
+			updateUI();
+		}
+
+		this.onclickView = function(name) {
+			setViewInfo(name);
+			initUI();
+			updateUI();
+		}
+
+		this.onclickPrint = function() {
+			$window.open("vpprint.htm#" + grid.pos);
 		}
 	}
 
 	function fLink(scope, element, attrs) {
 		if (!attrs.hasOwnProperty("disableScrolling"))
-		{
 			scrolling = true;
-			vpAlmanac.setScrollBuffer(6);
-		}
 
 		if (!attrs.hasOwnProperty("disableAutoload"))
-			scope.vptable.initView();
+			scope.vpgrid.init();
 	}
 
 	return {
 		controller: fCtl,
-		controllerAs: "vptable",
+		controllerAs: "vpgrid",
 		link: fLink,
-		templateUrl: "vptable.htm",
+		templateUrl: "vpgrid.htm",
 		restrict: 'E'
 	};
 });
