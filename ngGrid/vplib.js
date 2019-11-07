@@ -251,10 +251,10 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 	this.reset = function() {
 		calendarlist.request = true;
 		calendarlist.items = [];
+		this.calinfo = calendarlist.items;
 	}
 
 	this.reset();
-	this.calinfo = calendarlist.items;
 
 	this.load = function(datespan, fRcv) {
 		if (!vpAccount.status.signed_in)
