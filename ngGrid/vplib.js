@@ -84,6 +84,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		hide_scrollbars: false,
 		align_weekends: true,
 		weekends: "6,0",
+		first_day_of_week: 1,
 		font_scale_pc: 100,
 		past_opacity: 0.6,
 		month_names: "Jan-Feb-Mar-Apr-May-Jun-Jul-Aug-Sep-Oct-Nov-Dec",
@@ -474,8 +475,14 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		this.cls = {};
 
 		if (cfg.align_weekends) {
-			if (this.num == 1)
-				this.cls["dayoffset" + vdt.DayOfWeek()] = true;
+			if (this.num == 1) {
+				var dayoffset = vdt.DayOfWeek() - cfg.first_day_of_week;
+				
+				if (dayoffset < 0)
+					dayoffset += 7;
+
+				this.cls["dayoffset" + dayoffset] = true;
+			}
 		}
 
 		if (vdt.isWeekend())
