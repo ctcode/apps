@@ -174,7 +174,7 @@
 }
 </style>
 
-<div id="vpbox">
+<div id="vpbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
 	<div id="vpcontent">
 		<div id="vpgrid" ng-class="vpgrid.cls">
 			<div ng-repeat="month in vpgrid.page" class="vpmonth" ng-class="month.cls">

@@ -585,6 +585,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 				$timeout(function() {
 					setScrollIndex(grid.pos - grid.offset);
 					box.style.visibility = "";
+					box.focus();
 
 					if (scrolling)
 						ngbox.on("scroll", onScroll);
@@ -677,6 +678,19 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 
 		this.onclickPrint = function() {
 			$window.open("vpprint.htm#" + grid.pos);
+		}
+
+		this.onkeydown = function(evt) {
+			var off = false;
+			if (evt.code == "ArrowLeft" || evt.code == "ArrowUp")
+				off = -1;
+			if (evt.code == "ArrowRight" || evt.code == "ArrowDown")
+				off = 1;
+
+			if (off) {
+				evt.preventDefault();
+				setScrollIndex(getScrollIndex() + off);
+			}
 		}
 	}
 
