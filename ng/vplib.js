@@ -659,14 +659,15 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 			}
 		}
 
-		this.init = function(initpos) {
+		this.init = function() {
 			initUI();
-			
-			if (initpos) {
-				grid.pos = initpos;
-				grid.offset = initpos - grid.buffer;
-			}
-			
+			updateUI();
+		}
+
+		this.initpos = function(pos) {
+			initUI();
+			grid.pos = pos;
+			grid.offset = pos - grid.buffer;
 			updateUI();
 		}
 
