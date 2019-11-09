@@ -445,6 +445,16 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		return vpmonths;
 	}
 
+	this.reloadEvents = function() {
+		var month;
+		for (month of vpmonths)
+			month.clearEvents();
+	}
+
+	this.syncEvents = function() {
+		console.log("syncEvents");
+	}
+
 	function VpMonth(ymd, off) {
 		var vdt = new VpDate(ymd);
 
@@ -462,6 +472,14 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			this.vpdays.push(vpday);
 			vpdays.push(vpday);
 			vdt.offsetDay(1);
+		}
+		
+		this.clearEvents = function() {
+			delete this.vpevents;
+			
+			var day;
+			for (day of this.vpdays)
+				day.clearEvents();
 		}
 	}
 	
@@ -497,6 +515,10 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			this.evts = [];
 		
 		this.evts.push(evt);
+	}
+	
+	VpDay.prototype.clearEvents = function() {
+		delete this.evts;
 	}
 	
 	VpDay.prototype.onclickNum = function() {
@@ -682,16 +704,30 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 		}
 
 		this.onkeydown = function(evt) {
-			var off = false;
-			if (evt.code == "ArrowLeft" || evt.code == "ArrowUp")
-				off = -1;
-			if (evt.code == "ArrowRight" || evt.code == "ArrowDown")
-				off = 1;
-
-			if (off) {
-				evt.preventDefault();
-				setScrollIndex(getScrollIndex() + off);
+			switch (evt.code)
+			{
+				case "ArrowLeft":
+				case "ArrowUp":
+					if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey) return;
+					setScrollIndex(getScrollIndex() - 1);
+					break;
+				case "ArrowRight":
+				case "ArrowDown":
+					if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey) return;
+					setScrollIndex(getScrollIndex() + 1);
+					break;
+				case "KeyR":
+					if (evt.shiftKey || evt.altKey || evt.metaKey) return;
+					if (event.ctrlKey)
+						vpAlmanac.reloadEvents();
+					else
+						vpAlmanac.syncEvents();
+					break;
+				default:
+					return;
 			}
+
+			evt.preventDefault();
 		}
 	}
 
