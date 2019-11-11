@@ -319,11 +319,8 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 				function rcv(response) {
 					$timeout.cancel(tmo);
 
-					for (item of response.result.items) {
-						var evt = new VpEvent(this, item);
-						if (evt.id)
-							fRcv(evt);
-					}
+					for (item of response.result.items)
+						makeEvent(this, item);
 
 					if (response.result.nextPageToken)
 						reqEvents(response.result.nextPageToken);
@@ -332,6 +329,19 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 
 					tmo = $timeout(1000);
 				};
+				
+				function makeEvent(cal, item) {
+					if (item.kind != "calendar#event")
+						return;
+
+					if (item.hasOwnProperty("recurrence"))
+						return;
+
+					if (!item.hasOwnProperty("start"))
+						return;
+
+					fRcv(new VpEvent(cal, item));
+				}
 			}
 
 			this.toggle = function() {
@@ -361,22 +371,13 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		}
 
 		function VpEvent(cal, item) {
-			if (item.kind != "calendar#event")
-				return;
-
-			if (item.hasOwnProperty("recurrence"))
-				return;
-
-			if (!item.hasOwnProperty("start"))
-				return;
-
 			this.id = item.id;
 			
 			if (item.status == "cancelled") {
 				this.deleted = true;
 				return;
 			}
-						
+			
 			this.cal = cal;
 			this.htmlLink = item.htmlLink;
 			
@@ -475,7 +476,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		}
 		
 		this.clearEvents = function() {
-			delete this.vpevents;
+			delete this.evts;
 			
 			var day;
 			for (day of this.vpdays)
