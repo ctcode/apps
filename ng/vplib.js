@@ -248,8 +248,8 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount) {
 	var calendars;
 	var reqcal;
-	var isoSpan = {};
 	var fRcvEvt;
+	var isoSpan = {};
 	var tmo=null;
 
 	function load(datespan, rcv) {
@@ -403,8 +403,12 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		}
 	}
 
+	var msg=true;
 	function fail(reason) {
-		alert(reason.result.error.message);
+		if (msg) {
+			alert("Calendar event error.\n\n" + reason.result.error.message);
+			msg = false;
+		}
 	}
 
 	this.reset = function() {
