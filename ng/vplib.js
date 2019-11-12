@@ -246,18 +246,11 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 //////////////////////////////////////////////////////////////////////
 
 angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount) {
-	var calendarlist = {};
+	var calendars;
+	var reqcal;
 	var isoSpan = {};
 
-	this.reset = function() {
-		calendarlist.request = true;
-		calendarlist.items = [];
-		this.calinfo = calendarlist.items;
-	}
-
-	this.reset();
-
-	this.load = function(datespan, fRcv) {
+	function load(datespan, fRcv) {
 		if (!vpAccount.status.signed_in)
 			return;
 
@@ -265,12 +258,12 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		isoSpan.start = new Date(datespan.start).toISOString();
 		isoSpan.end = new Date(datespan.end).toISOString();
 
-		if (calendarlist.request) {
+		if (reqcal) {
 			reqCalendars();
-			calendarlist.request = false;
+			reqcal = false;
 		}
 		else {
-			for (cal of calendarlist.items)
+			for (cal of calendars)
 				cal.reqEvents();
 		}
 
@@ -286,7 +279,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 				$timeout.cancel(tmo);
 				for (item of response.result.items) {
 					if (item.selected)
-						calendarlist.items.push(new VpCalendar(item));
+						calendars.push(new VpCalendar(item));
 				}
 
 				if (response.result.nextPageToken)
@@ -369,47 +362,56 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 			
 			this.reqEvents();
 		}
+	}
 
-		function VpEvent(cal, item) {
-			this.id = item.id;
-			
-			if (item.status == "cancelled") {
-				this.deleted = true;
-				return;
-			}
-			
-			this.cal = cal;
-			this.htmlLink = item.htmlLink;
-			
-			if ("dateTime" in item.start)
-			{
-				this.timed = true;
-				//this.timespan = {start: item.start.dateTime, end: item.end.dateTime};
+	function VpEvent(cal, item) {
+		this.id = item.id;
+		
+		if (item.status == "cancelled") {
+			this.deleted = true;
+			return;
+		}
+		
+		this.cal = cal;
+		this.htmlLink = item.htmlLink;
+		
+		if ("dateTime" in item.start)
+		{
+			this.timed = true;
+			//this.timespan = {start: item.start.dateTime, end: item.end.dateTime};
 
-				var vdttStart = new VpDateTime(item.start.dateTime);
-				var vdttEnd = new VpDateTime(item.end.dateTime);
+			var vdttStart = new VpDateTime(item.start.dateTime);
+			var vdttEnd = new VpDateTime(item.end.dateTime);
 
-				this.start = vdttStart.ymd();
-				this.duration = VpDate.DaySpan(vdttStart.ymd(), vdttEnd.ymd()) + 1;
-				this.title = vdttStart.TimeTitle() + " " + item.summary;
-			}
-			else
-			{
-				this.timed = false;
-				this.start = item.start.date;
-				this.duration = VpDate.DaySpan(item.start.date, item.end.date);
-				this.title = item.summary;
-			}
-			
-			this.edit = function() {
-				$window.open(this.htmlLink.replace("event?eid=", "r/eventedit/"));
-			}
+			this.start = vdttStart.ymd();
+			this.duration = VpDate.DaySpan(vdttStart.ymd(), vdttEnd.ymd()) + 1;
+			this.title = vdttStart.TimeTitle() + " " + item.summary;
+		}
+		else
+		{
+			this.timed = false;
+			this.start = item.start.date;
+			this.duration = VpDate.DaySpan(item.start.date, item.end.date);
+			this.title = item.summary;
+		}
+		
+		this.edit = function() {
+			$window.open(this.htmlLink.replace("event?eid=", "r/eventedit/"));
 		}
 	}
 
 	function fail(reason) {
 		alert(reason.result.error.message);
 	}
+
+	this.reset = function() {
+		reqcal = true;
+		calendars = [];
+		this.calendars = calendars;
+	}
+
+	this.load = load;
+	this.reset();
 });
 
 
