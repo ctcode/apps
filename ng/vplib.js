@@ -422,6 +422,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	var cfg = vpSettings.config;
 	var vpmonths = [];
 	var vpdays = [];
+	var datespan;
 
 	this.makePage = function(pageoffset, pagelength) {
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
@@ -431,7 +432,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		vdt.toStartOfMonth();
 		vdt.offsetMonth(pageoffset);
 		var isoStart = vdt.dt.toISOString();
-		var datespan = {start: vdt.ymd()};
+		datespan = {start: vdt.ymd()};
 
 		vpmonths = [];
 		vpdays = [];
@@ -440,7 +441,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			vdt.offsetMonth(1);
 			datespan.end = vdt.ymd();
 		}
-		
+
 		vpEvents.load(datespan, rcvEvent);
 	}
 
@@ -452,6 +453,8 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		var month;
 		for (month of vpmonths)
 			month.clearEvents();
+
+		vpEvents.load(datespan, rcvEvent);
 	}
 
 	this.syncEvents = function() {
