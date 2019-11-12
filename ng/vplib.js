@@ -249,12 +249,15 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 	var calendars;
 	var reqcal;
 	var isoSpan = {};
+	var fRcvEvt;
+	var tmo=null;
 
-	function load(datespan, fRcv) {
+	function load(datespan, rcv) {
 		if (!vpAccount.status.signed_in)
 			return;
 
-		var tmo=null;
+		fRcvEvt = rcv;
+		
 		isoSpan.start = new Date(datespan.start).toISOString();
 		isoSpan.end = new Date(datespan.end).toISOString();
 
@@ -266,102 +269,102 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 			for (cal of calendars)
 				cal.reqEvents();
 		}
+	}
 
-		function reqCalendars(tok) {
+	function reqCalendars(tok) {
+		gapi.client.request({
+			path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+			method: "GET",
+			params: tok ? {pageToken: tok} : {}
+		})
+		.then(rcv, fail);
+
+		function rcv(response) {
+			$timeout.cancel(tmo);
+			for (item of response.result.items) {
+				if (item.selected)
+					calendars.push(new VpCalendar(item));
+			}
+
+			if (response.result.nextPageToken)
+				reqCalendars(response.result.nextPageToken);
+
+			tmo = $timeout(1000);
+		};
+	}
+
+	function VpCalendar(item) {
+		var id = item.id;
+		var synctok = null;
+		var cls = {};
+		this.name = item.summary;
+		this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
+		this.cls = cls;
+		syncStg(false);
+
+		this.reqEvents = function(tok) {
+			var reqparams = {timeMin: isoSpan.start, timeMax: isoSpan.end, singleEvents: true};
+			if (tok) reqparams.pageToken = tok;
+			
 			gapi.client.request({
-				path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+				path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events",
 				method: "GET",
-				params: tok ? {pageToken: tok} : {}
+				params: reqparams
 			})
-			.then(rcv, fail);
+			.then(rcv.bind(this), fail);
 
 			function rcv(response) {
 				$timeout.cancel(tmo);
-				for (item of response.result.items) {
-					if (item.selected)
-						calendars.push(new VpCalendar(item));
-				}
+
+				for (item of response.result.items)
+					makeEvent(this, item);
 
 				if (response.result.nextPageToken)
-					reqCalendars(response.result.nextPageToken);
+					reqEvents(response.result.nextPageToken);
+				else if (response.result.nextSyncToken)
+					synctok = response.result.nextSyncToken;
 
 				tmo = $timeout(1000);
 			};
-		}
-
-		function VpCalendar(item) {
-			var id = item.id;
-			var synctok = null;
-			var cls = {};
-			this.name = item.summary;
-			this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
-			this.cls = cls;
-			syncStg(false);
-
-			this.reqEvents = function(tok) {
-				var reqparams = {timeMin: isoSpan.start, timeMax: isoSpan.end, singleEvents: true};
-				if (tok) reqparams.pageToken = tok;
-				
-				gapi.client.request({
-					path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events",
-					method: "GET",
-					params: reqparams
-				})
-				.then(rcv.bind(this), fail);
-
-				function rcv(response) {
-					$timeout.cancel(tmo);
-
-					for (item of response.result.items)
-						makeEvent(this, item);
-
-					if (response.result.nextPageToken)
-						reqEvents(response.result.nextPageToken);
-					else if (response.result.nextSyncToken)
-						synctok = response.result.nextSyncToken;
-
-					tmo = $timeout(1000);
-				};
-				
-				function makeEvent(cal, item) {
-					if (item.kind != "calendar#event")
-						return;
-
-					if (item.hasOwnProperty("recurrence"))
-						return;
-
-					if (!item.hasOwnProperty("start"))
-						return;
-
-					fRcv(new VpEvent(cal, item));
-				}
-			}
-
-			this.toggle = function() {
-				cls.checked = cls.checked ? false : true;
-				syncStg(true);
-			}
-
-			function syncStg(write) {
-				var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
-				if (!tog)
-					tog = {};
-
-				if (write) {
-					delete tog[id];
-					if (cls.checked)
-						tog[id] = true;
-
-					$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
-				}
-				else {
-					if (tog[id])
-						cls.checked = true;
-				}
-			}
 			
-			this.reqEvents();
+			function makeEvent(cal, item) {
+				if (item.kind != "calendar#event")
+					return;
+
+				if (item.hasOwnProperty("recurrence"))
+					return;
+
+				if (!item.hasOwnProperty("start"))
+					return;
+
+				fRcvEvt(new VpEvent(cal, item));
+			}
 		}
+
+		this.toggle = function() {
+			cls.checked = cls.checked ? false : true;
+			syncStg(true);
+		}
+
+		function syncStg(write) {
+			var tog = JSON.parse($window.localStorage.getItem("vp-caltoginfo"));
+			if (!tog)
+				tog = {};
+
+			if (write) {
+				delete tog[id];
+				if (cls.checked)
+					tog[id] = true;
+
+				$window.localStorage.setItem("vp-caltoginfo", JSON.stringify(tog));
+			}
+			else {
+				if (tog[id])
+					cls.checked = true;
+			}
+		}
+		
+		this.reqEvents();
 	}
 
 	function VpEvent(cal, item) {
@@ -452,7 +455,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	this.reloadEvents = function() {
 		var month;
 		for (month of vpmonths)
-			month.clearEvents();
+			month.removeEvent();
 
 		vpEvents.load(datespan, rcvEvent);
 	}
@@ -480,12 +483,12 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			vdt.offsetDay(1);
 		}
 		
-		this.clearEvents = function() {
+		this.removeEvent = function(evt) {
 			delete this.evts;
 			
 			var day;
 			for (day of this.vpdays)
-				day.clearEvents();
+				day.removeEvent(evt);
 		}
 	}
 	
@@ -523,7 +526,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		this.evts.push(evt);
 	}
 	
-	VpDay.prototype.clearEvents = function() {
+	VpDay.prototype.removeEvent = function(evt) {
 		delete this.evts;
 	}
 	
@@ -532,6 +535,9 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 
 	function rcvEvent(evt) {
+		if (evt.deleted)
+			return;
+
 		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
 		for (var c=0; c < evt.duration; c++) {
 			if (vpdays[d])
@@ -539,6 +545,17 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 			d++;
 		}
+	}
+
+	function rcvSyncEvent(evt) {
+		console.log(evt);
+		return;
+		
+		var month;
+		for (month of vpmonths)
+			month.removeEvent(evt);
+
+		rcvEvent(evt);
 	}
 });
 
