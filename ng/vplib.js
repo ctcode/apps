@@ -248,19 +248,12 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount) {
 	var calendars;
 	var reqcal;
-	var fRcvEvt;
 	var isoSpan = {};
 	var tmo=null;
+	var fAddEvent = function(){};
+	var fRemoveEvent = function(){};
 
-	function load(datespan, rcv) {
-		if (!vpAccount.status.signed_in)
-			return;
-
-		fRcvEvt = rcv;
-		
-		isoSpan.start = new Date(datespan.start).toISOString();
-		isoSpan.end = new Date(datespan.end).toISOString();
-
+	function load() {
 		if (reqcal) {
 			reqCalendars();
 			reqcal = false;
@@ -272,6 +265,9 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 	}
 
 	function reqCalendars(tok) {
+		if (!vpAccount.status.signed_in)
+			return;
+
 		gapi.client.request({
 			path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
 			method: "GET",
@@ -303,6 +299,9 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		syncStg(false);
 
 		this.reqEvents = function(tok) {
+			if (!vpAccount.status.signed_in)
+				return;
+
 			var reqparams = {timeMin: isoSpan.start, timeMax: isoSpan.end, singleEvents: true};
 			if (tok) reqparams.pageToken = tok;
 			
@@ -326,19 +325,29 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 
 				tmo = $timeout(1000);
 			};
-			
-			function makeEvent(cal, item) {
-				if (item.kind != "calendar#event")
-					return;
+		}
 
-				if (item.hasOwnProperty("recurrence"))
-					return;
-
-				if (!item.hasOwnProperty("start"))
-					return;
-
-				fRcvEvt(new VpEvent(cal, item));
+		this.syncEvents = function(tok) {
+			if (!vpAccount.status.signed_in)
+				return;
+		}
+		
+		function makeEvent(cal, item) {
+			if (item.kind != "calendar#event")
+				return;
+	
+			if (item.status == "cancelled") {
+				fRemoveEvent(item.id);
+				return;
 			}
+
+			if (item.hasOwnProperty("recurrence"))
+				return;
+
+			if (!item.hasOwnProperty("start"))
+				return;
+
+			fAddEvent(new VpEvent(cal, item));
 		}
 
 		this.toggle = function() {
@@ -369,12 +378,6 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 
 	function VpEvent(cal, item) {
 		this.id = item.id;
-		
-		if (item.status == "cancelled") {
-			this.deleted = true;
-			return;
-		}
-		
 		this.cal = cal;
 		this.htmlLink = item.htmlLink;
 		
@@ -417,7 +420,29 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.calendars = calendars;
 	}
 
-	this.load = load;
+	this.register = function(add, remove) {
+		fAddEvent = add;
+		fRemoveEvent = remove;
+	}
+
+	this.setDateSpan = function(span) {
+		isoSpan.start = new Date(span.start).toISOString();
+		isoSpan.end = new Date(span.end).toISOString();
+	}
+
+	this.load = function() {
+		load();
+	}
+
+	this.reload = function() {
+		fRemoveEvent();
+		load();
+	}
+
+	this.sync = function() {
+		console.log("sync Events");
+	}
+
 	this.reset();
 });
 
@@ -430,6 +455,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	var vpmonths = [];
 	var vpdays = [];
 	var datespan;
+	vpEvents.register(addEvent, removeEvent);
 
 	this.makePage = function(pageoffset, pagelength) {
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
@@ -449,23 +475,28 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			datespan.end = vdt.ymd();
 		}
 
-		vpEvents.load(datespan, rcvEvent);
+		vpEvents.setDateSpan(datespan);
+		vpEvents.load();
 	}
 
 	this.getPage = function() {
 		return vpmonths;
 	}
 
-	this.reloadEvents = function() {
-		var month;
-		for (month of vpmonths)
-			month.removeEvent();
+	function addEvent(evt) {
+		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
+		for (var c=0; c < evt.duration; c++) {
+			if (vpdays[d])
+				vpdays[d].addEvent(evt);
 
-		vpEvents.load(datespan, rcvEvent);
+			d++;
+		}
 	}
 
-	this.syncEvents = function() {
-		console.log("syncEvents");
+	function removeEvent(id) {
+		var month;
+		for (month of vpmonths)
+			month.removeEvent(id);
 	}
 
 	function VpMonth(ymd, off) {
@@ -487,12 +518,15 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			vdt.offsetDay(1);
 		}
 		
-		this.removeEvent = function(evt) {
-			delete this.evts;
+		this.removeEvent = function(id) {
+			if (id) {
+			}
+			else
+				delete this.evts;
 			
 			var day;
 			for (day of this.vpdays)
-				day.removeEvent(evt);
+				day.removeEvent(id);
 		}
 	}
 	
@@ -530,36 +564,15 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		this.evts.push(evt);
 	}
 	
-	VpDay.prototype.removeEvent = function(evt) {
-		delete this.evts;
+	VpDay.prototype.removeEvent = function(id) {
+		if (id) {
+		}
+		else
+			delete this.evts;
 	}
 	
 	VpDay.prototype.onclickNum = function() {
 		$window.open("https://www.google.com/calendar/r/week/" + new VpDate(this.ymd).GCalURL());
-	}
-
-	function rcvEvent(evt) {
-		if (evt.deleted)
-			return;
-
-		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
-		for (var c=0; c < evt.duration; c++) {
-			if (vpdays[d])
-				vpdays[d].addEvent(evt);
-
-			d++;
-		}
-	}
-
-	function rcvSyncEvent(evt) {
-		console.log(evt);
-		return;
-		
-		var month;
-		for (month of vpmonths)
-			month.removeEvent(evt);
-
-		rcvEvent(evt);
 	}
 });
 
@@ -568,7 +581,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $window, $timeout) {
+angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEvents, $window, $timeout) {
 	var cfg = vpSettings.config;
 	var view = {sel: {}, cls: {}};
 	var scrolling = false;
@@ -746,9 +759,9 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, $win
 				case "KeyR":
 					if (evt.shiftKey || evt.altKey || evt.metaKey) return;
 					if (event.ctrlKey)
-						vpAlmanac.reloadEvents();
+						vpEvents.reload();
 					else
-						vpAlmanac.syncEvents();
+						vpEvents.sync();
 					break;
 				default:
 					return;
