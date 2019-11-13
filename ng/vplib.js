@@ -256,7 +256,6 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 	function load() {
 		if (reqcal) {
 			reqCalendars();
-			reqcal = false;
 		}
 		else {
 			for (cal of calendars)
@@ -287,6 +286,8 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 
 			tmo = $timeout(1000);
 		};
+
+		reqcal = false;
 	}
 
 	function VpCalendar(item) {
