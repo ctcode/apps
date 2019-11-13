@@ -320,7 +320,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 					makeEvent(this, item);
 
 				if (response.result.nextPageToken)
-					reqEvents(response.result.nextPageToken);
+					this.reqEvents(response.result.nextPageToken);
 				else if (response.result.nextSyncToken)
 					synctok = response.result.nextSyncToken;
 
@@ -331,6 +331,30 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.syncEvents = function(tok) {
 			if (!vpAccount.status.signed_in)
 				return;
+
+			var reqparams = {syncToken: synctok, singleEvents: true};
+			if (tok) reqparams.pageToken = tok;
+			
+			gapi.client.request({
+				path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events",
+				method: "GET",
+				params: reqparams
+			})
+			.then(rcv.bind(this), fail);
+
+			function rcv(response) {
+				$timeout.cancel(tmo);
+
+				for (item of response.result.items)
+					makeEvent(this, item);
+
+				if (response.result.nextPageToken)
+					this.syncEvents(response.result.nextPageToken);
+				else if (response.result.nextSyncToken)
+					synctok = response.result.nextSyncToken;
+
+				tmo = $timeout(1000);
+			};
 		}
 		
 		function makeEvent(cal, item) {
@@ -441,7 +465,8 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 	}
 
 	this.sync = function() {
-		console.log("sync Events");
+		for (cal of calendars)
+			cal.syncEvents();
 	}
 
 	this.reset();
@@ -566,10 +591,16 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 	
 	VpDay.prototype.removeEvent = function(id) {
-		if (id) {
+		if (this.evts) {
+			if (id) {
+				for (var i=0; i < this.evts.length; i++) {
+					if (this.evts[i].id == id)
+						this.evts.splice(i, 1);
+				}
+			}
+			else
+				delete this.evts;
 		}
-		else
-			delete this.evts;
 	}
 	
 	VpDay.prototype.onclickNum = function() {
