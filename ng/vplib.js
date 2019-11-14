@@ -311,7 +311,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 				method: "GET",
 				params: reqparams
 			})
-			.then(rcv, fail);
+			.then(rcv, reqfail);
 
 			function rcv(response) {
 				$timeout.cancel(tmo);
@@ -349,6 +349,15 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 
 				fAddEvent(new VpEvent(cal, item));
 			}
+		
+			function reqfail(reason) {
+				if (reason.status == 410) {
+					fRemoveEvent();
+					load();
+				}
+				else
+					fail(reason);
+			};
 		}
 
 		this.loadEvents = function() {
@@ -417,6 +426,8 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 
 	var msg=true;
 	function fail(reason) {
+		console.error(reason);
+
 		if (msg) {
 			alert("Calendar event error.\n\n" + reason.result.error.message);
 			msg = false;
