@@ -538,13 +538,17 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			vpdays.push(vpday);
 			vdt.offsetDay(1);
 		}
+	
+		this.addEvent = function(evt) {
+			if (!this.evts)
+				this.evts = [];
+			
+			this.evts.push(evt);
+		}
 		
 		this.removeEvent = function(id) {
-			if (id) {
-			}
-			else
-				delete this.evts;
-			
+			removeEventFromOwner(this, id);
+
 			var day;
 			for (day of this.vpdays)
 				day.removeEvent(id);
@@ -586,20 +590,23 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 	
 	VpDay.prototype.removeEvent = function(id) {
-		if (this.evts) {
-			if (id) {
-				for (var i=0; i < this.evts.length; i++) {
-					if (this.evts[i].id == id)
-						this.evts.splice(i, 1);
-				}
-			}
-			else
-				delete this.evts;
-		}
+		removeEventFromOwner(this, id);
 	}
 	
 	VpDay.prototype.onclickNum = function() {
 		$window.open("https://www.google.com/calendar/r/week/" + new VpDate(this.ymd).GCalURL());
+	}
+	
+	function removeEventFromOwner(owner, id) {
+		if (owner.evts) {
+			if (id)
+				for (var i=0; i < owner.evts.length; i++) {
+					if (owner.evts[i].id == id)
+						owner.evts.splice(i, 1);
+				}
+			else
+				delete owner.evts;
+		}
 	}
 });
 
