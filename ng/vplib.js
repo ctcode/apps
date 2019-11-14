@@ -255,22 +255,22 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 
 	function load() {
 		if (reqcal) {
-			reqCalendars();
+			reqCalendars({});
 		}
 		else {
 			for (cal of calendars)
-				cal.reqEvents();
+				cal.loadEvents();
 		}
 	}
 
-	function reqCalendars(tok) {
+	function reqCalendars(reqparams) {
 		if (!vpAccount.status.signed_in)
 			return;
 
 		gapi.client.request({
 			path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
 			method: "GET",
-			params: tok ? {pageToken: tok} : {}
+			params: reqparams
 		})
 		.then(rcv, fail);
 
@@ -281,8 +281,10 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 					calendars.push(new VpCalendar(item));
 			}
 
-			if (response.result.nextPageToken)
-				reqCalendars(response.result.nextPageToken);
+			if (response.result.nextPageToken) {
+				reqparams.pageToken = response.result.nextPageToken;
+				reqCalendars(reqparams);
+			}
 
 			tmo = $timeout(1000);
 		};
@@ -291,6 +293,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 	}
 
 	function VpCalendar(item) {
+		var cal = this;
 		var id = item.id;
 		var synctok = null;
 		var cls = {};
@@ -299,80 +302,61 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.cls = cls;
 		syncStg(false);
 
-		this.reqEvents = function(tok) {
+		function reqEvents(reqparams) {
 			if (!vpAccount.status.signed_in)
 				return;
-
-			var reqparams = {timeMin: isoSpan.start, timeMax: isoSpan.end, singleEvents: true};
-			if (tok) reqparams.pageToken = tok;
 			
 			gapi.client.request({
 				path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events",
 				method: "GET",
 				params: reqparams
 			})
-			.then(rcv.bind(this), fail);
+			.then(rcv, fail);
 
 			function rcv(response) {
 				$timeout.cancel(tmo);
 
 				for (item of response.result.items)
-					makeEvent(this, item);
+					makeEvent(item);
 
-				if (response.result.nextPageToken)
-					this.reqEvents(response.result.nextPageToken);
+				if (response.result.nextPageToken) {
+					reqparams.pageToken = response.result.nextPageToken;
+					reqEvents(reqparams);
+				}
 				else if (response.result.nextSyncToken)
 					synctok = response.result.nextSyncToken;
 
 				tmo = $timeout(1000);
 			};
-		}
-
-		this.syncEvents = function(tok) {
-			if (!vpAccount.status.signed_in)
-				return;
-
-			var reqparams = {syncToken: synctok, singleEvents: true};
-			if (tok) reqparams.pageToken = tok;
-			
-			gapi.client.request({
-				path: "https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events",
-				method: "GET",
-				params: reqparams
-			})
-			.then(rcv.bind(this), fail);
-
-			function rcv(response) {
-				$timeout.cancel(tmo);
-
-				for (item of response.result.items)
-					makeEvent(this, item);
-
-				if (response.result.nextPageToken)
-					this.syncEvents(response.result.nextPageToken);
-				else if (response.result.nextSyncToken)
-					synctok = response.result.nextSyncToken;
-
-				tmo = $timeout(1000);
-			};
-		}
 		
-		function makeEvent(cal, item) {
-			if (item.kind != "calendar#event")
-				return;
-	
-			if (item.status == "cancelled") {
-				fRemoveEvent(item.id);
-				return;
+			function makeEvent(item) {
+				if (item.kind != "calendar#event")
+					return;
+		
+				if (item.status == "cancelled") {
+					fRemoveEvent(item.id);
+					return;
+				}
+
+				if (item.hasOwnProperty("recurrence"))
+					return;
+
+				if (!item.hasOwnProperty("start"))
+					return;
+
+				if (reqparams.syncToken)
+					fRemoveEvent(item.id);
+
+				fAddEvent(new VpEvent(cal, item));
 			}
+		}
 
-			if (item.hasOwnProperty("recurrence"))
-				return;
+		this.loadEvents = function() {
+			reqEvents({timeMin: isoSpan.start, timeMax: isoSpan.end, singleEvents: true});
+		}
 
-			if (!item.hasOwnProperty("start"))
-				return;
-
-			fAddEvent(new VpEvent(cal, item));
+		this.syncEvents = function() {
+			reqEvents({syncToken: synctok, singleEvents: true});
 		}
 
 		this.toggle = function() {
@@ -398,7 +382,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 			}
 		}
 		
-		this.reqEvents();
+		this.loadEvents();
 	}
 
 	function VpEvent(cal, item) {
