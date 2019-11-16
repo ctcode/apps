@@ -20,14 +20,6 @@
 	position: absolute;
 	pointer-events: none;
 }
-#vpfader {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	pointer-events: none;
-}
 #vpgrid {
 	font-size: calc(1.1vh * {{vpgrid.fontscale}});
 	height: 100%;
@@ -98,9 +90,6 @@
 	height: 100%;
 	width: {{vpgrid.scroll_size}}%;
 }
-#vpfader {
-	background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0) 5% 95%, rgba(255,255,255,0.9));
-}
 @media only screen and (orientation: portrait) {
 	#vpcontent {
 		width: {{vpgrid.scroll_size_portrait}}%;
@@ -144,9 +133,6 @@
 	width: 100%;
 	height: {{vpgrid.scroll_size}}%;
 }
-#vpfader {
-	background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0) 5% 95%, rgba(255,255,255,0.9));
-}
 #vpgrid {
 	grid-auto-flow: row;
 	grid-auto-rows: minmax(5em, 1fr);
@@ -189,6 +175,5 @@
 				</div>
 			</div>
 		</div>
-		<div id="vpfader"></div>
 	</div>
 </div>
