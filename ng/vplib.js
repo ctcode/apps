@@ -773,6 +773,13 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			updateUI();
 		}
 
+		this.onclickSync = function(evt) {
+			if (evt.ctrlKey)
+				vpEvents.reload();
+			else
+				vpEvents.sync();
+		}
+
 		this.onclickPrint = function() {
 			$window.open("vpprint.htm#" + grid.pos);
 		}
@@ -792,10 +799,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 					break;
 				case "KeyR":
 					if (evt.shiftKey || evt.altKey || evt.metaKey) return;
-					if (event.ctrlKey)
-						vpEvents.reload();
-					else
-						vpEvents.sync();
+					this.onclickSync(evt);
 					break;
 				default:
 					return;

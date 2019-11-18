@@ -123,6 +123,7 @@ body {
 			<div>{{vpaccount.status.msg}}</div>
 			<img class="toolbtn" src="settings.png" title="Settings" draggable="false" ng-click="vp.onclickSettings()"/>
 			<img class="toolbtn" src="print.png" title="Print" draggable="false" ng-click="vpgrid.onclickPrint()"/>
+			<img class="toolbtn" src="sync.png" title="Sync" draggable="false" ng-click="vpgrid.onclickSync($event)"/>
 			<img class="toolbtn" src="list.png" title="List" draggable="false" ng-click="vpgrid.onclickView('list')" ng-class="vpgrid.view.cls.list"/>
 			<img class="toolbtn" src="column.png" title="Column" draggable="false" ng-click="vpgrid.onclickView('column')" ng-class="vpgrid.view.cls.column"/>
 		</div>
