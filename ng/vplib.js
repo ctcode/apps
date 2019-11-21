@@ -680,7 +680,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
 
 				$timeout(function() {
-					setScrollIndex(gridui.visoffset - gridui.offset);
+					setVisIndex(gridui.visoffset - gridui.offset);
 					box.style.visibility = "";
 					box.focus();
 
@@ -707,13 +707,13 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			}
 
 			function offsetPage(off) {
-				gridui.visoffset = vpAlmanac.getPage()[getScrollIndex()].offset;
+				gridui.visoffset = vpAlmanac.getPage()[getVisIndex()].offset;
 				gridui.offset += (off * gridui.buffer);
 				updateUI();
 			}
 		}
 
-		function getScrollIndex() {
+		function getVisIndex() {
 			if (!scrolling)
 				return 0;
 			
@@ -731,7 +731,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			}
 		}
 
-		function setScrollIndex(idx) {
+		function setVisIndex(idx) {
 			if (!scrolling) {
 				box.scrollTo(0, 0);
 				return;
@@ -774,7 +774,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		this.onclickPrint = function() {
-			var i = getScrollIndex();
+			var i = getVisIndex();
 			$window.vpprintgrid = {
 				page: $scope.vpgrid.page.slice(i, i + gridui.vislength),
 				view: $scope.vpgrid.view,
@@ -794,12 +794,12 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				case "ArrowLeft":
 				case "ArrowUp":
 					if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey) return;
-					setScrollIndex(getScrollIndex() - 1);
+					setVisIndex(getVisIndex() - 1);
 					break;
 				case "ArrowRight":
 				case "ArrowDown":
 					if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey) return;
-					setScrollIndex(getScrollIndex() + 1);
+					setVisIndex(getVisIndex() + 1);
 					break;
 				case "KeyR":
 					if (evt.shiftKey || evt.altKey || evt.metaKey) return;
