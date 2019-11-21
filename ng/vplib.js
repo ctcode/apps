@@ -653,7 +653,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			else {
 				var off = ((cfg.first_month-1) - new Date().getMonth());
 				if (off > 0) off -= 12;
-				gridui.offset = off - grid.buffer;
+				gridui.offset = off - gridui.buffer;
 			}
 			
 			gridui.vislength = cfg.month_count;
