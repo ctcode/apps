@@ -670,8 +670,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 			$timeout(function() {
 				vpAlmanac.makePage(grid.offset, grid.length);
-				$scope.vpgrid.view = view;
 				$scope.vpgrid.page = vpAlmanac.getPage();
+				$scope.vpgrid.view = view;
 				$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
 				$scope.vpgrid.past_opacity = cfg.past_opacity;
 				$scope.vpgrid.scroll_size = scrolling ? (grid.length / cfg.month_count)*100 : 100;
@@ -781,7 +781,42 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		this.onclickPrint = function() {
-			$window.open("vpprint.htm#" + grid.pos);
+			var printgrid = {page: []};
+			
+			var monthdiv = document.getElementById("vpgrid").firstElementChild;
+			for (var i=0 ; monthdiv; i++) {
+				var lo, hi, pt;
+				
+				if (view.sel.column) {
+					lo = box.scrollLeft;
+					hi = box.scrollLeft + box.offsetWidth;
+					pt = monthdiv.firstElementChild.offsetLeft;
+				}
+
+				if (view.sel.list) {
+					lo = box.scrollTop;
+					hi = box.scrollTop + box.offsetHeight;
+					pt = monthdiv.firstElementChild.offsetTop;
+				}
+
+				if (pt >= hi)
+					break;
+
+				if (pt >= lo)
+					printgrid.page.push($scope.vpgrid.page[i]);
+
+				monthdiv = monthdiv.nextElementSibling;
+			}
+
+			printgrid.view = $scope.vpgrid.view;
+			printgrid.fontscale = $scope.vpgrid.fontscale;
+			printgrid.past_opacity = 1;
+			printgrid.scroll_size = 100;
+			printgrid.scroll_size_portrait = 100;
+			printgrid.cls = $scope.vpgrid.cls;
+
+			$window.vpprintgrid = printgrid;
+			$window.open("vpprint.htm");
 		}
 
 		this.onkeydown = function(evt) {

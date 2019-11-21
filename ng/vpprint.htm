@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto" type="text/css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js"></script>
-<script src="https://apis.google.com/js/api.js"></script>
 <link href="vp.png" rel="icon">
 <style>
 body {
@@ -18,37 +17,20 @@ body {
 </style>
 <title>Print</title>
 </head>
-<body ng-app="vpApp" ng-controller="vpPrintController" ng-cloak>
-<div ng-hide="show.grid">{{vpaccount.status.msg}}</div>
-<vp-grid disable-autoload disable-scrolling ng-show="show.grid"/>
-<script src="vpconfig.js" type='text/javascript'></script>
-<script src="vplib.js" type='text/javascript'></script>
+<body ng-app="vpPrintApp" ng-cloak>
+<vp-print-grid/>
 <script type='text/javascript'>
-angular.module("vpApp").controller("vpPrintController", function($scope, $timeout, vpAccount, vpSettings) {
-	$scope.vpaccount = vpAccount;
-	$scope.show = {};
-
-	$scope.$on("account:signin", function() {
-		$timeout(function() {
-			vpSettings.load();
-		});
-	});
-
-	$scope.$on("account:signout", function() {
-		$timeout(function() {
-			$scope.show = {};
-		});
-	});
-
-	$scope.$on("settings:load", function() {
-		$timeout(function() {
-			$scope.vpgrid.initpos(parseInt(window.location.hash.substr(1)));
-			$scope.show = {grid: true};
-		});
-	});
-
-	vpAccount.connect();
-});
+angular.module('vpPrintApp', [])
+	.directive("vpPrintGrid", function($window) {
+		return {
+			controller: function($scope) {
+				$scope.vpgrid = $window.opener.vpprintgrid;
+			},
+			templateUrl: "vpgrid.htm",
+			restrict: 'E'
+		};
+	})
+;
 </script>
 </body>
 </html>
