@@ -618,7 +618,6 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEvents, $window, $timeout) {
 	var cfg = vpSettings.config;
 	var view = {sel: {}, cls: {}};
-	var scrolling = false;
 
 	var stg = $window.localStorage.getItem("vp-viewinfo");
 	if (stg)
@@ -642,10 +641,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		var gridui;
 
 		function initUI() {
-			gridui = {buffer: 0, offset: 0, length: 0, visoffset: 0, vislength: 0};
-			
-			if (scrolling)
-				gridui.buffer = 6;
+			gridui = {buffer: 6, offset: 0, length: 0, visoffset: 0, vislength: 0};
 			
 			if (cfg.auto_scroll) {
 				gridui.offset = cfg.auto_scroll_offset - gridui.buffer;
@@ -675,17 +671,15 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				$scope.vpgrid.view = view;
 				$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
 				$scope.vpgrid.past_opacity = cfg.past_opacity;
-				$scope.vpgrid.scroll_size = scrolling ? (gridui.length / cfg.month_count)*100 : 100;
-				$scope.vpgrid.scroll_size_portrait = scrolling ? $scope.vpgrid.scroll_size * 2 : 100;
+				$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
+				$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
 				$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
 
 				$timeout(function() {
 					setVisIndex(gridui.visoffset - gridui.offset);
 					box.style.visibility = "";
 					box.focus();
-
-					if (scrolling)
-						ngbox.on("scroll", onScroll);
+					ngbox.on("scroll", onScroll);
 				});
 			});
 		}
@@ -714,9 +708,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		function getVisIndex() {
-			if (!scrolling)
-				return 0;
-			
 			var monthdiv = document.getElementById("vpgrid").firstElementChild;
 			for (var i=0 ; monthdiv; i++) {
 				if (view.sel.column)
@@ -732,11 +723,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		function setVisIndex(idx) {
-			if (!scrolling) {
-				box.scrollTo(0, 0);
-				return;
-			}
-			
 			var monthdiv = document.getElementById("vpgrid").firstElementChild;
 			for (var i=0 ; monthdiv; i++) {
 				if (i == idx) {
@@ -814,9 +800,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 	}
 
 	function fLink(scope, element, attrs) {
-		if (!attrs.hasOwnProperty("disableScrolling"))
-			scrolling = true;
-
 		if (!attrs.hasOwnProperty("disableAutoload"))
 			scope.vpgrid.init();
 	}
