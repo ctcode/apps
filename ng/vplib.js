@@ -797,11 +797,14 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 			evt.preventDefault();
 		}
+		
+		if ($scope.vpgridinit)
+			this.init();
 	}
 
 	function fLink(scope, element, attrs) {
-		if (!attrs.hasOwnProperty("disableAutoload"))
-			scope.vpgrid.init();
+		//if (!attrs.hasOwnProperty("disableAutoload"))
+			//scope.vpgrid.init();
 	}
 
 	return {
