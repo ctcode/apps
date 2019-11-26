@@ -747,9 +747,26 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		this.onclickView = function(name) {
+			if (view.sel.column)
+				var pos = box.scrollLeft / box.scrollWidth;
+			if (view.sel.list)
+				var pos = box.scrollTop / box.scrollHeight;
+
+			box.style.visibility = "hidden";
+			ngbox.off("scroll");
 			setViewInfo(name);
-			initUI();
-			updateUI();
+
+			$timeout(function() {
+				if (view.sel.column)
+					box.scrollTo(box.scrollWidth * pos, 0);
+				if (view.sel.list)
+					box.scrollTo(0, box.scrollHeight * pos);
+				box.style.visibility = "";
+				box.focus();
+				ngbox.on("scroll", onScroll);
+			});
+			//initUI();
+			//updateUI();
 		}
 
 		this.onclickSync = function(evt) {
