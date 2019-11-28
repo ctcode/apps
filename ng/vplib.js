@@ -641,7 +641,10 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		var gridui;
 
 		function initUI() {
-			gridui = {buffer: 6, offset: 0, length: 0, visoffset: 0, vislength: 0};
+			gridui = {};
+			gridui.buffer = 6;
+			gridui.vislength = cfg.month_count;
+			gridui.length = gridui.buffer + gridui.vislength + gridui.buffer;
 			
 			if (cfg.auto_scroll) {
 				gridui.offset = cfg.auto_scroll_offset - gridui.buffer;
@@ -651,59 +654,63 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				if (off > 0) off -= 12;
 				gridui.offset = off - gridui.buffer;
 			}
-			
-			gridui.vislength = cfg.month_count;
-			gridui.length = gridui.buffer + gridui.vislength + gridui.buffer;
+
 			gridui.visoffset = gridui.offset + gridui.buffer;
 
-			ngbox.removeClass("hidescroll");
 			if (cfg.hide_scrollbars)
 				ngbox.addClass("hidescroll");
 		}
 
 		function updateUI() {
-			box.style.visibility = "hidden";
-			ngbox.off("scroll");
+			showGrid(false);
+
+			vpAlmanac.makePage(gridui.offset, gridui.length);
+			$scope.vpgrid.page = vpAlmanac.getPage();
+			$scope.vpgrid.view = view;
+			$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
+			$scope.vpgrid.past_opacity = cfg.past_opacity;
+			$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
+			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
+			$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
 
 			$timeout(function() {
-				vpAlmanac.makePage(gridui.offset, gridui.length);
-				$scope.vpgrid.page = vpAlmanac.getPage();
-				$scope.vpgrid.view = view;
-				$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
-				$scope.vpgrid.past_opacity = cfg.past_opacity;
-				$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
-				$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
-				$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
-
-				$timeout(function() {
-					setVisIndex(gridui.visoffset - gridui.offset);
-					box.style.visibility = "";
-					box.focus();
-					ngbox.on("scroll", onScroll);
-				});
+				setVisIndex(gridui.visoffset - gridui.offset);
+				showGrid(true);
 			});
 		}
 
 		var tmo=null;
 		function onScroll(evt) {
 			$timeout.cancel(tmo);
+			var shift = false;
 			
 			if (cfg.auto_page) {
 				var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
 				var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
 
-				var off = false;
-				if (pos == 0) off = -1;
-				if (pos >= max) off = 1;
+				if (pos == 0) shift = -1;
+				if (pos >= max) shift = 1;
 
-				if (off)
-					tmo = $timeout(offsetPage, 1000, true, off);
+				if (shift)
+					tmo = $timeout(shiftPage, 1000);
 			}
 
-			function offsetPage(off) {
+			function shiftPage() {
 				gridui.visoffset = vpAlmanac.getPage()[getVisIndex()].offset;
-				gridui.offset += (off * gridui.buffer);
+				gridui.offset += (shift * gridui.buffer);
 				updateUI();
+			}
+		}
+
+		function showGrid(show) {
+			if (show) {
+				box.style.visibility = "";
+				box.focus();
+				ngbox.on("scroll", onScroll);
+			}
+			else {
+				box.style.visibility = "hidden";
+				ngbox.off("scroll");
 			}
 		}
 
@@ -752,8 +759,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			if (view.sel.list)
 				var pos = box.scrollTop / box.scrollHeight;
 
-			box.style.visibility = "hidden";
-			ngbox.off("scroll");
+			showGrid(false);
 			setViewInfo(name);
 
 			$timeout(function() {
@@ -761,12 +767,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 					box.scrollTo(box.scrollWidth * pos, 0);
 				if (view.sel.list)
 					box.scrollTo(0, box.scrollHeight * pos);
-				box.style.visibility = "";
-				box.focus();
-				ngbox.on("scroll", onScroll);
+				showGrid(true);
 			});
-			//initUI();
-			//updateUI();
 		}
 
 		this.onclickSync = function(evt) {
