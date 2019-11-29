@@ -94,7 +94,6 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		show_all_day_events: true,
 		single_day_as_multi_day: false,
 		show_timed_events: true,
-		event_on_separate_line: false,
 		multi_day_opacity: 0.8
 	};
 
@@ -671,7 +670,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.past_opacity = cfg.past_opacity;
 			$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
 			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
-			$scope.vpgrid.cls = cfg.event_on_separate_line ? {} : {vpeventsingleline: true};
+			$scope.vpgrid.cls = view.expand ? {} : {vpeventsingleline: true};
 
 			$timeout(function() {
 				setVisIndex(gridui.visoffset - gridui.offset);
@@ -788,6 +787,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				setViewInfo(false, 'expand');
 			else
 				setViewInfo('expand');
+
+			$scope.vpgrid.cls = view.expand ? {} : {vpeventsingleline: true};
 		}
 
 		this.onclickSync = function(evt) {
