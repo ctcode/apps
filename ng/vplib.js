@@ -617,20 +617,20 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEvents, $window, $timeout) {
 	var cfg = vpSettings.config;
-	var view = {sel: {}, cls: {}};
+	var view = {};
 
 	var stg = $window.localStorage.getItem("vp-viewinfo");
 	if (stg)
 		view = JSON.parse(stg);
 	else
-		setViewInfo("column");
+		setViewInfo('column');
 
-	function setViewInfo(name) {
-		view.sel = {};
-		view.sel[name] = true;
+	function setViewInfo(add, del) {
+		if (add)
+			view[add] = {checked: true};
 
-		view.cls = {};
-		view.cls[name] = {checked: true};
+		if (del)
+			delete view[del];
 
 		$window.localStorage.setItem("vp-viewinfo", JSON.stringify(view));
 	}
@@ -685,8 +685,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			var shift = false;
 			
 			if (cfg.auto_page) {
-				var pos = view.sel.list ? box.scrollTop : box.scrollLeft;
-				var max = view.sel.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
+				var pos = view.list ? box.scrollTop : box.scrollLeft;
+				var max = view.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
 
 				if (pos == 0) shift = -1;
 				if (pos >= max) shift = 1;
@@ -717,11 +717,11 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		function getVisIndex() {
 			var monthdiv = document.getElementById("vpgrid").firstElementChild;
 			for (var i=0 ; monthdiv; i++) {
-				if (view.sel.column)
+				if (view.column)
 				if (monthdiv.firstElementChild.offsetLeft >= box.scrollLeft)
 					return i;
 
-				if (view.sel.list)
+				if (view.list)
 				if (monthdiv.firstElementChild.offsetTop >= box.scrollTop)
 					return i;
 
@@ -733,12 +733,12 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			var monthdiv = document.getElementById("vpgrid").firstElementChild;
 			for (var i=0 ; monthdiv; i++) {
 				if (i == idx) {
-					if (view.sel.column) {
+					if (view.column) {
 						box.scrollTo(monthdiv.firstElementChild.offsetLeft, 0);
 						return;
 					}
 
-					if (view.sel.list) {
+					if (view.list) {
 						box.scrollTo(0, monthdiv.firstElementChild.offsetTop);
 						return;
 					}
@@ -753,22 +753,41 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			updateUI();
 		}
 
-		this.onclickView = function(name) {
-			if (view.sel.column)
-				var pos = box.scrollLeft / box.scrollWidth;
-			if (view.sel.list)
-				var pos = box.scrollTop / box.scrollHeight;
+		this.onclickColumn = function() {
+			if (view.column)
+				return;
 
+			var pos = box.scrollTop / box.scrollHeight;
 			showGrid(false);
-			setViewInfo(name);
+
+			setViewInfo('column', 'list');
 
 			$timeout(function() {
-				if (view.sel.column)
-					box.scrollTo(box.scrollWidth * pos, 0);
-				if (view.sel.list)
-					box.scrollTo(0, box.scrollHeight * pos);
+				box.scrollTo(box.scrollWidth * pos, 0);
 				showGrid(true);
 			});
+		}
+
+		this.onclickList = function() {
+			if (view.list)
+				return;
+
+			var pos = box.scrollLeft / box.scrollWidth;
+			showGrid(false);
+
+			setViewInfo('list', 'column');
+
+			$timeout(function() {
+				box.scrollTo(0, box.scrollHeight * pos);
+				showGrid(true);
+			});
+		}
+
+		this.onclickExpand = function() {
+			if (view.expand)
+				setViewInfo(false, 'expand');
+			else
+				setViewInfo('expand');
 		}
 
 		this.onclickSync = function(evt) {
