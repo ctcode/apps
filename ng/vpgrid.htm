@@ -118,11 +118,14 @@
 	padding: 0.25em;
 	margin: 0.1em 0.1em 0.1em 0.2em;
 }
-.vpeventsingleline .vpevents {
+</style>
+
+<style ng-if="vpgrid.view.column && !vpgrid.view.expand">
+.vpevents {
 	display: flex;
 	align-items: center;
 }
-.vpeventsingleline .vpevent {
+.vpevent {
 	white-space: nowrap;
 }
 </style>
@@ -161,7 +164,7 @@
 
 <div id="vpbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
 	<div id="vpcontent">
-		<div id="vpgrid" ng-class="vpgrid.cls">
+		<div id="vpgrid">
 			<div ng-repeat="month in vpgrid.page" class="vpmonth" ng-class="month.cls">
 				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">

@@ -670,7 +670,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.past_opacity = cfg.past_opacity;
 			$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
 			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
-			$scope.vpgrid.cls = view.expand ? {} : {vpeventsingleline: true};
 
 			$timeout(function() {
 				setVisIndex(gridui.visoffset - gridui.offset);
@@ -787,8 +786,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				setViewInfo(false, 'expand');
 			else
 				setViewInfo('expand');
-
-			$scope.vpgrid.cls = view.expand ? {} : {vpeventsingleline: true};
 		}
 
 		this.onclickSync = function(evt) {
