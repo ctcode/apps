@@ -803,8 +803,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				fontscale: $scope.vpgrid.fontscale,
 				past_opacity: 1,
 				scroll_size: 100,
-				scroll_size_portrait: 100,
-				cls: $scope.vpgrid.cls
+				scroll_size_portrait: 100
 			};
 
 			$window.open("vpprint.htm");
