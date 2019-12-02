@@ -763,6 +763,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$timeout(function() {
 				box.scrollTo(box.scrollWidth * pos, 0);
 				showGrid(true);
+				box.focus();
 			});
 		}
 
@@ -778,6 +779,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$timeout(function() {
 				box.scrollTo(0, box.scrollHeight * pos);
 				showGrid(true);
+				box.focus();
 			});
 		}
 
@@ -786,6 +788,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				setViewInfo(false, 'expand');
 			else
 				setViewInfo('expand');
+
+			box.focus();
 		}
 
 		this.onclickSync = function(evt) {
@@ -793,6 +797,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				vpEvents.reload();
 			else
 				vpEvents.sync();
+
+			box.focus();
 		}
 
 		this.onclickPrint = function() {
