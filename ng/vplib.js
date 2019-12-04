@@ -823,6 +823,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$window.vpprintgrid = {
 				page: $scope.vpgrid.page.slice(i, i + gridui.vislength),
 				view: $scope.vpgrid.view,
+				cls: $scope.vpgrid.cls,
 				fontscale: $scope.vpgrid.fontscale,
 				past_opacity: 1,
 				scroll_size: 100,
