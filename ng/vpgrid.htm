@@ -20,7 +20,6 @@
 	pointer-events: none;
 }
 #vpgrid {
-	height: 100%;
 	box-sizing: border-box;
 	display: grid;
 	grid-gap: 1px;
@@ -68,126 +67,144 @@
 }
 </style>
 
-<style ng-if="vpgrid.view.column">
-#vpcontent {
-	height: 100%;
-	width: {{vpgrid.scroll_size}}%;
-}
-@media only screen and (orientation: portrait) {
+<span ng-if="vpgrid.view.column">
+	<style>
 	#vpcontent {
-		width: {{vpgrid.scroll_size_portrait}}%;
+		height: 100%;
+		width: {{vpgrid.scroll_size}}%;
 	}
-}
-#vpgrid {
-	font-size: calc(1.1vh * {{vpgrid.fontscale}});
-	grid-auto-flow: column;
-	grid-auto-columns: minmax(5em, 1fr);
-	grid-template-rows: 3em repeat(38, 1fr);
-}
-.vphdr {
-	grid-row-start: 1;
-}
-.vpday {
-	align-items: center;
-}
-.vpday.dayoffset0 {grid-row-start: 2;}
-.vpday.dayoffset1 {grid-row-start: 3;}
-.vpday.dayoffset2 {grid-row-start: 4;}
-.vpday.dayoffset3 {grid-row-start: 5;}
-.vpday.dayoffset4 {grid-row-start: 6;}
-.vpday.dayoffset5 {grid-row-start: 7;}
-.vpday.dayoffset6 {grid-row-start: 8;}
-.vpnum {
-	width: 1.5em;
-	text-align: center;
-	padding: 0.25em;
-	margin: 0.1em 0.1em 0.1em 0.2em;
-}
-.vpevents {
-	overflow: hidden;
-}
-.vpevent {
-	width: fit-content;
-	width: -moz-fit-content;
-	max-width: 100%;
-	box-sizing: border-box;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	border-radius: 0.25em;
-	padding: 0.1em 0.2em;
-	margin: 1px;
-	pointer-events: all;
-}
-</style>
+	@media only screen and (orientation: portrait) {
+		#vpcontent {
+			width: {{vpgrid.scroll_size_portrait}}%;
+		}
+	}
+	#vpgrid {
+		font-size: calc(1.1vh * {{vpgrid.fontscale}});
+		grid-auto-flow: column;
+		grid-auto-columns: minmax(5em, 1fr);
+		grid-template-rows: 3em repeat(38, 1fr);
+	}
+	.vphdr {
+		grid-row-start: 1;
+	}
+	.vpday {
+		align-items: center;
+	}
+	.vpday.dayoffset0 {grid-row-start: 2;}
+	.vpday.dayoffset1 {grid-row-start: 3;}
+	.vpday.dayoffset2 {grid-row-start: 4;}
+	.vpday.dayoffset3 {grid-row-start: 5;}
+	.vpday.dayoffset4 {grid-row-start: 6;}
+	.vpday.dayoffset5 {grid-row-start: 7;}
+	.vpday.dayoffset6 {grid-row-start: 8;}
+	.vpnum {
+		width: 1.5em;
+		text-align: center;
+		padding: 0.25em;
+		margin: 0.1em 0.1em 0.1em 0.2em;
+	}
+	.vpevents {
+		overflow: hidden;
+	}
+	.vpevent {
+		width: fit-content;
+		width: -moz-fit-content;
+		max-width: 100%;
+		box-sizing: border-box;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		border-radius: 0.25em;
+		padding: 0.1em 0.2em;
+		margin: 1px;
+		pointer-events: all;
+	}
+	</style>
 
-<style ng-if="vpgrid.view.column && !vpgrid.view.expand">
-.vpevents {
-	display: flex;
-	align-items: center;
-}
-.vpevent {
-	white-space: nowrap;
-}
-</style>
+	<span ng-if="vpgrid.view.expand">
+		<style>
+		#vpgrid.flexrow {
+			height: 100%;
+		}
+		</style>
+	</span>
 
-<style ng-if="vpgrid.view.list">
-#vpcontent {
-	width: 100%;
-	height: {{vpgrid.scroll_size}}%;
-}
-#vpgrid {
-	font-size: calc(1.25vh * {{vpgrid.fontscale}});
-	grid-auto-flow: row;
-	grid-auto-rows: minmax(5em, 1fr);
-	grid-template-columns: 5fr repeat(38, 1fr);
-}
-.vphdr {
-	grid-column-start: 1;
-}
-.vpday {
-	flex-direction: column;
-	min-width: 2em;
-}
-.vpday.dayoffset0 {grid-column-start: 2;}
-.vpday.dayoffset1 {grid-column-start: 3;}
-.vpday.dayoffset2 {grid-column-start: 4;}
-.vpday.dayoffset3 {grid-column-start: 5;}
-.vpday.dayoffset4 {grid-column-start: 6;}
-.vpday.dayoffset5 {grid-column-start: 7;}
-.vpday.dayoffset6 {grid-column-start: 8;}
-.vpnum {
-	width: fit-content;
-	width: -moz-fit-content;
-	padding: 0.25em 0.5em;
-	margin: 1px;
-	pointer-events: none;
-}
-.vpevents {
-	position: relative;
-	width: 100%;
-	height: 100%;
-}
-.vpevent {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	opacity: 0.6;
-	pointer-events: none;
-}
-.vpevttext {
-	display: none;
-}
-</style>
+	<span ng-if="!vpgrid.view.expand">
+		<style>
+		#vpgrid {
+			height: 100%;
+		}
+		.vpevents {
+			display: flex;
+			align-items: center;
+		}
+		.vpevent {
+			white-space: nowrap;
+		}
+		</style>
+	</span>
+</span>
+
+<span ng-if="vpgrid.view.list">
+	<style>
+	#vpcontent {
+		width: 100%;
+		height: {{vpgrid.scroll_size}}%;
+	}
+	#vpgrid {
+		height: 100%;
+		font-size: calc(1.25vh * {{vpgrid.fontscale}});
+		grid-auto-flow: row;
+		grid-auto-rows: minmax(5em, 1fr);
+		grid-template-columns: 5fr repeat(38, 1fr);
+	}
+	.vphdr {
+		grid-column-start: 1;
+	}
+	.vpday {
+		flex-direction: column;
+		min-width: 2em;
+	}
+	.vpday.dayoffset0 {grid-column-start: 2;}
+	.vpday.dayoffset1 {grid-column-start: 3;}
+	.vpday.dayoffset2 {grid-column-start: 4;}
+	.vpday.dayoffset3 {grid-column-start: 5;}
+	.vpday.dayoffset4 {grid-column-start: 6;}
+	.vpday.dayoffset5 {grid-column-start: 7;}
+	.vpday.dayoffset6 {grid-column-start: 8;}
+	.vpnum {
+		width: fit-content;
+		width: -moz-fit-content;
+		padding: 0.25em 0.5em;
+		margin: 1px;
+		pointer-events: none;
+	}
+	.vpevents {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+	.vpevent {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		opacity: {{vpgrid.multi_day_opacity}};
+		pointer-events: none;
+	}
+	.vpevttext {
+		display: none;
+	}
+	</style>
+</span>
 
 <div id="vpbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
 	<div id="vpcontent">
-		<div id="vpgrid">
+		<div id="vpgrid" ng-class="vpgrid.cls">
 			<div ng-repeat="month in vpgrid.page" class="vpmonth" ng-class="month.cls">
 				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
 					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
 					<div class="vpevents" ng-if="day.evts">
-						<div ng-repeat="evt in day.evts" class="vpevent vplink" title="{{evt.cal.name}} - {{evt.title}}" ng-class="evt.cal.cls" ng-style="{'color': evt.cal.colour.fore, 'background-color': evt.cal.colour.back}" ng-click="evt.edit()">
+						<div ng-repeat="evt in day.evts" class="vpevent vplink" title="{{evt.cal.name}} - {{evt.title}}" ng-class="evt.cal.cls" ng-style="evt.style" ng-click="evt.edit()">
 							<span class="vpevttext">{{evt.title}}</span>
 						</div>
 					</div>

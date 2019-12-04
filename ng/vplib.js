@@ -79,9 +79,10 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		month_count: 6,
 		auto_scroll: true,
 		auto_scroll_offset: -1,
-		auto_page: true,
 		first_month: 1,
 		hide_scrollbars: false,
+		disable_scroll: false,
+		fixed_row_height: false,
 		align_weekends: true,
 		weekends: "6,0",
 		first_day_of_week: 1,
@@ -91,10 +92,11 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		proportional_events: false,
 		proportional_start_hour: 8,
 		proportional_end_hour: 20,
+		event_colour: 'cal',
 		show_all_day_events: true,
 		single_day_as_multi_day: false,
 		show_timed_events: true,
-		multi_day_opacity: 0.8
+		multi_day_opacity: 0.6
 	};
 
 	var cfg = {};
@@ -244,7 +246,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount) {
+angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount, vpSettings) {
 	var calendars;
 	var reqcal;
 	var isoSpan = {};
@@ -297,7 +299,8 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		var synctok = null;
 		var cls = {};
 		this.name = item.summary;
-		this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
+		if (vpSettings.config.event_colour == "cal")
+			this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
 		this.cls = cls;
 		syncStg(false);
 
@@ -397,6 +400,15 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.id = item.id;
 		this.cal = cal;
 		this.htmlLink = item.htmlLink;
+
+		if (vpSettings.config.event_colour == "cal")
+			this.style = {'color': cal.colour.fore, 'background-color': cal.colour.back};
+
+		if (vpSettings.config.event_colour == "evt")
+			this.style = {'color': "red", 'background-color': "black"};
+
+		if (vpSettings.config.event_colour == "white")
+			this.style = {'background-color': "white"};
 		
 		if ("dateTime" in item.start)
 		{
@@ -641,7 +653,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 		function initUI() {
 			gridui = {};
-			gridui.buffer = 6;
+			gridui.buffer = cfg.disable_scroll ? 0 : 6;
 			gridui.vislength = cfg.month_count;
 			gridui.length = gridui.buffer + gridui.vislength + gridui.buffer;
 			
@@ -670,6 +682,11 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.past_opacity = cfg.past_opacity;
 			$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
 			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
+			$scope.vpgrid.multi_day_opacity = cfg.multi_day_opacity;
+
+			$scope.vpgrid.cls = {};
+			if (!cfg.fixed_row_height)
+				$scope.vpgrid.cls.flexrow = true;
 
 			$timeout(function() {
 				setVisIndex(gridui.visoffset - gridui.offset);
@@ -682,16 +699,14 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$timeout.cancel(tmo);
 			var shift = false;
 			
-			if (cfg.auto_page) {
-				var pos = view.list ? box.scrollTop : box.scrollLeft;
-				var max = view.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
+			var pos = view.list ? box.scrollTop : box.scrollLeft;
+			var max = view.list ? (box.scrollHeight - box.clientHeight) : (box.scrollWidth - box.clientWidth);
 
-				if (pos == 0) shift = -1;
-				if (pos >= max) shift = 1;
+			if (pos == 0) shift = -1;
+			if (pos >= max) shift = 1;
 
-				if (shift)
-					tmo = $timeout(shiftPage, 1000);
-			}
+			if (shift)
+				tmo = $timeout(shiftPage, 1000);
 
 			function shiftPage() {
 				gridui.visoffset = vpAlmanac.getPage()[getVisIndex()].offset;
@@ -704,7 +719,9 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			if (show) {
 				box.style.visibility = "";
 				box.focus();
-				ngbox.on("scroll", onScroll);
+				
+				if (!cfg.disable_scroll)
+					ngbox.on("scroll", onScroll);
 			}
 			else {
 				box.style.visibility = "hidden";
@@ -809,7 +826,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				fontscale: $scope.vpgrid.fontscale,
 				past_opacity: 1,
 				scroll_size: 100,
-				scroll_size_portrait: 100
+				scroll_size_portrait: 100,
+				multi_day_opacity: 1
 			};
 
 			$window.open("vpprint.htm");

@@ -165,6 +165,9 @@ body {
 		<div class="sub"><input ng-model="vpsettings.config.hide_scrollbars" type="checkbox">
 			Hide scrollbars.
 		</div>
+		<div class="sub"><input ng-model="vpsettings.config.disable_scroll" type="checkbox">
+			Disable scrolling.
+		</div>
 		<div class="sub"><input ng-model="vpsettings.config.align_weekends" type="checkbox">
 			Align weekends.
 		</div>
@@ -173,6 +176,9 @@ body {
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.first_day_of_week" type="number" min="0" max="6">
 			First day of week.  (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
+		</div>
+		<div class="sub"><input ng-model="vpsettings.config.fixed_row_height" type="checkbox">
+			In 'Expand' view, make all rows equal height.
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.font_scale_pc" type="number" min="50" max="200">
 			% Font scale.
@@ -203,6 +209,9 @@ body {
 		<div class="sub"><input ng-model="vpsettings.config.show_timed_events" type="checkbox">
 			Show 'timed' events.
 		</div>
+		<div class="sub"><select ng-model="vpsettings.config.event_colour"  ng-options="x for (x, y) in vp.event_colour_options"></select>
+			Event colour.
+		</div>
 		<div class="sub"><input ng-model="vpsettings.config.multi_day_opacity" type="number" min="0" max="1">
 			Opacity of multi-day event.  (1 = opaque)
 		</div>
@@ -231,6 +240,7 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 	this.show = {planner: true};
 	this.busy = false;
 	this.month_count_options = {3: 3, 4: 4, 6: 6, 8: 8, 10: 10, 12: 12};
+	this.event_colour_options = {"Calendar": "cal", "Event": "evt", "White": "white", "None": ""};
 	var gsignbtn = document.getElementById("g_signbtn");
 
 	this.onclickSettings = function() {
@@ -251,6 +261,7 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 		$timeout(function() {
 			this.busy = false;
 			this.show = {planner: true};
+			vpEvents.reset();
 			$scope.vpgrid.init();
 		}.bind(this), 2000)
 	}
