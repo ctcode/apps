@@ -166,6 +166,9 @@ body {
 				First month of year.
 			</div>
 		</div>
+		<div class="sub"><input ng-model="vpsettings.config.fixed_row_height" type="checkbox">
+			In 'Expand' view, make all rows the same height.
+		</div>
 		<div class="sub"><input ng-model="vpsettings.config.hide_scrollbars" type="checkbox">
 			Hide scrollbars.
 		</div>
@@ -180,9 +183,6 @@ body {
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.first_day_of_week" type="number" min="0" max="6">
 			First day of week.  (0-6)
-		</div>
-		<div class="sub"><input ng-model="vpsettings.config.fixed_row_height" type="checkbox">
-			In 'Expand' view, make all rows equal height.
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.font_scale_pc" type="number" min="50" max="200">
 			% Font scale.
