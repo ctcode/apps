@@ -92,7 +92,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		proportional_events: false,
 		proportional_start_hour: 8,
 		proportional_end_hour: 20,
-		event_colour: 'cal',
+		event_background: 'cal',
 		show_all_day_events: true,
 		single_day_as_multi_day: false,
 		show_timed_events: true,
@@ -299,7 +299,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		var synctok = null;
 		var cls = {};
 		this.name = item.summary;
-		if (vpSettings.config.event_colour == "cal")
+		if (vpSettings.config.event_background == "cal")
 			this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
 		this.cls = cls;
 		syncStg(false);
@@ -401,13 +401,13 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.cal = cal;
 		this.htmlLink = item.htmlLink;
 
-		if (vpSettings.config.event_colour == "cal")
+		if (vpSettings.config.event_background == "cal")
 			this.style = {'color': cal.colour.fore, 'background-color': cal.colour.back};
 
-		if (vpSettings.config.event_colour == "evt")
+		if (vpSettings.config.event_background == "evt")
 			this.style = {'color': "red", 'background-color': "black"};
 
-		if (vpSettings.config.event_colour == "white")
+		if (vpSettings.config.event_background == "white")
 			this.style = {'background-color': "white"};
 		
 		if ("dateTime" in item.start)

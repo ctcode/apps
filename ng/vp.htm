@@ -209,8 +209,8 @@ body {
 		<div class="sub"><input ng-model="vpsettings.config.show_timed_events" type="checkbox">
 			Show 'timed' events.
 		</div>
-		<div class="sub"><select ng-model="vpsettings.config.event_colour"  ng-options="x for (x, y) in vp.event_colour_options"></select>
-			Event colour.
+		<div class="sub"><select ng-model="vpsettings.config.event_background"  ng-options="x for (x, y) in vp.event_background_options"></select>
+			Event background.
 		</div>
 		<div class="sub"><input ng-model="vpsettings.config.multi_day_opacity" type="number" min="0" max="1">
 			Opacity of multi-day event.  (1 = opaque)
@@ -240,7 +240,7 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 	this.show = {planner: true};
 	this.busy = false;
 	this.month_count_options = {3: 3, 4: 4, 6: 6, 8: 8, 10: 10, 12: 12};
-	this.event_colour_options = {"Calendar": "cal", "Event": "evt", "White": "white", "None": ""};
+	this.event_background_options = {"Calendar": "cal", "Event": "evt", "White": "white", "Transparent": ""};
 	var gsignbtn = document.getElementById("g_signbtn");
 
 	this.onclickSettings = function() {
