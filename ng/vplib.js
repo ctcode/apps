@@ -100,6 +100,8 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	};
 
 	var cfg = {};
+	var calendarcolours = {event: {}};
+
 	this.config = cfg;
 	publish(defaults);
 	
@@ -120,6 +122,10 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		publish(defaults);
 	}
 	
+	this.getEventColour = function(id) {
+		return calendarcolours.event[id];
+	}
+	
 	this.load = function() {
 		loadFileID(function() {
 			if (file_id) {
@@ -135,9 +141,24 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 			function rcv(response) {
 				appdata = JSON.parse(response.body);
 				publish(appdata);
-				loadGCalSettings();
+				loadCalendarColours();
 			};
 		});
+
+		function loadCalendarColours() {
+			gapi.client.request({
+				path: "https://www.googleapis.com/calendar/v3/colors",
+				method: "GET"
+			})
+			.then(rcv, fail);
+
+			function rcv(response) {
+				if (response.result.kind == "calendar#colors")
+					calendarcolours = response.result;
+
+				loadGCalSettings();
+			};
+		}
 
 		function loadGCalSettings() {
 			gapi.client.request({
@@ -299,8 +320,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		var synctok = null;
 		var cls = {};
 		this.name = item.summary;
-		if (vpSettings.config.event_background == "cal")
-			this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
+		this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
 		this.cls = cls;
 		syncStg(false);
 
@@ -404,8 +424,13 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		if (vpSettings.config.event_background == "cal")
 			this.style = {'color': cal.colour.fore, 'background-color': cal.colour.back};
 
-		if (vpSettings.config.event_background == "evt")
-			this.style = {'color': "red", 'background-color': "black"};
+		if (vpSettings.config.event_background == "evt") {
+			var evtclr = vpSettings.getEventColour(item.colorId);
+			if (evtclr)
+				this.style = {'color': evtclr.foreground, 'background-color': evtclr.background};
+			else
+				this.style = {'color': cal.colour.fore, 'background-color': cal.colour.back};
+		}
 
 		if (vpSettings.config.event_background == "white")
 			this.style = {'background-color': "white"};
