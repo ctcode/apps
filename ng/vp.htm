@@ -94,6 +94,9 @@ body {
 	justify-content: center;
 	background-color: gainsboro;
 }
+#settings #savebtns button {
+	margin: 0 1em;
+}
 #settings .sub {
 	min-width: 50vw;
 	padding-top: 1em;
@@ -134,8 +137,8 @@ body {
 
 <div id="settings" ng-show="vp.show.settings">
 	<div id="savebtns">
-		<button ng-hide="vp.busy" ng-click="vp.onclickCancel()">Cancel</button>
 		<button ng-hide="vp.form.$pristine || vp.busy" ng-click="vp.onclickSave()">Save</button>
+		<button ng-hide="vp.busy" ng-click="vp.onclickCancel()">Cancel</button>
 		<div ng-show="vp.busy"><i>Saving...</i></div>
 	</div>
 	<div class="sub group"><b>Account</b>

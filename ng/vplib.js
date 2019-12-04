@@ -733,11 +733,11 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			var monthdiv = document.getElementById("vpgrid").firstElementChild;
 			for (var i=0 ; monthdiv; i++) {
 				if (view.column)
-				if (monthdiv.firstElementChild.offsetLeft >= box.scrollLeft)
+				if (monthdiv.firstElementChild.offsetLeft > box.scrollLeft-3)
 					return i;
 
 				if (view.list)
-				if (monthdiv.firstElementChild.offsetTop >= box.scrollTop)
+				if (monthdiv.firstElementChild.offsetTop > box.scrollTop-3)
 					return i;
 
 				monthdiv = monthdiv.nextElementSibling;
