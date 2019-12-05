@@ -136,7 +136,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 				})
 				.then(rcv, fail);
 			}
-			else onLoad();
+			else loadCalendarColours();
 
 			function rcv(response) {
 				appdata = JSON.parse(response.body);
