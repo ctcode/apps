@@ -200,7 +200,7 @@
 <div id="vpbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
 	<div id="vpcontent">
 		<div id="vpgrid" ng-class="vpgrid.cls">
-			<div ng-repeat="month in vpgrid.page" class="vpmonth" ng-class="month.cls">
+			<div ng-repeat="month in vpgrid.page" id="{{month.id}}" class="vpmonth" ng-class="month.cls">
 				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
 					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
