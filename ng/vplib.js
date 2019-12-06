@@ -674,7 +674,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 		$window.localStorage.setItem("vp-viewinfo", JSON.stringify(view));
 	}
-	
+
 	function fCtl($scope) {
 		var box = document.getElementById("vpbox");
 		var ngbox = angular.element(box);
@@ -736,7 +736,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			if (pos >= max) shift = 1;
 
 			if (shift)
-				tmo = $timeout(shiftPage, 1000);
+				tmo = $timeout(shiftPage, 500);
 
 			function shiftPage() {
 				gridui.visid = getVisMonth().id;
@@ -761,12 +761,14 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 		function getVisMonth() {
 			for (var monthdiv of box.querySelectorAll(".vpmonth")) {
+				var hdr = monthdiv.firstElementChild;
+				
 				if (view.column)
-				if (monthdiv.firstElementChild.offsetLeft > box.scrollLeft-2)
+				if (hdr.offsetLeft + (hdr.offsetWidth / 2) > box.scrollLeft)
 					return monthdiv;
 
 				if (view.list)
-				if (monthdiv.firstElementChild.offsetTop > box.scrollTop-2)
+				if (hdr.offsetTop + (hdr.offsetHeight / 2) > box.scrollTop)
 					return monthdiv;
 			}
 		}
@@ -844,24 +846,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			box.focus();
 		}
 
-		this.onclickPrint = function() {
-/*
-			var i = getVisIndex();
-			$window.vpprintgrid = {
-				page: $scope.vpgrid.page.slice(i, i + gridui.vislength),
-				view: $scope.vpgrid.view,
-				cls: $scope.vpgrid.cls,
-				fontscale: $scope.vpgrid.fontscale,
-				past_opacity: 1,
-				scroll_size: 100,
-				scroll_size_portrait: 100,
-				multi_day_opacity: 1
-			};
-
-			$window.open("vpprint.htm");
-*/
-		}
-
 		this.onkeydown = function(evt) {
 			switch (evt.code)
 			{
@@ -884,6 +868,59 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			}
 
 			evt.preventDefault();
+		}
+
+		this.onclickPrint = function() {
+			var vis = getVisMonth();
+			var v = -1;
+			var printpage = [];
+
+			var months = box.querySelectorAll(".vpmonth");
+			for (var i=0; i < months.length; i++) {
+				var m = months[i];
+				
+				if (m.id == vis.id)
+					v = i;
+
+				if (v < 0)
+					continue;
+
+				if (i >= v + gridui.vislength)
+					break;
+
+				printpage.push($scope.vpgrid.page[i]);
+			}
+
+			$window.vpprintgrid = {
+				page: printpage,
+				view: $scope.vpgrid.view,
+				cls: $scope.vpgrid.cls,
+				fontscale: $scope.vpgrid.fontscale,
+				past_opacity: 1,
+				scroll_size: 100,
+				scroll_size_portrait: 100,
+				multi_day_opacity: 1
+			};
+
+			$window.open("vpprint.htm");
+		}
+
+		$window.onbeforeprint = function() {
+			var vis = getVisMonth();
+			var v = -1;
+
+			var months = box.querySelectorAll(".vpmonth");
+			for (var i=0; i < months.length; i++) {
+				var m = months[i];
+				
+				if (m.id == vis.id)
+					v = i;
+
+				if (v < 0 || i >= v + gridui.vislength)
+					m.classList.add("noprint");
+				else
+					m.classList.remove("noprint");
+			}
 		}
 		
 		if ($scope.vpgridinit)
