@@ -739,7 +739,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				tmo = $timeout(shiftPage, 500);
 
 			function shiftPage() {
-				gridui.visid = getVisMonth().id;
+				gridui.visid = getVisInfo().id;
 				gridui.offset += (shift * gridui.buffer);
 				updateUI();
 			}
@@ -759,18 +759,38 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			}
 		}
 
-		function getVisMonth() {
-			for (var monthdiv of box.querySelectorAll(".vpmonth")) {
-				var hdr = monthdiv.firstElementChild;
-				
-				if (view.column)
-				if (hdr.offsetLeft + (hdr.offsetWidth / 2) > box.scrollLeft)
-					return monthdiv;
+		function getVisInfo() {
+			var info = {div: null, id: null, visdivs: [], invisdivs: [], months: []};
 
-				if (view.list)
-				if (hdr.offsetTop + (hdr.offsetHeight / 2) > box.scrollTop)
-					return monthdiv;
+			var mdiv = box.querySelectorAll(".vpmonth");
+			var v = -1;
+			for (var i=0; i < mdiv.length; i++) {
+				var hdr = mdiv[i].firstElementChild;
+				
+				if (v < 0) {
+					if (view.column)
+					if (hdr.offsetLeft + (hdr.offsetWidth / 2) > box.scrollLeft)
+						v = i;
+
+					if (view.list)
+					if (hdr.offsetTop + (hdr.offsetHeight / 2) > box.scrollTop)
+						v = i;
+				}
+
+				if (v == i) {
+					info.div = mdiv[i];
+					info.id = mdiv[i].id;
+				}
+
+				if (v >= 0 && i < (v + gridui.vislength)) {
+					info.visdivs.push(mdiv[i]);
+					info.months.push($scope.vpgrid.page[i]);
+				}
+				else
+					info.invisdivs.push(mdiv[i]);
 			}
+			
+			return info;
 		}
 
 		function setVisMonth(id) {
@@ -784,8 +804,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		function scrollMonth(next) {
-			var monthdiv = getVisMonth();
-			var sibdiv = next ? monthdiv.nextElementSibling : monthdiv.previousElementSibling;
+			var sibdiv = next ? getVisInfo().div.nextElementSibling : getVisInfo().div.previousElementSibling;
 			
 			if (sibdiv)
 				setVisMonth(sibdiv.id);
@@ -871,28 +890,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		this.onclickPrint = function() {
-			var vis = getVisMonth();
-			var v = -1;
-			var printpage = [];
-
-			var months = box.querySelectorAll(".vpmonth");
-			for (var i=0; i < months.length; i++) {
-				var m = months[i];
-				
-				if (m.id == vis.id)
-					v = i;
-
-				if (v < 0)
-					continue;
-
-				if (i >= v + gridui.vislength)
-					break;
-
-				printpage.push($scope.vpgrid.page[i]);
-			}
-
 			$window.vpprintgrid = {
-				page: printpage,
+				page: getVisInfo().months,
 				view: $scope.vpgrid.view,
 				cls: $scope.vpgrid.cls,
 				fontscale: $scope.vpgrid.fontscale,
@@ -906,21 +905,13 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		$window.onbeforeprint = function() {
-			var vis = getVisMonth();
-			var v = -1;
+			var info = getVisInfo();
 
-			var months = box.querySelectorAll(".vpmonth");
-			for (var i=0; i < months.length; i++) {
-				var m = months[i];
-				
-				if (m.id == vis.id)
-					v = i;
+			for (var m of info.visdivs)
+				m.classList.remove("noprint");
 
-				if (v < 0 || i >= v + gridui.vislength)
-					m.classList.add("noprint");
-				else
-					m.classList.remove("noprint");
-			}
+			for (var m of info.invisdivs)
+				m.classList.add("noprint");
 		}
 		
 		if ($scope.vpgridinit)
