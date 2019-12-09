@@ -100,7 +100,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	};
 
 	var cfg = {};
-	var calendarcolours = {event: {}};
+	var calendarcolours = {};
 
 	this.config = cfg;
 	publish(defaults);
@@ -122,8 +122,11 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		publish(defaults);
 	}
 	
-	this.getEventColour = function(id) {
-		return calendarcolours.event[id];
+	this.getEventColour = function(cid) {
+		if (calendarcolours.event)
+			return calendarcolours.event[cid];
+		
+		return null;
 	}
 	
 	this.load = function() {
