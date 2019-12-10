@@ -457,7 +457,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 			this.start = item.start.date;
 			this.duration = VpDate.DaySpan(item.start.date, item.end.date);
 			this.title = item.summary;
-			this.timestamp = 0;
+			this.timestamp = -1;
 		}
 		
 		this.edit = function() {
