@@ -211,7 +211,7 @@
 				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
 					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
 					<div class="vpevents" ng-if="day.evts">
-						<div ng-repeat="evt in day.evts" class="vpevent vplink" title="{{evt.cal.name}} - {{evt.title}}" ng-class="evt.cal.cls" ng-style="evt.style" ng-click="evt.edit()">
+						<div ng-repeat="evt in day.evts | orderBy: ['timestamp', 'title']" class="vpevent vplink" title="{{evt.cal.name}} - {{evt.title}}" ng-class="evt.cal.cls" ng-style="evt.style" ng-click="evt.edit()">
 							<span class="vpevttext">{{evt.title}}</span>
 						</div>
 					</div>

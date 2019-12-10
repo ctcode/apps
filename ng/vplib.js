@@ -449,6 +449,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 			this.start = vdttStart.ymd();
 			this.duration = VpDate.DaySpan(vdttStart.ymd(), vdttEnd.ymd()) + 1;
 			this.title = vdttStart.TimeTitle() + " " + item.summary;
+			this.timestamp = vdttStart.DayMinutes();
 		}
 		else
 		{
@@ -456,6 +457,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 			this.start = item.start.date;
 			this.duration = VpDate.DaySpan(item.start.date, item.end.date);
 			this.title = item.summary;
+			this.timestamp = 0;
 		}
 		
 		this.edit = function() {
