@@ -123,10 +123,10 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	}
 	
 	this.getEventColour = function(cid) {
-		if (cid && calendarcolours.event)
+		if (calendarcolours.event)
 			return {text: calendarcolours.event[cid].foreground, background: calendarcolours.event[cid].background};
 		
-		return null;
+		return {};
 	}
 	
 	this.load = function() {
@@ -429,11 +429,9 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 			this.colour = cal.colour;
 
 		if (vpSettings.config.event_background == "evt") {
-			var evtclr = vpSettings.getEventColour(item.colorId);
-			if (evtclr)
-				this.colour = evtclr;
-			else
-				this.colour = cal.colour;
+			this.colour = cal.colour;
+			if (item.colorId)
+				this.colour = vpSettings.getEventColour(item.colorId);
 		}
 
 		if (vpSettings.config.event_background == "white")
