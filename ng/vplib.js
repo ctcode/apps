@@ -123,8 +123,8 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	}
 	
 	this.getEventColour = function(cid) {
-		if (calendarcolours.event)
-			return calendarcolours.event[cid];
+		if (cid && calendarcolours.event)
+			return {text: calendarcolours.event[cid].foreground, background: calendarcolours.event[cid].background};
 		
 		return null;
 	}
@@ -323,7 +323,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		var synctok = null;
 		var cls = {};
 		this.name = item.summary;
-		this.colour = {fore: item.foregroundColor, back: item.backgroundColor};
+		this.colour = {text: item.foregroundColor, background: item.backgroundColor};
 		this.cls = cls;
 		syncStg(false);
 
@@ -423,20 +423,21 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.id = item.id;
 		this.cal = cal;
 		this.htmlLink = item.htmlLink;
+		this.colour = {};
 
 		if (vpSettings.config.event_background == "cal")
-			this.style = {'color': cal.colour.fore, 'background-color': cal.colour.back};
+			this.colour = cal.colour;
 
 		if (vpSettings.config.event_background == "evt") {
 			var evtclr = vpSettings.getEventColour(item.colorId);
 			if (evtclr)
-				this.style = {'color': evtclr.foreground, 'background-color': evtclr.background};
+				this.colour = evtclr;
 			else
-				this.style = {'color': cal.colour.fore, 'background-color': cal.colour.back};
+				this.colour = cal.colour;
 		}
 
 		if (vpSettings.config.event_background == "white")
-			this.style = {'background-color': "white"};
+			this.colour = {background: "#ffffff"};
 		
 		if ("dateTime" in item.start)
 		{
