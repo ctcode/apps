@@ -1,7 +1,6 @@
 <style>
 #vpbox {
 	height: 100%;
-	position: relative;
 	overflow: auto;
 	border: none;
 	outline: none;
@@ -12,12 +11,7 @@
 .hidescroll::-webkit-scrollbar {
 	display: none;
 }
-#vpcontent {
-	position: absolute;
-	pointer-events: none;
-}
 #vpgrid {
-	box-sizing: border-box;
 	display: grid;
 	grid-gap: 1px;
 	user-select: none;
@@ -66,23 +60,23 @@
 
 <span ng-if="vpgrid.view.column">
 	<style>
-	#vpcontent {
-		height: 100%;
-		width: {{vpgrid.scroll_size}}%;
-	}
-	@media only screen and (orientation: portrait) {
-		#vpcontent {
-			width: {{vpgrid.scroll_size_portrait}}%;
-		}
-	}
 	#vpgrid {
+		width: {{vpgrid.scroll_size}}%;
 		font-size: calc(1.1vh * {{vpgrid.fontscale}});
 		grid-auto-flow: column;
 		grid-auto-columns: minmax(5em, 1fr);
-		grid-template-rows: 3em repeat(38, 1fr);
+		grid-template-rows: 3em repeat(37, 1fr) 1em;
+	}
+	@media only screen and (orientation: portrait) {
+		#vpgrid {
+			width: {{vpgrid.scroll_size_portrait}}%;
+		}
 	}
 	.vphdr {
-		grid-row-start: 1;
+		grid-row: 1;
+	}
+	.vpftr {
+		grid-row: 39;
 	}
 	.vpday {
 		align-items: center;
@@ -144,19 +138,19 @@
 
 <span ng-if="vpgrid.view.list">
 	<style>
-	#vpcontent {
+	#vpgrid {
 		width: 100%;
 		height: {{vpgrid.scroll_size}}%;
-	}
-	#vpgrid {
-		height: 100%;
 		font-size: calc(1.25vh * {{vpgrid.fontscale}});
 		grid-auto-flow: row;
 		grid-auto-rows: minmax(5em, 1fr);
-		grid-template-columns: 5fr repeat(38, 1fr);
+		grid-template-columns: 5fr repeat(37, 1fr) 3em;
 	}
 	.vphdr {
-		grid-column-start: 1;
+		grid-column: 1;
+	}
+	.vpftr {
+		grid-column: 39;
 	}
 	.vpday {
 		flex-direction: column;
@@ -198,25 +192,24 @@
 <style>
 @media only print {
 	#vpbox {overflow: visible;}
-	#vpcontent {width: 100%; height: 100%;}
+	#vpgrid {width: 100%; height: 100%;}
 	.vpmonth.noprint {display: none;}
 }
 </style>
 
 <div id="vpbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
-	<div id="vpcontent">
-		<div id="vpgrid" ng-class="vpgrid.cls">
-			<div ng-repeat="month in vpgrid.page" id="{{month.id}}" class="vpmonth" ng-class="month.cls">
-				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
-				<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
-					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
-					<div class="vpevents" ng-if="day.evts">
-						<div ng-repeat="evt in day.evts | orderBy: ['timestamp', 'title']" class="vpevent vplink" title="{{evt.cal.name}} - {{evt.title}}" style="color: {{evt.colour.text}}; background-color: {{evt.colour.background}};" ng-class="evt.cal.cls" ng-click="evt.edit()">
-							<span class="vpevttext">{{evt.title}}</span>
-						</div>
+	<div id="vpgrid" ng-class="vpgrid.cls">
+		<div ng-repeat="month in vpgrid.page" id="{{month.id}}" class="vpmonth" ng-class="month.cls">
+			<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
+			<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
+				<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
+				<div class="vpevents" ng-if="day.evts">
+					<div ng-repeat="evt in day.evts | orderBy: ['timestamp', 'title']" class="vpevent vplink" title="{{evt.cal.name}} - {{evt.title}}" style="color: {{evt.colour.text}}; background-color: {{evt.colour.background}};" ng-class="evt.cal.cls" ng-click="evt.edit()">
+						<span class="vpevttext">{{evt.title}}</span>
 					</div>
 				</div>
 			</div>
+			<div class="vpftr"></div>
 		</div>
 	</div>
 </div>

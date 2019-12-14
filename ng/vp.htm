@@ -13,21 +13,17 @@
 <style>
 body {
 	font-family: Arial;
-	height: 100vh;
 	margin: 0;
 	min-width: 600px;
 	min-height: 400px;
 }
-#planner {
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-}
 #banner {
+	height: 3em;
+	padding: 0.3em 1em;
+	box-sizing: border-box;
+	position: relative;
 	font-family: Roboto;
 	background-color: gainsboro;
-	padding: 0.3em 1em;
-	position: relative;
 }
 #banner #bantxt {
 	font-weight: 800;
@@ -69,12 +65,12 @@ body {
 	opacity: 1;
 }
 #grid {
-	flex-grow: 1;
+	height: calc(100vh - 5em);
 	border: none;
 	outline: none;
 }
 #calendarbar {
-	font-size: 0.65em;
+	height: 2em;
 	background-color: gainsboro;
 }
 #settings {
