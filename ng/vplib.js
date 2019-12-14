@@ -716,8 +716,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.multi_day_opacity = cfg.multi_day_opacity;
 
 			$scope.vpgrid.cls = {};
-			if (!cfg.fixed_row_height)
-				$scope.vpgrid.cls.flexrow = true;
+			if (cfg.fixed_row_height)
+				$scope.vpgrid.cls.fixrow = true;
 
 			$timeout(function() {
 				if (!gridui.visid)

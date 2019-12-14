@@ -61,6 +61,7 @@
 <span ng-if="vpgrid.view.column">
 	<style>
 	#vpgrid {
+		height: 100%;
 		width: {{vpgrid.scroll_size}}%;
 		font-size: calc(1.1vh * {{vpgrid.fontscale}});
 		grid-auto-flow: column;
@@ -114,17 +115,14 @@
 
 	<span ng-if="vpgrid.view.expand">
 		<style>
-		#vpgrid.flexrow {
-			height: 100%;
+		#vpgrid.fixrow {
+			height: auto;
 		}
 		</style>
 	</span>
 
 	<span ng-if="!vpgrid.view.expand">
 		<style>
-		#vpgrid {
-			height: 100%;
-		}
 		.vpevents {
 			display: flex;
 			align-items: center;
@@ -144,7 +142,7 @@
 		font-size: calc(1.25vh * {{vpgrid.fontscale}});
 		grid-auto-flow: row;
 		grid-auto-rows: minmax(5em, 1fr);
-		grid-template-columns: 5fr repeat(37, 1fr) 3em;
+		grid-template-columns: 5fr repeat(37, 1fr) 2em;
 	}
 	.vphdr {
 		grid-column: 1;
