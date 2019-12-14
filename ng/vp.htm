@@ -80,18 +80,8 @@ body {
 	padding-right: 2em;
 }
 #settings #savebtns {
-	position: fixed;
-	left: 0;
-	bottom: 0;
-	width: 100vw;
-	height: 3em;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: gainsboro;
-}
-#settings #savebtns button {
-	margin: 0 1em;
+	min-height: 3em;
+	margin: 3em 0;
 }
 #settings .sub {
 	min-width: 50vw;
@@ -136,11 +126,6 @@ body {
 </div>
 
 <div id="settings" ng-show="vp.show.settings">
-	<div id="savebtns">
-		<button ng-hide="vp.form.$pristine || vp.busy" ng-click="vp.onclickSave()">Save</button>
-		<button ng-hide="vp.busy" ng-click="vp.onclickCancel()">Cancel</button>
-		<div ng-show="vp.busy"><i>Saving...</i></div>
-	</div>
 	<div class="sub group"><b>Account</b>
 		<div class="sub">{{vpaccount.status.msg}}</div>
 		<div class="sub" ng-show="vp.g_signbtn_ok"><div id="g_signbtn" class="g-signin2" data-width="300" data-height="60" data-longtitle="true"></div></div>
@@ -149,7 +134,7 @@ body {
 		<div class="sub" ng-hide="vpaccount.status.signed_in || vp.g_signbtn_ok"><button ng-click="vpaccount.SignIn();">Sign In</button></div>
 		<div class="sub" ng-show="vpaccount.status.signed_in"><button ng-click="vpaccount.SignOut();">Sign Out</button></div>
 	</div>
-	<form name="vp.form">
+	<form name="vp.form" novalidate>
 	<div class="sub group"><b>View</b>
 		<div class="sub"><input ng-model="vpsettings.config.title">
 			Planner title.
@@ -219,6 +204,11 @@ body {
 		<div class="sub"><input ng-model="vpsettings.config.multi_day_opacity" type="number" min="0" max="1">
 			Opacity of multi-day event.  (1 = opaque)
 		</div>
+	</div>
+	<div id="savebtns" class="sub">
+		<button ng-hide="vp.busy" ng-click="vp.onclickCancel()">Cancel</button>
+		<button ng-hide="vp.form.$pristine || vp.busy" ng-click="vp.onclickSave()">Save</button>
+		<div ng-show="vp.busy"><i>Saving...</i></div>
 	</div>
 	</form>
 	<div class="sub group" style="text-align: center;">
