@@ -569,7 +569,8 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 		this.id = ymd.slice(0,7);
 		this.hdr = vdt.MonthTitle();
-		this.vpdays = [];
+		this.days = [];
+		this.evts = [];
 		this.cls = {};
 		
 		if (vdt.isPastMonth())
@@ -578,15 +579,12 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		var m = vdt.getMonth();
 		while (m == vdt.getMonth()) {
 			var vpday = new VpDay(this, vdt);
-			this.vpdays.push(vpday);
+			this.days.push(vpday);
 			vpdays.push(vpday);
 			vdt.offsetDay(1);
 		}
 	
 		this.addEvent = function(evt) {
-			if (!this.evts)
-				this.evts = [];
-			
 			this.evts.push(evt);
 		}
 		
@@ -594,7 +592,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			removeEventFromOwner(this, id);
 
 			var day;
-			for (day of this.vpdays)
+			for (day of this.days)
 				day.removeEvent(id);
 		}
 	}

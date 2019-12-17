@@ -199,7 +199,7 @@
 	<div id="vpgrid" ng-class="vpgrid.cls">
 		<div ng-repeat="month in vpgrid.page" id="{{month.id}}" class="vpmonth" ng-class="month.cls">
 			<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
-			<div ng-repeat="day in month.vpdays" class="vpday" ng-class="day.cls">
+			<div ng-repeat="day in month.days" class="vpday" ng-class="day.cls">
 				<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
 				<div class="vpevents" ng-if="day.evts">
 					<div ng-repeat="evt in day.evts | orderBy: ['timestamp', 'title']" class="vpevent vplink" title="{{evt.cal.name}} - {{evt.title}}" style="color: {{evt.colour.text}}; background-color: {{evt.colour.background}};" ng-class="evt.cal.cls" ng-click="evt.edit()">
