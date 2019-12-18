@@ -423,19 +423,17 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.id = item.id;
 		this.cal = cal;
 		this.htmlLink = item.htmlLink;
-		this.colour = {};
 
+		this.colour = {};
 		if (vpSettings.config.event_background == "cal")
 			this.colour = cal.colour;
-
+		if (vpSettings.config.event_background == "white")
+			this.colour = {background: "#ffffff"};
 		if (vpSettings.config.event_background == "evt") {
 			this.colour = cal.colour;
 			if (item.colorId)
 				this.colour = vpSettings.getEventColour(item.colorId);
 		}
-
-		if (vpSettings.config.event_background == "white")
-			this.colour = {background: "#ffffff"};
 		
 		if ("dateTime" in item.start)
 		{
@@ -531,7 +529,9 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		vpmonths = [];
 		vpdays = [];
 		for (var i=0; i < pagelength; i++) {
-			vpmonths.push(new VpMonth(vdt.ymd()));
+			var month = new VpMonth(vdt.ymd());
+			month.index = vpmonths.length;
+			vpmonths.push(month);
 			vdt.offsetMonth(1);
 			datespan.end = vdt.ymd();
 		}
@@ -570,7 +570,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		this.id = ymd.slice(0,7);
 		this.hdr = vdt.MonthTitle();
 		this.days = [];
-		this.evts = [];
+		this.dayoffset = 0;
 		this.cls = {};
 		
 		if (vdt.isPastMonth())
@@ -579,13 +579,43 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		var m = vdt.getMonth();
 		while (m == vdt.getMonth()) {
 			var vpday = new VpDay(this, vdt);
+			vpday.index = this.days.length;
+
+			if (vpday.index == 0) {
+				if (cfg.align_weekends) {
+					this.dayoffset = vdt.DayOfWeek() - cfg.first_day_of_week;
+					
+					if (this.dayoffset < 0)
+						this.dayoffset += 7;
+				}
+
+				vpday.cls["offset" + this.dayoffset] = true;
+			}
+
 			this.days.push(vpday);
 			vpdays.push(vpday);
+
 			vdt.offsetDay(1);
 		}
 	
-		this.addEvent = function(evt) {
-			this.evts.push(evt);
+		this.addEvent = function(day, addevt) {
+			if (!this.labels)
+				this.labels = [];
+			
+			var lab;
+			for (lab of this.labels) {
+				if (lab.evt === addevt) {
+					lab.setSpan(this.dayoffset + day.index + 1);
+					return;
+				}
+			}
+		
+			lab = new VpLabel(addevt);
+			lab.setCell(this.index, this.dayoffset + day.index);
+			lab.setSpan(this.dayoffset + day.index);
+			lab.setSlot(2);
+
+			this.labels.push(lab);
 		}
 		
 		this.removeEvent = function(id) {
@@ -604,18 +634,8 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	function VpDay(vpmonth, vdt) {
 		this.ymd = vdt.ymd();
 		this.num = vdt.DayOfMonth();
+		this.month = vpmonth;
 		this.cls = {};
-
-		if (cfg.align_weekends) {
-			if (this.num == 1) {
-				var dayoffset = vdt.DayOfWeek() - cfg.first_day_of_week;
-				
-				if (dayoffset < 0)
-					dayoffset += 7;
-
-				this.cls["dayoffset" + dayoffset] = true;
-			}
-		}
 
 		if (vdt.isWeekend())
 			this.cls.weekend = true;
@@ -625,10 +645,15 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 	
 	VpDay.prototype.addEvent = function(evt) {
-		if (!this.evts)
-			this.evts = [];
+		if ((evt.duration > 1) || (cfg.single_day_as_multi_day && !evt.timed)) {
+			this.month.addEvent(this, evt);
+			return;
+		}
 		
-		this.evts.push(evt);
+		if (!this.labels)
+			this.labels = [];
+		
+		this.labels.push(new VpLabel(evt));
 	}
 	
 	VpDay.prototype.removeEvent = function(id) {
@@ -638,16 +663,42 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	VpDay.prototype.onclickNum = function() {
 		$window.open("https://www.google.com/calendar/r/week/" + new VpDate(this.ymd).GCalURL());
 	}
+
+	function VpLabel(vpevent) {
+		this.evt = vpevent;
+		this.style = {};
+
+		var clr = this.evt.colour;
+		if (clr.text)
+			this.style["color"] = clr.text;
+		if (clr.background)
+			this.style["background-color"] = clr.background;
+		
+		this.setCell = function(col, row) {
+			this.style["grid-column"] = col+1;
+			this.style["grid-row-start"] = row+2;
+		}
+		
+		this.setSpan = function(idx) {
+			this.style["grid-row-end"] = idx+2;
+		}
+		
+		this.setSlot = function(slot) {
+			this.style["margin-left"] = (3+(2*slot)) + "em";
+		}
+	}
 	
 	function removeEventFromOwner(owner, id) {
-		if (owner.evts) {
+		if (owner.labels) {
 			if (id)
-				for (var i=0; i < owner.evts.length; i++) {
-					if (owner.evts[i].id == id)
-						owner.evts.splice(i, 1);
+				for (var i=0; i < owner.labels.length; i++) {
+					if (owner.labels[i].evt.id == id) {
+						owner.labels.splice(i, 1);
+						return;
+					}
 				}
 			else
-				delete owner.evts;
+				delete owner.labels;
 		}
 	}
 });

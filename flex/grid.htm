@@ -21,7 +21,7 @@ body {
 }
 #grid.column {
 	grid-auto-flow: column;
-	grid-template-columns: repeat(6, 1fr);
+	grid-auto-columns: 1fr;
 	grid-template-rows: 2fr repeat(20, 1fr) 1em;
 }
 #grid.list {
@@ -128,8 +128,8 @@ body {
 		<div class="cell">10</div>
 		<div class="cell">11</div>
 		<div class="ftr"></div>
-		<div class="evt" style="grid-area: 6/2/12; background-color: coral; margin-left: 3em;">event 1</div>
-		<div class="evt" style="grid-area: 7/2/11; background-color: lightcoral; margin-left: 1em;">event 2 qwertyuiop asdfghjkl</div>
+		<div class="evt" style="grid-column: 2; grid-row: 6 / span 7; background-color: coral; margin-left: 3em;">event 1</div>
+		<div class="evt" style="grid-column: 2; grid-row: 7 / span 4; background-color: lightcoral; margin-left: 1em;">event 2 qwertyuiop asdfghjkl</div>
 
 		<div class="hdr">col 3</div>
 		<div class="cell offset4">1</div>
