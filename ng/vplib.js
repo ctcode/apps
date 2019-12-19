@@ -605,15 +605,18 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			var lab;
 			for (lab of this.labels) {
 				if (lab.evt === addevt) {
-					lab.setSpan(this.dayoffset + day.index + 1);
+					lab.setCellEnd(day.index);
+					var slots = [];
+					for (l of this.labels) {
+						l.calcSlot(slots);
+						l.updateLayout();
+					}
 					return;
 				}
 			}
 		
 			lab = new VpLabel(addevt);
-			lab.setCell(this.index, this.dayoffset + day.index);
-			lab.setSpan(this.dayoffset + day.index);
-			lab.setSlot(2);
+			lab.setCellStart(this.index, day.index, this.dayoffset);
 
 			this.labels.push(lab);
 		}
@@ -628,7 +631,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	}
 	
 	VpMonth.prototype.onclickHdr = function() {
-		$window.open("https://www.google.com/calendar/r/month/" + new VpDate(this.vpdays[0].ymd).GCalURL());
+		$window.open("https://www.google.com/calendar/r/month/" + new VpDate(this.days[0].ymd).GCalURL());
 	}
 
 	function VpDay(vpmonth, vdt) {
@@ -667,6 +670,12 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	function VpLabel(vpevent) {
 		this.evt = vpevent;
 		this.style = {};
+		
+		var month;
+		var day;
+		var dayoffset;
+		var span;
+		var slot;
 
 		var clr = this.evt.colour;
 		if (clr.text)
@@ -674,17 +683,39 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		if (clr.background)
 			this.style["background-color"] = clr.background;
 		
-		this.setCell = function(col, row) {
-			this.style["grid-column"] = col+1;
-			this.style["grid-row-start"] = row+2;
+		this.setCellStart = function(imonth, iday, off) {
+			month = imonth;
+			day = iday;
+			dayoffset = off;
+			span = 1;
+			slot = 0;
 		}
 		
-		this.setSpan = function(idx) {
-			this.style["grid-row-end"] = idx+2;
+		this.setCellEnd = function(iday) {
+			span = (iday - day) + 1;
 		}
 		
-		this.setSlot = function(slot) {
-			this.style["margin-left"] = (3+(2*slot)) + "em";
+		this.updateLayout = function() {
+			this.style["right"] = 1 + (1.4*slot) + "em";
+			this.style["grid-column"] = month + 1 + " / span 1";
+			this.style["grid-row"] = dayoffset + day + 2 + " / span " + span;
+		}
+		
+		this.calcSlot = function(slots) {
+			var key = (Math.pow(2, span) - 1) << day;
+			
+			for (var i=0; i < slots.length; i++) {
+				if (key & slots[i])
+					continue;
+
+				slot = i;
+				slots[i] |= key;
+
+				return;
+			}
+			
+			slot = slots.length;
+			slots.push(key);
 		}
 	}
 	

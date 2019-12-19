@@ -21,8 +21,8 @@ body {
 }
 #grid.column {
 	grid-auto-flow: column;
-	grid-auto-columns: 1fr;
-	grid-template-rows: 2fr repeat(20, 1fr) 1em;
+	grid-auto-columns: [month] 1fr;
+	grid-template-rows: [hdr] 2fr repeat(20, [day] 1fr) 1em;
 }
 #grid.list {
 	grid-auto-flow: row;
@@ -36,7 +36,7 @@ body {
 	padding: 0.2em;
 }
 .column .hdr {
-	grid-row: 1;
+	grid-row: hdr;
 }
 .list .hdr {
 	grid-column: 1;
@@ -128,7 +128,7 @@ body {
 		<div class="cell">10</div>
 		<div class="cell">11</div>
 		<div class="ftr"></div>
-		<div class="evt" style="grid-column: 2; grid-row: 6 / span 7; background-color: coral; margin-left: 3em;">event 1</div>
+		<div class="evt" style="grid-area: day 7 / month 2 / day 10 / month 2; background-color: coral; margin-left: 3em;">event 1</div>
 		<div class="evt" style="grid-column: 2; grid-row: 7 / span 4; background-color: lightcoral; margin-left: 1em;">event 2 qwertyuiop asdfghjkl</div>
 
 		<div class="hdr">col 3</div>
