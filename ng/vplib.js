@@ -636,18 +636,17 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		}
 
 		this.updateLayout = function() {
-			var day;
-			for (day of this.days)
-				day.updateLayout();
+			var slots = [];
 
 			if (this.labels) {
-				var slots = [];
 				var lab;
-				for (lab of this.labels) {
-					lab.calcSlot(slots);
-					lab.updateLayout();
-				}
+				for (lab of this.labels)
+					lab.updateLayout(slots);
 			}
+
+			var day;
+			for (day of this.days)
+				day.updateLayout(slots);
 		}
 	}
 	
@@ -705,7 +704,6 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		var day;
 		var dayoffset;
 		var span;
-		var slot;
 
 		var clr = this.evt.colour;
 		if (clr.text)
@@ -719,14 +717,13 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			day = iday;
 			dayoffset = off;
 			span = 1;
-			slot = 0;
 		}
 		
 		this.setCellEnd = function(iday) {
 			span = (iday - day) + 1;
 		}
 		
-		this.updateLayout = function() {
+		this.updateLayout = function(slots) {
 			this.style["display"] = "none";
 			if (this.evt.cal.cls.checked)
 				return;
@@ -734,31 +731,28 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			this.style["display"] = "";
 
 			if (multi) {
+				var slot = getSlot(slots);
+				
 				this.style["right"] = 1 + (1.4*slot) + "em";
 				this.style["grid-column"] = month + 1 + " / span 1";
 				this.style["grid-row"] = dayoffset + day + 2 + " / span " + span;
 			}
 		}
 		
-		this.calcSlot = function(slots) {
-			slot = -1;
-			if (this.evt.cal.cls.checked)
-				return;
-			
+		function getSlot(slots) {
 			var key = (Math.pow(2, span) - 1) << day;
 			
-			for (var i=0; i < slots.length; i++) {
+			var i;
+			for (i=0; i < slots.length; i++) {
 				if (key & slots[i])
 					continue;
 
-				slot = i;
 				slots[i] |= key;
-
-				return;
+				return i;
 			}
 			
-			slot = slots.length;
 			slots.push(key);
+			return i;
 		}
 	}
 	
