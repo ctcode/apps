@@ -270,13 +270,13 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccount, vpSettings) {
+angular.module("vpApp").service("vpEvents", function($window, vpAccount, vpSettings) {
 	var calendars;
 	var reqcal;
 	var isoSpan = {};
-	var tmo=null;
-	var fAddEvent = function(){};
-	var fRemoveEvent = function(){};
+	var fAdd = function(){};
+	var fRemove = function(){};
+	var fUpdate = function(){};
 
 	function load() {
 		if (reqcal) {
@@ -300,7 +300,6 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		.then(rcv, fail);
 
 		function rcv(response) {
-			$timeout.cancel(tmo);
 			for (item of response.result.items) {
 				if (item.selected)
 					calendars.push(new VpCalendar(item));
@@ -310,8 +309,6 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 				reqparams.pageToken = response.result.nextPageToken;
 				reqCalendars(reqparams);
 			}
-
-			tmo = $timeout(1000);
 		};
 
 		reqcal = false;
@@ -339,8 +336,6 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 			.then(rcv, reqfail);
 
 			function rcv(response) {
-				$timeout.cancel(tmo);
-
 				for (item of response.result.items)
 					makeEvent(item);
 
@@ -350,8 +345,6 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 				}
 				else if (response.result.nextSyncToken)
 					synctok = response.result.nextSyncToken;
-
-				tmo = $timeout(1000);
 			};
 		
 			function makeEvent(item) {
@@ -359,7 +352,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 					return;
 		
 				if (item.status == "cancelled") {
-					fRemoveEvent(item.id);
+					fRemove(item.id);
 					return;
 				}
 
@@ -370,14 +363,14 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 					return;
 
 				if (reqparams.syncToken)
-					fRemoveEvent(item.id);
+					fRemove(item.id);
 
-				fAddEvent(new VpEvent(cal, item));
+				fAdd(new VpEvent(cal, item));
 			}
 		
 			function reqfail(reason) {
 				if (reason.status == 410) {
-					fRemoveEvent();
+					fRemove();
 					load();
 				}
 				else
@@ -396,6 +389,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.toggle = function() {
 			cls.checked = cls.checked ? false : true;
 			syncStg(true);
+			fUpdate();
 		}
 
 		function syncStg(write) {
@@ -478,9 +472,10 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 		this.calendars = calendars;
 	}
 
-	this.register = function(add, remove) {
-		fAddEvent = add;
-		fRemoveEvent = remove;
+	this.register = function(add, remove, update) {
+		fAdd = add;
+		fRemove = remove;
+		fUpdate = update;
 	}
 
 	this.setDateSpan = function(span) {
@@ -493,7 +488,7 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 	}
 
 	this.reload = function() {
-		fRemoveEvent();
+		fRemove();
 		load();
 	}
 
@@ -509,12 +504,12 @@ angular.module("vpApp").service("vpEvents", function($timeout, $window, vpAccoun
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $window) {
+angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEvents, $window) {
 	var cfg = vpSettings.config;
 	var vpmonths = [];
 	var vpdays = [];
 	var datespan;
-	vpEvents.register(addEvent, removeEvent);
+	vpEvents.register(addEvent, removeEvent, updateEvents);
 
 	this.makePage = function(pageoffset, pagelength) {
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
@@ -548,7 +543,10 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		return vpmonths[i];
 	}
 
+	var tmo=null;
 	function addEvent(evt) {
+		$timeout.cancel(tmo);
+
 		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
 		for (var c=0; c < evt.duration; c++) {
 			if (vpdays[d])
@@ -556,12 +554,26 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 
 			d++;
 		}
+
+		tmo = $timeout(updateLayout, 1000);
 	}
 
 	function removeEvent(id) {
 		var month;
 		for (month of vpmonths)
 			month.removeEvent(id);
+		
+		$timeout(updateLayout);
+	}
+
+	function updateEvents() {
+		$timeout(updateLayout);
+	}
+
+	function updateLayout() {
+		var month;
+		for (month of vpmonths)
+			month.updateLayout();
 	}
 
 	function VpMonth(ymd) {
@@ -606,18 +618,12 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			for (lab of this.labels) {
 				if (lab.evt === addevt) {
 					lab.setCellEnd(day.index);
-					var slots = [];
-					for (l of this.labels) {
-						l.calcSlot(slots);
-						l.updateLayout();
-					}
 					return;
 				}
 			}
 		
 			lab = new VpLabel(addevt);
 			lab.setCellStart(this.index, day.index, this.dayoffset);
-
 			this.labels.push(lab);
 		}
 		
@@ -627,6 +633,21 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			var day;
 			for (day of this.days)
 				day.removeEvent(id);
+		}
+
+		this.updateLayout = function() {
+			var day;
+			for (day of this.days)
+				day.updateLayout();
+
+			if (this.labels) {
+				var slots = [];
+				var lab;
+				for (lab of this.labels) {
+					lab.calcSlot(slots);
+					lab.updateLayout();
+				}
+			}
 		}
 	}
 	
@@ -663,6 +684,14 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		removeEventFromOwner(this, id);
 	}
 	
+	VpDay.prototype.updateLayout = function() {
+		if (this.labels) {
+			var lab;
+			for (lab of this.labels)
+				lab.updateLayout();
+		}
+	}
+	
 	VpDay.prototype.onclickNum = function() {
 		$window.open("https://www.google.com/calendar/r/week/" + new VpDate(this.ymd).GCalURL());
 	}
@@ -670,7 +699,8 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 	function VpLabel(vpevent) {
 		this.evt = vpevent;
 		this.style = {};
-		
+
+		var multi = false;
 		var month;
 		var day;
 		var dayoffset;
@@ -684,6 +714,7 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 			this.style["background-color"] = clr.background;
 		
 		this.setCellStart = function(imonth, iday, off) {
+			multi = true;
 			month = imonth;
 			day = iday;
 			dayoffset = off;
@@ -696,12 +727,24 @@ angular.module("vpApp").service("vpAlmanac", function(vpSettings, vpEvents, $win
 		}
 		
 		this.updateLayout = function() {
-			this.style["right"] = 1 + (1.4*slot) + "em";
-			this.style["grid-column"] = month + 1 + " / span 1";
-			this.style["grid-row"] = dayoffset + day + 2 + " / span " + span;
+			this.style["display"] = "none";
+			if (this.evt.cal.cls.checked)
+				return;
+
+			this.style["display"] = "";
+
+			if (multi) {
+				this.style["right"] = 1 + (1.4*slot) + "em";
+				this.style["grid-column"] = month + 1 + " / span 1";
+				this.style["grid-row"] = dayoffset + day + 2 + " / span " + span;
+			}
 		}
 		
 		this.calcSlot = function(slots) {
+			slot = -1;
+			if (this.evt.cal.cls.checked)
+				return;
+			
 			var key = (Math.pow(2, span) - 1) << day;
 			
 			for (var i=0; i < slots.length; i++) {
