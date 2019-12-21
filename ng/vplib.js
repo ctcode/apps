@@ -614,8 +614,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			if (!this.labels)
 				this.labels = [];
 			
-			var lab;
-			for (lab of this.labels) {
+			for (var lab of this.labels) {
 				if (lab.evt === addevt) {
 					lab.setCellEnd(day.index);
 					return;
@@ -630,8 +629,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		this.removeEvent = function(id) {
 			removeEventFromOwner(this, id);
 
-			var day;
-			for (day of this.days)
+			for (var day of this.days)
 				day.removeEvent(id);
 		}
 
@@ -644,8 +642,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 					lab.updateLayout(slots);
 			}
 
-			var day;
-			for (day of this.days)
+			for (var day of this.days)
 				day.updateLayout(slots);
 		}
 	}
