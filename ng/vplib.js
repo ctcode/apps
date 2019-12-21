@@ -683,10 +683,21 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		removeEventFromOwner(this, id);
 	}
 	
-	VpDay.prototype.updateLayout = function() {
+	VpDay.prototype.updateLayout = function(slots) {
+		this.labelboxstyle = {};
+
 		if (this.labels) {
-			var lab;
-			for (lab of this.labels)
+			var key = Math.pow(2, this.index);
+
+			for (var i = slots.length-1; i>=0; i--) {
+				if (key & slots[i]) {
+					var slotmargin = ((i + 1) * 1.4) + 0.5;
+					this.labelboxstyle["margin-right"] = slotmargin + "em";
+					break;
+				}
+			}
+			
+			for (var lab of this.labels)
 				lab.updateLayout();
 		}
 	}
@@ -733,7 +744,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			if (multi) {
 				var slot = getSlot(slots);
 				
-				this.style["right"] = 1 + (1.4*slot) + "em";
+				this.style["right"] = 0.5 + (1.4*slot) + "em";
 				this.style["grid-column"] = month + 1 + " / span 1";
 				this.style["grid-row"] = dayoffset + day + 2 + " / span " + span;
 			}
