@@ -209,7 +209,7 @@
 			<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 			<div ng-repeat="day in month.days" class="vpday" ng-class="day.cls">
 				<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
-				<div class="vplabels" ng-if="day.labels" ng-style="{{day.labelboxstyle}}">
+				<div class="vplabels" ng-if="day.labels" ng-style="day.labelboxstyle">
 					<div ng-repeat="label in day.labels | orderBy: ['evt.timestamp', 'evt.title']" class="vplabel vplink" title="{{label.evt.cal.name}} - {{label.evt.title}}" ng-style="label.style" ng-click="label.evt.edit()">
 						<span class="vplabeltext">{{label.evt.title}}</span>
 					</div>
