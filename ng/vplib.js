@@ -550,7 +550,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
 		for (var c=0; c < evt.duration; c++) {
 			if (vpdays[d])
-				vpdays[d].addEvent(evt);
+				vpdays[d].addEvent(evt, c);
 
 			d++;
 		}
@@ -610,19 +610,19 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			vdt.offsetDay(1);
 		}
 	
-		this.addEvent = function(day, addevt) {
+		this.addEvent = function(day, addevt, seq) {
 			if (!this.labels)
 				this.labels = [];
 			
 			for (var lab of this.labels) {
 				if (lab.evt === addevt) {
-					lab.setCellEnd(day.index);
+					lab.setCellEnd(day.index, seq);
 					return;
 				}
 			}
 		
 			lab = new VpLabel(addevt);
-			lab.setCellStart(this.index, day.index, this.dayoffset);
+			lab.setCellStart(this.index, day.index, this.dayoffset, seq);
 			this.labels.push(lab);
 		}
 		
@@ -664,9 +664,9 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			this.cls.today = true;
 	}
 	
-	VpDay.prototype.addEvent = function(evt) {
+	VpDay.prototype.addEvent = function(evt, seq) {
 		if ((evt.duration > 1) || (cfg.single_day_as_multi_day && !evt.timed)) {
-			this.month.addEvent(this, evt);
+			this.month.addEvent(this, evt, seq);
 			return;
 		}
 		
@@ -719,16 +719,31 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		if (clr.background)
 			this.style["background-color"] = clr.background;
 		
-		this.setCellStart = function(imonth, iday, off) {
+		this.setCellStart = function(imonth, iday, off, seq) {
 			multi = true;
 			month = imonth;
 			day = iday;
 			dayoffset = off;
 			span = 1;
+			
+			this.updateBorderRadius(seq);
 		}
 		
-		this.setCellEnd = function(iday) {
+		this.setCellEnd = function(iday, seq) {
 			span = (iday - day) + 1;
+			this.updateBorderRadius(seq);
+		}
+		
+		this.updateBorderRadius = function(seq) {
+			if (seq == 0) {
+				this.style["border-top-left-radius"] = "1em";
+				this.style["border-top-right-radius"] = "1em";
+			}
+			
+			if (seq+1 == this.evt.duration) {
+				this.style["border-bottom-left-radius"] = "1em";
+				this.style["border-bottom-right-radius"] = "1em";
+			}
 		}
 		
 		this.updateLayout = function(slots) {
