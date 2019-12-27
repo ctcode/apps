@@ -270,7 +270,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpEvents", function($window, vpAccount, vpSettings) {
+angular.module("vpApp").service("vpEvents", function($window, $timeout, vpAccount, vpSettings) {
 	var calendars;
 	var reqcal;
 	var isoSpan = {};
@@ -309,6 +309,8 @@ angular.module("vpApp").service("vpEvents", function($window, vpAccount, vpSetti
 				reqparams.pageToken = response.result.nextPageToken;
 				reqCalendars(reqparams);
 			}
+
+			$timeout();
 		};
 
 		reqcal = false;
@@ -559,15 +561,18 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	}
 
 	function removeEvent(id) {
+		$timeout.cancel(tmo);
+
 		var month;
 		for (month of vpmonths)
 			month.removeEvent(id);
 		
-		$timeout(updateLayout);
+		tmo = $timeout(updateLayout, 100);
 	}
 
 	function updateEvents() {
-		$timeout(updateLayout);
+		$timeout.cancel(tmo);
+		tmo = $timeout(updateLayout, 100);
 	}
 
 	function updateLayout() {
