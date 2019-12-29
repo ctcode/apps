@@ -201,9 +201,6 @@ body {
 		<div class="sub"><select ng-model="vpsettings.config.event_background"  ng-options="x for (x, y) in vp.event_background_options"></select>
 			Event background.
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.multi_day_opacity" type="number" min="0" max="1">
-			Opacity of multi-day event.  (1 = opaque)
-		</div>
 	</div>
 	<div id="savebtns" class="sub">
 		<button ng-hide="vp.busy" ng-click="vp.onclickCancel()">Cancel</button>

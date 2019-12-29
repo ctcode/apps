@@ -95,8 +95,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 		event_background: 'cal',
 		show_all_day_events: true,
 		single_day_as_multi_day: false,
-		show_timed_events: true,
-		multi_day_opacity: 0.6
+		show_timed_events: true
 	};
 
 	var cfg = {};
