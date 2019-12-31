@@ -12,6 +12,7 @@
 	display: none;
 }
 #vpgrid {
+	font-size: calc(1.1vh * {{vpgrid.fontscale}});
 	display: grid;
 	grid-gap: 1px;
 	position: relative;
@@ -50,6 +51,30 @@
 	color: white;
 	background-color: red;
 }
+.vplabels {
+	overflow: hidden;
+}
+.vplabel {
+	width: fit-content;
+	width: -moz-fit-content;
+	max-width: 100%;
+	box-sizing: border-box;
+	border-radius: 0.25em;
+	padding: 0.1em 0.2em;
+	margin: 1px;
+	opacity: inherit;
+	pointer-events: all;
+}
+.vplabel.multiday {
+	height: 100%;
+	margin: 0;
+	width: 1.1em;
+	padding: 0.5em 0;
+	border-radius: 0;
+	position: absolute;
+	white-space: nowrap;
+	writing-mode: vertical-rl;
+}
 .vplink {
 	pointer-events: all;
 	cursor: pointer;
@@ -61,7 +86,6 @@
 	#vpgrid {
 		height: 100%;
 		width: {{vpgrid.scroll_size}}%;
-		font-size: calc(1.1vh * {{vpgrid.fontscale}});
 		grid-auto-flow: column;
 		grid-auto-columns: minmax(5em, 1fr);
 		grid-template-rows: 3em repeat(37, 1fr) 1em;
@@ -94,38 +118,16 @@
 		padding: 0.25em;
 		margin: 0.1em 0.1em 0.1em 0.2em;
 	}
-	.vplabels {
-		overflow: hidden;
-	}
-	.vplabel {
-		width: fit-content;
-		width: -moz-fit-content;
-		max-width: 100%;
-		box-sizing: border-box;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		border-radius: 0.25em;
-		padding: 0.1em 0.2em;
-		margin: 1px;
-		opacity: inherit;
-		pointer-events: all;
-	}
-	.vplabel.multiday {
-		height: 100%;
-		margin: 0;
-		width: 1.1em;
-		padding: 0.5em 0;
-		border-radius: 0;
-		position: absolute;
-		white-space: nowrap;
-		writing-mode: vertical-rl;
-	}
 	</style>
 
 	<span ng-if="vpgrid.view.expand">
 		<style>
 		#vpgrid.fixrow {
 			height: auto;
+		}
+		.vplabel {
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 		</style>
 	</span>
@@ -138,6 +140,8 @@
 		}
 		.vplabel {
 			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 		</style>
 	</span>
@@ -148,9 +152,8 @@
 	#vpgrid {
 		width: 100%;
 		height: {{vpgrid.scroll_size}}%;
-		font-size: calc(1.25vh * {{vpgrid.fontscale}});
 		grid-auto-flow: row;
-		grid-auto-rows: minmax(5em, 1fr);
+		grid-auto-rows: minmax(min-content, 1fr);
 		grid-template-columns: 5fr repeat(37, 1fr) 2em;
 	}
 	.vphdr {
@@ -177,23 +180,33 @@
 		margin: 1px;
 		pointer-events: none;
 	}
-	.vplabels {
-		position: relative;
-		width: 100%;
-		height: 100%;
-	}
-	.vplabel {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		background-color: #4775d1;
-		opacity: {{vpgrid.multi_day_opacity}};
-		pointer-events: none;
-	}
-	.vplabeltext {
-		display: none;
-	}
 	</style>
+
+	<span ng-if="vpgrid.view.expand">
+		<style>
+		#vpgrid.fixrow {
+			height: auto;
+		}
+		.vplabel {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		</style>
+	</span>
+
+	<span ng-if="!vpgrid.view.expand">
+		<style>
+		.vplabels {
+			display: flex;
+			align-items: center;
+		}
+		.vplabel {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		</style>
+	</span>
 </span>
 
 <style>
