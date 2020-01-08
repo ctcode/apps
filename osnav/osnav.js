@@ -132,26 +132,24 @@ function LoadMarkers()
 	{
 		var markers = JSON.parse(localStorage["osnav-markers"]);
 
-		for (i in markers)
-			CreateMarker(markers[i].lon, markers[i].lat);
+		for (key in markers)
+			CreateMarker(markers[key].lon, markers[key].lat);
 	}
 }
 
 function SaveMarkers()
 {
-	if (window.localStorage)
+	var markers = {};
+	var lyr = osMap.getMarkerLayer();
+	for (i in lyr.markers)
 	{
-		var lyr = osMap.getMarkerLayer();
-		var markers = [];
-
-		for (i in lyr.markers)
-		{
-			//console.log(lyr.markers[i]);
-			markers.push({lon: lyr.markers[i].lonlat.lon, lat: lyr.markers[i].lonlat.lat});
-		}
-
-		localStorage["osnav-markers"] = JSON.stringify(markers);
+		//console.log(lyr.markers[i]);
+		//markers.push({lon: lyr.markers[i].lonlat.lon, lat: lyr.markers[i].lonlat.lat});
+		var m = lyr.markers[i].lonlat;
+		markers[m.lon + "." + m.lat] = {lon: m.lon, lat: m.lat};
 	}
+
+	localStorage["osnav-markers"] = JSON.stringify(markers);
 }
 
 function LoadPosition(set_scale)
