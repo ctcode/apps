@@ -91,7 +91,7 @@ function onMapClick(evt)
 
 		CreateMarker(click_pos.lon, click_pos.lat);
 		SaveMarkers();
-		SavePosition(click_pos.lon, click_pos.lat);
+		//SavePosition(click_pos.lon, click_pos.lat);
 
 		OpenLayers.Event.stop(evt);
 	}
