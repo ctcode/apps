@@ -117,6 +117,10 @@ angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 	var cfg = {};
 	var calendarcolours = {};
 	var gridview = {};
+	
+	var file_name = "settings002.json";
+	var file_id = null;
+	var appdata = null;
 
 	var stg = $window.localStorage.getItem("vp-gridviewinfo");
 	if (stg)
@@ -126,15 +130,14 @@ angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 		setViewInfo('collapse');
 	}
 
-	this.config = cfg;
 	publish(defaults);
-	
-	var file_name = "settings002.json";
-	var file_id = null;
-	var appdata = null;
 
 	function publish(settings) {
 		angular.copy(settings, cfg);
+	}
+
+	this.getConfig = function() {
+		return cfg;
 	}
 
 	this.revert = function() {
@@ -316,6 +319,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 //////////////////////////////////////////////////////////////////////
 
 angular.module("vpApp").service("vpEvents", function($window, $timeout, vpAccount, vpSettings) {
+	var cfg = vpSettings.getConfig();
 	var calendars;
 	var reqcal;
 	var isoSpan = {};
@@ -466,11 +470,11 @@ angular.module("vpApp").service("vpEvents", function($window, $timeout, vpAccoun
 		this.htmlLink = item.htmlLink;
 
 		this.colour = {};
-		if (vpSettings.config.event_background == "cal")
+		if (cfg.event_background == "cal")
 			this.colour = cal.colour;
-		if (vpSettings.config.event_background == "white")
+		if (cfg.event_background == "white")
 			this.colour = {background: "#ffffff"};
-		if (vpSettings.config.event_background == "evt") {
+		if (cfg.event_background == "evt") {
 			this.colour = cal.colour;
 			if (item.colorId)
 				this.colour = vpSettings.getEventColour(item.colorId);
@@ -552,7 +556,7 @@ angular.module("vpApp").service("vpEvents", function($window, $timeout, vpAccoun
 //////////////////////////////////////////////////////////////////////
 
 angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEvents, $window) {
-	var cfg = vpSettings.config;
+	var cfg = vpSettings.getConfig();
 	var vpmonths = [];
 	var vpdays = [];
 	var datespan;
@@ -850,7 +854,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 //////////////////////////////////////////////////////////////////////
 
 angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEvents, $window, $timeout) {
-	var cfg = vpSettings.config;
+	var cfg = vpSettings.getConfig();
 	var view = vpSettings.getGridView();
 
 	function fCtl($scope) {
