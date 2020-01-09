@@ -35,6 +35,22 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 			status.msg = bp.getEmail();
 
 			$rootScope.$broadcast("account:signin");
+
+/*
+			// calendar.settings.list
+			gapi.client.request({
+				path: "https://www.googleapis.com/calendar/v3/users/me/settings",
+				method: "GET"
+			})
+			.then(function(){}, function(){});
+
+			// calendar.settings.watch error
+			gapi.client.request({
+				path: "https://www.googleapis.com/calendar/v3/users/me/settings/watch",
+				method: "POST"
+			})
+			.then(function(){}, function(){});
+*/
 		}
 		else
 		{
