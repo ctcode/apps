@@ -89,7 +89,7 @@ angular.module("vpApp").service("vpAccount", function($rootScope) {
 
 //////////////////////////////////////////////////////////////////////
 
-angular.module("vpApp").service("vpSettings", function($rootScope) {
+angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 	var defaults = {
 		title: "visual-planner",
 		month_count: 6,
@@ -116,6 +116,15 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 
 	var cfg = {};
 	var calendarcolours = {};
+	var gridview = {};
+
+	var stg = $window.localStorage.getItem("vp-gridviewinfo");
+	if (stg)
+		gridview = JSON.parse(stg);
+	else {
+		setViewInfo('column');
+		setViewInfo('collapse');
+	}
 
 	this.config = cfg;
 	publish(defaults);
@@ -135,6 +144,27 @@ angular.module("vpApp").service("vpSettings", function($rootScope) {
 	this.reset = function() {
 		appdata = null;
 		publish(defaults);
+	}
+
+	function setViewInfo(add, del) {
+		if (add)
+			gridview[add] = {checked: true};
+
+		if (del)
+			delete gridview[del];
+
+		$window.localStorage.setItem("vp-gridviewinfo", JSON.stringify(gridview));
+	}
+
+	this.setGridView = function(sel) {
+		if (sel.column) setViewInfo('column', 'list');
+		if (sel.list) setViewInfo('list', 'column');
+		if (sel.expand) setViewInfo('expand', 'collapse');
+		if (sel.collapse) setViewInfo('collapse', 'expand');
+	}
+
+	this.getGridView = function() {
+		return gridview;
 	}
 	
 	this.getEventColour = function(cid) {
@@ -821,23 +851,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 
 angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEvents, $window, $timeout) {
 	var cfg = vpSettings.config;
-	var view = {};
-
-	var stg = $window.localStorage.getItem("vp-viewinfo");
-	if (stg)
-		view = JSON.parse(stg);
-	else
-		setViewInfo('column');
-
-	function setViewInfo(add, del) {
-		if (add)
-			view[add] = {checked: true};
-
-		if (del)
-			delete view[del];
-
-		$window.localStorage.setItem("vp-viewinfo", JSON.stringify(view));
-	}
+	var view = vpSettings.getGridView();
 
 	function fCtl($scope) {
 		var box = document.getElementById("vpbox");
@@ -986,7 +1000,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			var pos = box.scrollTop / box.scrollHeight;
 			showGrid(false);
 
-			setViewInfo('column', 'list');
+			vpSettings.setGridView({column: true});
 
 			$timeout(function() {
 				box.scrollTo(box.scrollWidth * pos, 0);
@@ -1002,7 +1016,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			var pos = box.scrollLeft / box.scrollWidth;
 			showGrid(false);
 
-			setViewInfo('list', 'column');
+			vpSettings.setGridView({list: true});
 
 			$timeout(function() {
 				box.scrollTo(0, box.scrollHeight * pos);
@@ -1013,9 +1027,9 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 		this.onclickExpand = function() {
 			if (view.expand)
-				setViewInfo(false, 'expand');
+				vpSettings.setGridView({collapse: true});
 			else
-				setViewInfo('expand');
+				vpSettings.setGridView({expand: true});
 
 			box.focus();
 		}

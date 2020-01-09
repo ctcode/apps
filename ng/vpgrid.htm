@@ -66,14 +66,10 @@
 	pointer-events: all;
 }
 .vplabel.multiday {
-	height: 100%;
 	margin: 0;
-	width: 1.1em;
-	padding: 0.5em 0;
 	border-radius: 0;
 	position: absolute;
 	white-space: nowrap;
-	writing-mode: vertical-rl;
 }
 .vplink {
 	pointer-events: all;
@@ -118,21 +114,15 @@
 		padding: 0.25em;
 		margin: 0.1em 0.1em 0.1em 0.2em;
 	}
+	.vplabel.multiday {
+		width: 1.1em;
+		height: 100%;
+		padding: 0.5em 0;
+		writing-mode: vertical-rl;
+	}
 	</style>
 
-	<span ng-if="vpgrid.view.expand">
-		<style>
-		#vpgrid.fixrow {
-			height: auto;
-		}
-		.vplabel {
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		</style>
-	</span>
-
-	<span ng-if="!vpgrid.view.expand">
+	<span ng-if="vpgrid.view.collapse">
 		<style>
 		.vplabels {
 			display: flex;
@@ -140,6 +130,18 @@
 		}
 		.vplabel {
 			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		</style>
+	</span>
+
+	<span ng-if="vpgrid.view.expand">
+		<style>
+		#vpgrid.fixrow {
+			height: auto;
+		}
+		.vplabel {
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
@@ -180,21 +182,14 @@
 		margin: 1px;
 		pointer-events: none;
 	}
+	.vplabel.multiday {
+		height: 1.1em;
+		width: 100%;
+		padding: 0 0.5em;
+	}
 	</style>
 
-	<span ng-if="vpgrid.view.expand">
-		<style>
-		#vpgrid.fixrow {
-			height: auto;
-		}
-		.vplabel {
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		</style>
-	</span>
-
-	<span ng-if="!vpgrid.view.expand">
+	<span ng-if="vpgrid.view.collapse">
 		<style>
 		.vplabels {
 			display: flex;
@@ -202,6 +197,18 @@
 		}
 		.vplabel {
 			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		</style>
+	</span>
+
+	<span ng-if="vpgrid.view.expand">
+		<style>
+		#vpgrid.fixrow {
+			height: auto;
+		}
+		.vplabel {
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
