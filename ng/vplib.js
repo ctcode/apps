@@ -557,6 +557,7 @@ angular.module("vpApp").service("vpEvents", function($window, $timeout, vpAccoun
 
 angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEvents, $window) {
 	var cfg = vpSettings.getConfig();
+	var gridview = vpSettings.getGridView();
 	var vpmonths = [];
 	var vpdays = [];
 	var datespan;
@@ -791,12 +792,12 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		this.updateBorderRadius = function(seq) {
 			if (seq == 0) {
 				this.style["border-top-left-radius"] = "1em";
-				this.style["border-top-right-radius"] = "1em";
+				this.style[gridview.column ? "border-top-right-radius" : "border-bottom-left-radius"] = "1em";
 			}
 			
 			if (seq+1 == this.evt.duration) {
-				this.style["border-bottom-left-radius"] = "1em";
 				this.style["border-bottom-right-radius"] = "1em";
+				this.style[gridview.column ? "border-bottom-left-radius" : "border-top-right-radius"] = "1em";
 			}
 		}
 		
@@ -809,10 +810,10 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 
 			if (multi) {
 				var slot = getSlot(slots);
-				
-				this.style["right"] = 0.5 + (1.4*slot) + "em";
-				this.style["grid-column"] = month + 1 + " / span 1";
-				this.style["grid-row"] = dayoffset + day + 2 + " / span " + span;
+
+				this.style[gridview.column ? "right" : "bottom"] = 0.5 + (1.4*slot) + "em";
+				this.style[gridview.column ? "grid-column" : "grid-row"] = month + 1 + " / span 1";
+				this.style[gridview.column ? "grid-row" : "grid-column"] = dayoffset + day + 2 + " / span " + span;
 			}
 		}
 		
@@ -1001,32 +1002,20 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			if (view.column)
 				return;
 
-			var pos = box.scrollTop / box.scrollHeight;
-			showGrid(false);
-
 			vpSettings.setGridView({column: true});
 
-			$timeout(function() {
-				box.scrollTo(box.scrollWidth * pos, 0);
-				showGrid(true);
-				box.focus();
-			});
+			initUI();
+			updateUI();
 		}
 
 		this.onclickList = function() {
 			if (view.list)
 				return;
 
-			var pos = box.scrollLeft / box.scrollWidth;
-			showGrid(false);
-
 			vpSettings.setGridView({list: true});
 
-			$timeout(function() {
-				box.scrollTo(0, box.scrollHeight * pos);
-				showGrid(true);
-				box.focus();
-			});
+			initUI();
+			updateUI();
 		}
 
 		this.onclickExpand = function() {
