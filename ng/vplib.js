@@ -744,7 +744,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			for (var i = slots.length-1; i>=0; i--) {
 				if (key & slots[i]) {
 					var slotmargin = ((i + 1) * 1.4) + 0.5;
-					this.labelboxstyle["margin-right"] = slotmargin + "em";
+					this.labelboxstyle[gridview.column ? "margin-right" : "margin-bottom"] = slotmargin + "em";
 					break;
 				}
 			}
