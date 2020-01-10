@@ -182,6 +182,10 @@
 		margin: 1px;
 		pointer-events: none;
 	}
+	.vplabel {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 	.vplabel.multiday {
 		height: 1.1em;
 		width: 100%;
@@ -191,14 +195,8 @@
 
 	<span ng-if="vpgrid.view.collapse">
 		<style>
-		.vplabels {
-			display: flex;
-			align-items: center;
-		}
 		.vplabel {
 			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
 		}
 		</style>
 	</span>
@@ -207,10 +205,6 @@
 		<style>
 		#vpgrid.fixrow {
 			height: auto;
-		}
-		.vplabel {
-			overflow: hidden;
-			text-overflow: ellipsis;
 		}
 		</style>
 	</span>
