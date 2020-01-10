@@ -106,11 +106,11 @@ body {
 </head>
 
 <body ng-app="vpApp" ng-controller="vpController as vp" ng-cloak>
-<title ng-bind="vpsettings.config.title">Loading...</title>
+<title ng-bind="vpconfig.title">Loading...</title>
 
 <div id="planner" ng-show="vp.show.planner">
 	<div id="banner">
-		<div id="bantxt">{{vpsettings.config.title}}</div>
+		<div id="bantxt">{{vpconfig.title}}</div>
 		<div id="tools">
 			<div>{{vpaccount.status.msg}}</div>
 			<img class="toolbtn left" src="column.png" title="Column" draggable="false" ng-click="vpgrid.onclickColumn()" ng-class="vpgrid.view.column"/>
@@ -136,69 +136,69 @@ body {
 	</div>
 	<form name="vp.form" novalidate>
 	<div class="sub group"><b>View</b>
-		<div class="sub"><input ng-model="vpsettings.config.title">
+		<div class="sub"><input ng-model="vpconfig.title">
 			Planner title.
 		</div>
-		<div class="sub"><select ng-model="vpsettings.config.month_count"  ng-options="x for (x, y) in vp.month_count_options"></select>
+		<div class="sub"><select ng-model="vpconfig.month_count"  ng-options="x for (x, y) in vp.month_count_options"></select>
 			Number of months to display.  More can be scrolled into view using the mouse wheel or cursor keys.
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.auto_scroll" type="checkbox">
+		<div class="sub"><input ng-model="vpconfig.auto_scroll" type="checkbox">
 			Auto-scroll to current month.  If not selected, the view will always start at the beginning of the year.
-			<div class="sub"><input ng-model="vpsettings.config.auto_scroll_offset" type="number" min="-12" max="12">
+			<div class="sub"><input ng-model="vpconfig.auto_scroll_offset" type="number" min="-12" max="12">
 				Auto-scroll offset.  For example, -2 will cause the date range to start from two months ago, 0 will start with the current month.
 			</div>
-			<div class="sub"><input ng-model="vpsettings.config.first_month" type="number" min="1" max="12">
+			<div class="sub"><input ng-model="vpconfig.first_month" type="number" min="1" max="12">
 				First month of year.
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.fixed_row_height" type="checkbox">
+		<div class="sub"><input ng-model="vpconfig.fixed_row_height" type="checkbox">
 			In 'Expand' view, make all rows the same height.
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.hide_scrollbars" type="checkbox">
+		<div class="sub"><input ng-model="vpconfig.hide_scrollbars" type="checkbox">
 			Hide scrollbars.
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.disable_scroll" type="checkbox">
+		<div class="sub"><input ng-model="vpconfig.disable_scroll" type="checkbox">
 			Disable scrolling.
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.align_weekends" type="checkbox">
+		<div class="sub"><input ng-model="vpconfig.align_weekends" type="checkbox">
 			Align weekends.
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.weekends">
+		<div class="sub"><input ng-model="vpconfig.weekends">
 			Weekends.  (0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.first_day_of_week" type="number" min="0" max="6">
+		<div class="sub"><input ng-model="vpconfig.first_day_of_week" type="number" min="0" max="6">
 			First day of week.  (0-6)
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.font_scale_pc" type="number" min="50" max="200">
+		<div class="sub"><input ng-model="vpconfig.font_scale_pc" type="number" min="50" max="200">
 			% Font scale.
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.past_opacity" type="number" min="0" max="1">
+		<div class="sub"><input ng-model="vpconfig.past_opacity" type="number" min="0" max="1">
 			Opacity of past months.  (1 = opaque)
 		</div>
-		<div class="sub"><input class="monthnames" ng-model="vpsettings.config.month_names">
+		<div class="sub"><input class="monthnames" ng-model="vpconfig.month_names">
 			Month names.
 		</div>
 	</div>
 	<div class="sub group"><b>Events</b>
-		<div ng-hide="true" class="sub"><input ng-model="vpsettings.config.proportional_events" type="checkbox">
+		<div ng-hide="true" class="sub"><input ng-model="vpconfig.proportional_events" type="checkbox">
 			Display event markers in proportion to their actual duration.  Events outside the visible event range will not be shown.
-			<div class="sub"><input ng-model="vpsettings.config.proportional_start_hour" type="number" min="0" max="24">
+			<div class="sub"><input ng-model="vpconfig.proportional_start_hour" type="number" min="0" max="24">
 				Start hour of visible event range.
 			</div>
-			<div class="sub"><input ng-model="vpsettings.config.proportional_end_hour" type="number" min="0" max="24">
+			<div class="sub"><input ng-model="vpconfig.proportional_end_hour" type="number" min="0" max="24">
 				End hour of visible event range.
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.show_all_day_events" type="checkbox">
+		<div class="sub"><input ng-model="vpconfig.show_all_day_events" type="checkbox">
 			Show 'all day' events.
-			<div class="sub"><input ng-model="vpsettings.config.single_day_as_multi_day" type="checkbox">
+			<div class="sub"><input ng-model="vpconfig.single_day_as_multi_day" type="checkbox">
 				Single day as multi-day (vertical bar).
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vpsettings.config.show_timed_events" type="checkbox">
+		<div class="sub"><input ng-model="vpconfig.show_timed_events" type="checkbox">
 			Show 'timed' events.
 		</div>
-		<div class="sub"><select ng-model="vpsettings.config.event_background"  ng-options="x for (x, y) in vp.event_background_options"></select>
+		<div class="sub"><select ng-model="vpconfig.event_background"  ng-options="x for (x, y) in vp.event_background_options"></select>
 			Event background.
 		</div>
 	</div>
@@ -227,7 +227,7 @@ body {
 <script type='text/javascript'>
 angular.module("vpApp").controller("vpController", function(vpAccount, vpSettings, vpEvents, $scope, $timeout) {
 	$scope.vpaccount = vpAccount;
-	$scope.vpsettings = vpSettings;
+	$scope.vpconfig = vpSettings.getConfig();
 	this.show = {planner: true};
 	this.busy = false;
 	this.month_count_options = {3: 3, 4: 4, 6: 6, 8: 8, 10: 10, 12: 12};
