@@ -65,6 +65,8 @@
 	margin: 1px;
 	opacity: inherit;
 	pointer-events: all;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	z-index: 2;
 }
 .vplabel.multiday {
@@ -136,8 +138,6 @@
 		}
 		.vplabel {
 			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
 		}
 		</style>
 	</span>
@@ -149,10 +149,6 @@
 		}
 		#vpgrid.fixrow {
 			height: auto;
-		}
-		.vplabel {
-			overflow: hidden;
-			text-overflow: ellipsis;
 		}
 		</style>
 	</span>
@@ -190,10 +186,6 @@
 		padding: 0.25em 0.5em;
 		margin: 1px;
 		pointer-events: none;
-	}
-	.vplabel {
-		overflow: hidden;
-		text-overflow: ellipsis;
 	}
 	.vplabel.multiday {
 		height: 1.2em;
