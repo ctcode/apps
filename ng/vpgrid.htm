@@ -45,6 +45,7 @@
 .vpnum {
 	font-size: 0.8em;
 	flex-shrink: 0;
+	z-index: 2;
 }
 .today .vpnum {
 	font-weight: bold;
@@ -64,12 +65,14 @@
 	margin: 1px;
 	opacity: inherit;
 	pointer-events: all;
+	z-index: 2;
 }
 .vplabel.multiday {
 	margin: 0;
 	border-radius: 0;
 	position: absolute;
 	white-space: nowrap;
+	z-index: 1;
 }
 .vplink {
 	pointer-events: all;
@@ -83,7 +86,6 @@
 		height: 100%;
 		width: {{vpgrid.scroll_size}}%;
 		grid-auto-flow: column;
-		grid-auto-columns: minmax(5em, 1fr);
 		grid-template-rows: 3em repeat(37, 1fr) 1em;
 	}
 	@media only screen and (orientation: portrait) {
@@ -124,7 +126,11 @@
 
 	<span ng-if="vpgrid.view.collapse">
 		<style>
+		#vpgrid {
+			grid-auto-columns: minmax(10em, 1fr);
+		}
 		.vplabels {
+			min-width: 30%;
 			display: flex;
 			align-items: center;
 		}
@@ -138,6 +144,9 @@
 
 	<span ng-if="vpgrid.view.expand">
 		<style>
+		#vpgrid {
+			grid-auto-columns: 1fr;
+		}
 		#vpgrid.fixrow {
 			height: auto;
 		}
