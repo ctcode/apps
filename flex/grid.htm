@@ -21,13 +21,13 @@ body {
 }
 #grid.column {
 	grid-auto-flow: column;
-	grid-auto-columns: [month] 1fr;
-	grid-template-rows: [hdr] 2fr repeat(20, [day] 1fr) 1em;
+	grid-auto-columns: 1fr;
+	grid-template-rows: 2fr repeat(16, 1fr) 1em;
 }
 #grid.list {
 	grid-auto-flow: row;
 	grid-template-rows: repeat(6, 1fr);
-	grid-template-columns: 3fr repeat(20, 1fr) 1em;
+	grid-template-columns: 3fr repeat(16, 1fr) 1em;
 }
 .hdr {
 	text-align: center;
@@ -36,13 +36,13 @@ body {
 	padding: 0.2em;
 }
 .column .hdr {
-	grid-row: hdr;
+	grid-row: 1;
 }
 .list .hdr {
 	grid-column: 1;
 }
 .ftr {
-	grid-row: 22;
+	grid-row: 18;
 	background-color: blue;
 }
 
@@ -68,12 +68,10 @@ body {
 .list .cell.offset4 {grid-column-start: 6;}
 .list .cell.offset5 {grid-column-start: 7;}
 
-.evts {
-	display: flex;
-	align-items: center;
-	overflow: hidden;
+.labels {
+	background-color: gainsboro;
 }
-.evt {
+.label {
 	height: 100%;
 	padding: 0.25em 0.1em;
 	box-sizing: border-box;
@@ -113,7 +111,7 @@ body {
 		<div class="cell">3</div>
 		<div class="cell">4</div>
 		<div class="cell">
-			<div style="background-color: gainsboro; margin-left: 7em;">
+			<div class="labels" style="margin-left: 7em;">
 				<div>e1</div>
 				<div>e2</div>
 				<div>e3</div>
@@ -128,8 +126,8 @@ body {
 		<div class="cell">10</div>
 		<div class="cell">11</div>
 		<div class="ftr"></div>
-		<div class="evt" style="grid-area: day 7 / month 2 / day 10 / month 2; background-color: coral; margin-left: 3em;">event 1</div>
-		<div class="evt" style="grid-column: 2; grid-row: 7 / span 4; background-color: lightcoral; margin-left: 1em;">event 2 qwertyuiop asdfghjkl</div>
+		<div class="label" style="grid-column: 3; grid-row: 8 / span 3; background-color: coral; margin-left: 3em;">event 1</div>
+		<div class="label" style="grid-column: 2; grid-row: 7 / span 4; background-color: lightcoral; margin-left: 1em;">event 2 qwertyuiop asdfghjkl</div>
 
 		<div class="hdr">col 3</div>
 		<div class="cell offset4">1</div>
@@ -151,8 +149,6 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="cell">12</div>
 		<div class="ftr"></div>
 
 		<div class="hdr">col 5</div>
@@ -166,9 +162,6 @@ body {
 		<div class="cell">8</div>
 		<div class="cell">9</div>
 		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="cell">12</div>
-		<div class="cell">13</div>
 		<div class="ftr"></div>
 
 		<div class="hdr">col 6</div>
