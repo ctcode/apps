@@ -29,6 +29,9 @@ body {
 	grid-template-rows: repeat(6, 1fr);
 	grid-template-columns: 3fr repeat(16, 1fr) 1em;
 }
+.month {
+	display: contents;
+}
 .hdr {
 	text-align: center;
 	background-color: yellow;
@@ -93,86 +96,98 @@ body {
 
 <div id="gridbox">
 	<div id="grid" class="column">
-		<div class="hdr">col 1</div>
-		<div class="cell offset3">1</div>
-		<div class="cell">2</div>
-		<div class="cell">3</div>
-		<div class="cell">4</div>
-		<div class="cell">5</div>
-		<div class="cell">6</div>
-		<div class="cell">7</div>
-		<div class="cell">8</div>
-		<div class="cell">9</div>
-		<div class="ftr"></div>
-
-		<div class="hdr">col 2</div>
-		<div class="cell offset2">1</div>
-		<div class="cell">2</div>
-		<div class="cell">3</div>
-		<div class="cell">4</div>
-		<div class="cell">
-			<div class="labels" style="margin-left: 7em;">
-				<div>e1</div>
-				<div>e2</div>
-				<div>e3</div>
-				<div>e4</div>
-				<div>e5</div>
-			</div>
+		<div class="month">
+			<div class="hdr">col 1</div>
+			<div class="cell offset3">1</div>
+			<div class="cell">2</div>
+			<div class="cell">3</div>
+			<div class="cell">4</div>
+			<div class="cell">5</div>
+			<div class="cell">6</div>
+			<div class="cell">7</div>
+			<div class="cell">8</div>
+			<div class="cell">9</div>
+			<div class="ftr"></div>
 		</div>
-		<div class="cell">6</div>
-		<div class="cell">7</div>
-		<div class="cell">8</div>
-		<div class="cell">9</div>
-		<div class="cell">10</div>
-		<div class="cell">11</div>
-		<div class="ftr"></div>
-		<div class="label" style="grid-column: 3; grid-row: 8 / span 3; background-color: coral; margin-left: 3em;">event 1</div>
-		<div class="label" style="grid-column: 2; grid-row: 7 / span 4; background-color: lightcoral; margin-left: 1em;">event 2 qwertyuiop asdfghjkl</div>
 
-		<div class="hdr">col 3</div>
-		<div class="cell offset4">1</div>
-		<div class="cell">2</div>
-		<div class="cell">3</div>
-		<div class="cell">4</div>
-		<div class="cell">5</div>
-		<div class="cell">6</div>
-		<div class="ftr"></div>
+		<div class="month">
+			<div class="hdr">col 2</div>
+			<div class="cell offset2">1</div>
+			<div class="cell">2</div>
+			<div class="cell">3</div>
+			<div class="cell">4</div>
+			<div class="cell">
+				<div class="labels" style="margin-left: 7em;">
+					<div>e1</div>
+					<div>e2</div>
+					<div>e3</div>
+					<div>e4</div>
+					<div>e5</div>
+				</div>
+			</div>
+			<div class="cell">6</div>
+			<div class="cell">7</div>
+			<div class="cell">8</div>
+			<div class="cell">9</div>
+			<div class="cell">10</div>
+			<div class="cell">11</div>
+			<div class="ftr"></div>
+			<div class="label" style="grid-column: 3 / span 1; grid-row: 8 / span 3; background-color: coral; margin-left: 3em;">event 1</div>
+			<div class="label" style="grid-column: 2 / span 1; grid-row: 7 / span 4; background-color: lightcoral; margin-left: 1em;">event 2 qwertyuiop asdfghjkl</div>
+		</div>
 
-		<div class="hdr">col 4</div>
-		<div class="cell offset5">1</div>
-		<div class="cell">2</div>
-		<div class="cell">3</div>
-		<div class="cell">4</div>
-		<div class="cell">5</div>
-		<div class="cell">6</div>
-		<div class="cell">7</div>
-		<div class="cell">8</div>
-		<div class="cell">9</div>
-		<div class="cell">10</div>
-		<div class="ftr"></div>
+		<div class="month">
+			<div class="hdr">col 3</div>
+			<div class="cell offset4">1</div>
+			<div class="cell">2</div>
+			<div class="cell">3</div>
+			<div class="cell">4</div>
+			<div class="cell">5</div>
+			<div class="cell">6</div>
+			<div class="ftr"></div>
+		</div>
 
-		<div class="hdr">col 5</div>
-		<div class="cell offset0">1</div>
-		<div class="cell">2</div>
-		<div class="cell">3</div>
-		<div class="cell">4</div>
-		<div class="cell">5</div>
-		<div class="cell">6</div>
-		<div class="cell">7</div>
-		<div class="cell">8</div>
-		<div class="cell">9</div>
-		<div class="cell">10</div>
-		<div class="ftr"></div>
+		<div class="month">
+			<div class="hdr">col 4</div>
+			<div class="cell offset5">1</div>
+			<div class="cell">2</div>
+			<div class="cell">3</div>
+			<div class="cell">4</div>
+			<div class="cell">5</div>
+			<div class="cell">6</div>
+			<div class="cell">7</div>
+			<div class="cell">8</div>
+			<div class="cell">9</div>
+			<div class="cell">10</div>
+			<div class="ftr"></div>
+		</div>
 
-		<div class="hdr">col 6</div>
-		<div class="cell offset2">1</div>
-		<div class="cell">2</div>
-		<div class="cell">3</div>
-		<div class="cell">4</div>
-		<div class="cell">5</div>
-		<div class="cell">6</div>
-		<div class="cell">7</div>
-		<div class="ftr"></div>
+		<div class="month">
+			<div class="hdr">col 5</div>
+			<div class="cell offset0">1</div>
+			<div class="cell">2</div>
+			<div class="cell">3</div>
+			<div class="cell">4</div>
+			<div class="cell">5</div>
+			<div class="cell">6</div>
+			<div class="cell">7</div>
+			<div class="cell">8</div>
+			<div class="cell">9</div>
+			<div class="cell">10</div>
+			<div class="ftr"></div>
+		</div>
+
+		<div class="month">
+			<div class="hdr">col 6</div>
+			<div class="cell offset2">1</div>
+			<div class="cell">2</div>
+			<div class="cell">3</div>
+			<div class="cell">4</div>
+			<div class="cell">5</div>
+			<div class="cell">6</div>
+			<div class="cell">7</div>
+			<div class="ftr"></div>
+		</div>
 	</div>
 </div>
 
