@@ -761,6 +761,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	function VpLabel(vpevent) {
 		this.evt = vpevent;
 		this.style = {};
+		this.boxstyle = {};
 
 		var multi = false;
 		var month;
@@ -812,8 +813,8 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 				var slot = getSlot(slots);
 
 				this.style[gridview.column ? "right" : "bottom"] = 0.5 + (1.4*slot) + "em";
-				this.style[gridview.column ? "grid-column" : "grid-row"] = month + 1 + " / span 1";
-				this.style[gridview.column ? "grid-row" : "grid-column"] = dayoffset + day + 2 + " / span " + span;
+				this.boxstyle[gridview.column ? "grid-column" : "grid-row"] = month + 1 + " / span 1";
+				this.boxstyle[gridview.column ? "grid-row" : "grid-column"] = dayoffset + day + 2 + " / span " + span;
 			}
 		}
 		

@@ -52,7 +52,7 @@
 	color: white;
 	background-color: red;
 }
-.vplabels {
+.vpdaylabels {
 	overflow: hidden;
 }
 .vplabel {
@@ -69,10 +69,16 @@
 	text-overflow: ellipsis;
 	z-index: 2;
 }
+.vpmonthlabelbox {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
 .vplabel.multiday {
+	position: absolute;
 	margin: 0;
 	border-radius: 0;
-	position: absolute;
 	white-space: nowrap;
 	z-index: 1;
 }
@@ -131,7 +137,7 @@
 		#vpgrid {
 			grid-auto-columns: minmax(10em, 1fr);
 		}
-		.vplabels {
+		.vpdaylabels {
 			min-width: 30%;
 			display: flex;
 			align-items: center;
@@ -225,15 +231,17 @@
 			<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
 			<div ng-repeat="day in month.days" class="vpday" ng-class="day.cls">
 				<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
-				<div class="vplabels" ng-if="day.labels" ng-style="day.labelboxstyle">
+				<div class="vpdaylabels" ng-if="day.labels" ng-style="day.labelboxstyle">
 					<div ng-repeat="label in day.labels | orderBy: ['evt.timestamp', 'evt.title']" class="vplabel vplink" title="{{label.evt.cal.name}} - {{label.evt.title}}" ng-style="label.style" ng-click="label.evt.edit()">
 						<span class="vplabeltext">{{label.evt.title}}</span>
 					</div>
 				</div>
 			</div>
 			<div class="vpftr"></div>
-			<div ng-repeat="label in month.labels" class="vplabel vplink multiday" title="{{label.evt.cal.name}} - {{label.evt.title}}" ng-style="label.style" ng-click="label.evt.edit()">
-				<span class="vplabeltext">{{label.evt.title}}</span>
+			<div ng-repeat="label in month.labels" class="vpmonthlabelbox" ng-style="label.boxstyle">
+				<div class="vplabel vplink multiday" title="{{label.evt.cal.name}} - {{label.evt.title}}" ng-style="label.style" ng-click="label.evt.edit()">
+					<span class="vplabeltext">{{label.evt.title}}</span>
+				</div>
 			</div>
 		</div>
 	</div>
