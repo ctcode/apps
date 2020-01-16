@@ -761,12 +761,9 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	function VpLabel(vpevent) {
 		this.evt = vpevent;
 		this.style = {};
-		this.boxstyle = {};
 
-		var multi = false;
 		var month;
 		var day;
-		var dayoffset;
 		var span;
 
 		var clr = this.evt.colour;
@@ -776,11 +773,11 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			this.style["background-color"] = clr.background;
 		
 		this.setCellStart = function(vpmonth, iday, seq) {
-			multi = true;
 			month = vpmonth;
 			day = iday;
 			span = 1;
 			
+			this.multiboxstyle = {};
 			this.updateBorderRadius(seq);
 		}
 		
@@ -802,18 +799,23 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		}
 		
 		this.updateLayout = function(slots) {
-			this.boxstyle["display"] = "none";
+			this.style.display = "none";
+			
+			if (this.multiboxstyle)
+				this.multiboxstyle.display = "none";
+
 			if (this.evt.cal.cls.checked)
 				return;
 
-			this.boxstyle["display"] = "";
+			delete this.style.display;
 
-			if (multi) {
+			if (this.multiboxstyle) {
 				var slot = getSlot(slots);
 
+				delete this.multiboxstyle.display;
 				this.style[gridview.column ? "right" : "bottom"] = 0.5 + (1.4*slot) + "em";
-				this.boxstyle[gridview.column ? "grid-column" : "grid-row"] = month.id + " / span 1";
-				this.boxstyle[gridview.column ? "grid-row" : "grid-column"] = month.dayoffset + day + 2 + " / span " + span;
+				this.multiboxstyle[gridview.column ? "grid-column" : "grid-row"] = month.id + " / span 1";
+				this.multiboxstyle[gridview.column ? "grid-row" : "grid-column"] = month.dayoffset + day + 2 + " / span " + span;
 			}
 		}
 		
