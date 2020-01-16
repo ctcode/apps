@@ -803,11 +803,11 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		}
 		
 		this.updateLayout = function(slots) {
-			this.style["display"] = "none";
+			this.boxstyle["display"] = "none";
 			if (this.evt.cal.cls.checked)
 				return;
 
-			this.style["display"] = "";
+			this.boxstyle["display"] = "";
 
 			if (multi) {
 				var slot = getSlot(slots);
