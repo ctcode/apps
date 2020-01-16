@@ -960,7 +960,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		function getVisInfo() {
-			var info = {div: null, id: null, visdivs: [], invisdivs: [], months: [], gridareas: ""};
+			var info = {div: null, id: null, months: [], gridareas: ""};
 
 			var mdiv = box.querySelectorAll(".vpmonth");
 			var v = -1;
@@ -982,12 +982,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 					info.id = mdiv[i].id;
 				}
 
-				if (v >= 0 && i < (v + gridui.vislength)) {
-					info.visdivs.push(mdiv[i]);
+				if (v >= 0 && i < (v + gridui.vislength))
 					info.months.push($scope.vpgrid.page[i]);
-				}
-				else
-					info.invisdivs.push(mdiv[i]);
 			}
 
 			info.gridareas = getGridAreas(info.months);
@@ -1094,19 +1090,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			};
 
 			$window.open("vpprint.htm");
-		}
-
-		$window.onbeforeprint = function() {
-			var info = getVisInfo();
-
-			for (var m of info.visdivs)
-				m.classList.remove("noprint");
-
-			for (var m of info.invisdivs)
-				m.classList.add("noprint");
-
-			$scope.vpgrid.printgridareas = info.gridareas;
-			$scope.$apply();
 		}
 		
 		if ($scope.vpgridinit)
