@@ -14,6 +14,7 @@
 #vpgrid {
 	font-size: calc(1.1vh * {{vpgrid.fontscale}});
 	display: grid;
+	grid-template-areas: {{vpgrid.gridareas}};
 	grid-gap: 1px;
 	position: relative;
 	user-select: none;
@@ -224,7 +225,7 @@
 <style>
 @media only print {
 	#vpbox {overflow: visible;}
-	#vpgrid {width: 100%; height: 100%;}
+	#vpgrid {width: 100%; height: 100%; grid-template-areas: {{vpgrid.printgridareas}};}
 	.vpmonth.noprint {display: none;}
 }
 </style>

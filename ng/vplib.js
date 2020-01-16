@@ -634,7 +634,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	function VpMonth(ymd) {
 		var vdt = new VpDate(ymd);
 
-		this.id = ymd.slice(0,7);
+		this.id = vdt.MonthID();
 		this.hdr = vdt.MonthTitle();
 		this.days = [];
 		this.dayoffset = 0;
@@ -677,7 +677,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			}
 		
 			lab = new VpLabel(addevt);
-			lab.setCellStart(this.index, day.index, this.dayoffset, seq);
+			lab.setCellStart(this, day.index, seq);
 			this.labels.push(lab);
 		}
 		
@@ -775,11 +775,10 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		if (clr.background)
 			this.style["background-color"] = clr.background;
 		
-		this.setCellStart = function(imonth, iday, off, seq) {
+		this.setCellStart = function(vpmonth, iday, seq) {
 			multi = true;
-			month = imonth;
+			month = vpmonth;
 			day = iday;
-			dayoffset = off;
 			span = 1;
 			
 			this.updateBorderRadius(seq);
@@ -813,8 +812,8 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 				var slot = getSlot(slots);
 
 				this.style[gridview.column ? "right" : "bottom"] = 0.5 + (1.4*slot) + "em";
-				this.boxstyle[gridview.column ? "grid-column" : "grid-row"] = month + 1 + " / span 1";
-				this.boxstyle[gridview.column ? "grid-row" : "grid-column"] = dayoffset + day + 2 + " / span " + span;
+				this.boxstyle[gridview.column ? "grid-column" : "grid-row"] = month.id + " / span 1";
+				this.boxstyle[gridview.column ? "grid-row" : "grid-column"] = month.dayoffset + day + 2 + " / span " + span;
 			}
 		}
 		
@@ -888,6 +887,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 			vpAlmanac.makePage(gridui.offset, gridui.length);
 			$scope.vpgrid.page = vpAlmanac.getPage();
+			$scope.vpgrid.gridareas = getGridAreas(vpAlmanac.getPage());
 			$scope.vpgrid.view = view;
 			$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
 			$scope.vpgrid.past_opacity = cfg.past_opacity;
@@ -943,8 +943,24 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			}
 		}
 
+		function getGridAreas(page) {
+			var gridareas = "";
+			
+			for (month of page) {
+				if (view.column)
+					gridareas += (month.id + ' ');
+				if (view.list)
+					gridareas += ('\"' + month.id + '\" ');
+			}
+
+			if (view.column)
+				return '\"' + gridareas + '\"';
+			
+			return gridareas;
+		}
+
 		function getVisInfo() {
-			var info = {div: null, id: null, visdivs: [], invisdivs: [], months: []};
+			var info = {div: null, id: null, visdivs: [], invisdivs: [], months: [], gridareas: ""};
 
 			var mdiv = box.querySelectorAll(".vpmonth");
 			var v = -1;
@@ -973,6 +989,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				else
 					info.invisdivs.push(mdiv[i]);
 			}
+
+			info.gridareas = getGridAreas(info.months);
 			
 			return info;
 		}
@@ -1062,8 +1080,10 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		this.onclickPrint = function() {
+			var info = getVisInfo();
 			$window.vpprintgrid = {
-				page: getVisInfo().months,
+				page: info.months,
+				gridareas: info.gridareas,
 				view: $scope.vpgrid.view,
 				cls: $scope.vpgrid.cls,
 				fontscale: $scope.vpgrid.fontscale,
@@ -1084,6 +1104,9 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 			for (var m of info.invisdivs)
 				m.classList.add("noprint");
+
+			$scope.vpgrid.printgridareas = info.gridareas;
+			$scope.$apply();
 		}
 		
 		if ($scope.vpgridinit)
@@ -1208,6 +1231,11 @@ VpDate.prototype.isPastMonth = function()
 VpDate.prototype.MonthTitle = function()
 {
 	return fmt("^ ^", VpDate.localemonth[this.dt.getMonth()], this.dt.getFullYear());
+}
+
+VpDate.prototype.MonthID = function()
+{
+	return VpDate.localemonth[this.dt.getMonth()] + this.dt.getFullYear();
 }
 
 VpDate.prototype.GCalURL = function()
