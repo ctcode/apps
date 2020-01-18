@@ -1224,7 +1224,7 @@ VpDate.prototype.MonthTitle = function()
 
 VpDate.prototype.MonthID = function()
 {
-	return VpDate.localemonth[this.dt.getMonth()] + this.dt.getFullYear();
+	return "M" + this.dt.getFullYear() + VpDate.ymdstr[this.dt.getMonth()];
 }
 
 VpDate.prototype.GCalURL = function()
