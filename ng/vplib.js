@@ -912,7 +912,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			if (show) {
 				box.style.visibility = "";
 				box.focus();
-					ngbox.on("scroll", onScroll);
+				//ngbox.on("scroll", onScroll);
 			}
 			else {
 				box.style.visibility = "hidden";
