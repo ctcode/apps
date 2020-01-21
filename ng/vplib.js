@@ -945,53 +945,36 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				box.scrollTo(0, monthdiv.firstElementChild.offsetTop);
 		}
 
-		function shiftMonth(dir) {
-			var visdiv = null;
-			var aligned = false;
+		function getVisInfo() {
+			var info = {months: [], index: null};
 			var boxpos = view.column ? box.scrollLeft : box.scrollTop;
 
 			var monthdivs = box.querySelectorAll(".vpmonth");
-			for (var md of monthdivs) {
-				var hdr = md.firstElementChild;
+			for (var i=0; i < monthdivs.length; i++) {
+				var hdr = monthdivs[i].firstElementChild;
 				var monthpos = view.column ? hdr.offsetLeft : hdr.offsetTop;
+				var monthsize = view.column ? hdr.offsetWidth : hdr.offsetHeight;
+				
+				if (monthpos + (monthsize / 2) > boxpos)
+					info.months.push(vpAlmanac.getPage()[i]);
 
-				if (monthpos < boxpos)
-					continue;
-
-				visdiv = md;
-
-				if (monthpos == boxpos)
-					aligned = true;
-
-				break;
+				if (info.months.length == 1)
+					info.index = i;
+				
+				if (info.months.length == gridui.vislength)
+					break;
 			}
+			
+			return info;
+		}
 
-			var shift = 0;
-			if (dir.left && box.scrollLeft == 0) shift = -1;
-			if (dir.up && box.scrollTop == 0) shift = -1;
-			if (dir.right && box.scrollLeft >= (box.scrollWidth - box.clientWidth)) shift = 1;
-			if (dir.down && box.scrollTop >= (box.scrollHeight - box.clientHeight)) shift = 1;
+		function recenterPage() {
+			showGrid(false);
+			var visinfo = getVisInfo();
 
-			if (shift) {
-				showGrid(false);
-
-				gridui.visid = visdiv.id;
-				gridui.offset += (shift * gridui.buffer);
-
-				$timeout(updateUI);
-				return;
-			}
-
-			if (dir.right || dir.down) {
-				if (aligned)
-					setVisMonth(visdiv.nextElementSibling.id);
-				else
-					setVisMonth(visdiv.id);
-			}
-
-			if (dir.left || dir.up) {
-				setVisMonth(visdiv.previousElementSibling.id);
-			}
+			gridui.visid = visinfo.months[0].id;
+			gridui.offset += (visinfo.index - gridui.buffer);
+			$timeout(updateUI);
 		}
 
 		this.init = function() {
@@ -1038,26 +1021,13 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		this.onkeydown = function(evt) {
-			if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey)
+			if (!evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey)
 				return;
 
-			switch (evt.code)
+			switch (evt.key)
 			{
-				case "ArrowLeft":
-					if (view.list) return;
-					shiftMonth({left: true});
-					break;
-				case "ArrowRight":
-					if (view.list) return;
-					shiftMonth({right: true});
-					break;
-				case "ArrowUp":
-					if (view.column) return;
-					shiftMonth({up: true});
-					break;
-				case "ArrowDown":
-					if (view.column) return;
-					shiftMonth({down: true});
+				case "Enter":
+					recenterPage();
 					break;
 				default:
 					return;
@@ -1067,25 +1037,12 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		this.onclickPrint = function() {
-			var printmonths = [];
+			var visinfo = getVisInfo();
 			var boxpos = view.column ? box.scrollLeft : box.scrollTop;
 
-			var monthdivs = box.querySelectorAll(".vpmonth");
-			for (var i=0; i < monthdivs.length; i++) {
-				var hdr = monthdivs[i].firstElementChild;
-				var monthpos = view.column ? hdr.offsetLeft : hdr.offsetTop;
-				var monthsize = view.column ? hdr.offsetWidth : hdr.offsetHeight;
-				
-				if (monthpos + (monthsize / 2) > boxpos)
-					printmonths.push(vpAlmanac.getPage()[i]);
-
-				if (printmonths.length == gridui.vislength)
-					break;
-			}
-
 			$window.vpprintgrid = {
-				page: printmonths,
-				gridareas: getGridAreas(printmonths),
+				page: visinfo.months,
+				gridareas: getGridAreas(visinfo.months),
 				view: $scope.vpgrid.view,
 				cls: $scope.vpgrid.cls,
 				fontscale: $scope.vpgrid.fontscale,
