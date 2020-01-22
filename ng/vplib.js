@@ -1017,7 +1017,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			box.focus();
 		}
 
-		this.onclickRecenter = function() {
+		this.onclickContinue = function() {
 			showGrid(false);
 			$timeout(function() {
 				var visinfo = getVisInfo();
@@ -1053,7 +1053,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			switch (evt.key)
 			{
 				case "Enter":
-					onclickRecenter();
+					onclickContinue();
 					break;
 				default:
 					return;
