@@ -1,11 +1,21 @@
 <style>
+#navbar {
+	background-color: gainsboro;
+	height: 30%;
+	font-size: 0.6em;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
 #vpcalbox {
+	background-color: gainsboro;
+	height: 70%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
 	font-size: 0.65em;
-	height: 100%;
 	user-select: none;
 	-ms-user-select: none;
 	-webkit-user-select: none;
@@ -33,6 +43,9 @@
 }
 </style>
 
+<div id="navbar">
+	<div>&#9475</div><div>&#9679</div><div>2019</div><div>&#9679</div><div>&#9475</div><div>&#9679</div><div>2020</div><div>&#9679</div><div>&#9475</div><div>&#9679</div><div>2021</div><div>&#9679</div><div>&#9475</div>
+</div>
 <div id="vpcalbox">
 	<div class="vpcalbtn" ng-repeat="cal in vpevents.calendars | orderBy: 'name'" ng-class="cal.cls" ng-click="cal.toggle()">
 		<span class="vpcalmarker" style="background-color: {{cal.colour.background}}"></span>
