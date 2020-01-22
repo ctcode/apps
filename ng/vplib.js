@@ -968,15 +968,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			return info;
 		}
 
-		function recenterPage() {
-			showGrid(false);
-			var visinfo = getVisInfo();
-
-			gridui.visid = visinfo.months[0].id;
-			gridui.offset += (visinfo.index - gridui.buffer);
-			$timeout(updateUI);
-		}
-
 		this.init = function() {
 			initUI();
 			updateUI();
@@ -1020,20 +1011,13 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			box.focus();
 		}
 
-		this.onkeydown = function(evt) {
-			if (!evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey)
-				return;
+		this.onclickRecenter = function() {
+			showGrid(false);
+			var visinfo = getVisInfo();
 
-			switch (evt.key)
-			{
-				case "Enter":
-					recenterPage();
-					break;
-				default:
-					return;
-			}
-
-			evt.preventDefault();
+			gridui.visid = visinfo.months[0].id;
+			gridui.offset += (visinfo.index - gridui.buffer);
+			$timeout(updateUI);
 		}
 
 		this.onclickPrint = function() {
@@ -1053,6 +1037,22 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			};
 
 			$window.open("vpprint.htm");
+		}
+
+		this.onkeydown = function(evt) {
+			if (!evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey)
+				return;
+
+			switch (evt.key)
+			{
+				case "Enter":
+					onclickRecenter();
+					break;
+				default:
+					return;
+			}
+
+			evt.preventDefault();
 		}
 		
 		if ($scope.vpgridinit)
