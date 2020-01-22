@@ -977,20 +977,26 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			if (view.column)
 				return;
 
-			vpSettings.setGridView({column: true});
+			showGrid(false);
+			$timeout(function() {
+				vpSettings.setGridView({column: true});
 
-			initUI();
-			updateUI();
+				initUI();
+				updateUI();
+			});
 		}
 
 		this.onclickList = function() {
 			if (view.list)
 				return;
 
-			vpSettings.setGridView({list: true});
+			showGrid(false);
+			$timeout(function() {
+				vpSettings.setGridView({list: true});
 
-			initUI();
-			updateUI();
+				initUI();
+				updateUI();
+			});
 		}
 
 		this.onclickExpand = function() {
@@ -1013,11 +1019,12 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 		this.onclickRecenter = function() {
 			showGrid(false);
-			var visinfo = getVisInfo();
-
-			gridui.visid = visinfo.months[0].id;
-			gridui.offset += (visinfo.index - gridui.buffer);
-			$timeout(updateUI);
+			$timeout(function() {
+				var visinfo = getVisInfo();
+				gridui.visid = visinfo.months[0].id;
+				gridui.offset += (visinfo.index - gridui.buffer);
+				updateUI();
+			});
 		}
 
 		this.onclickPrint = function() {
