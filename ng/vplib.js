@@ -1053,7 +1053,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			switch (evt.key)
 			{
 				case "Enter":
-					onclickContinue();
+					this.onclickContinue();
 					break;
 				default:
 					return;
