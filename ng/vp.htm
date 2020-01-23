@@ -68,6 +68,19 @@ body {
 #banner .toolbtn.checked {
 	opacity: 1;
 }
+#navbar {
+	background-color: gainsboro;
+	opacity: 0.5;
+	font-size: 0.6em;
+	font-weight: bold;
+	padding: 0.3em;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+}
 #grid {
 	flex-grow: 1;
 	overflow: hidden;
@@ -124,6 +137,9 @@ body {
 			<img class="toolbtn right" src="continue.png" title="Continue (Ctrl+Enter)" draggable="false" ng-click="vpgrid.onclickContinue()"/>
 			<img class="toolbtn right" src="sync.png" title="Sync" draggable="false" ng-click="vpgrid.onclickSync($event)"/>
 		</div>
+	</div>
+	<div id="navbar" title="Go Here">
+		<div>&#9475</div><div>&#9679</div><div>2019</div><div>&#9679</div><div>&#9475</div><div>&#9679</div><div>2020</div><div>&#9679</div><div>&#9475</div><div>&#9679</div><div>2021</div><div>&#9679</div><div>&#9475</div>
 	</div>
 	<div id="grid" tabIndex="1"><vp-grid/></div>
 	<div id="calendarbar"><vp-calbar></div>
