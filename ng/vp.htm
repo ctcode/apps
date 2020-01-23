@@ -17,8 +17,12 @@ body {
 	min-width: 600px;
 	min-height: 400px;
 }
+#planner {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
 #banner {
-	height: 3em;
 	padding: 0.3em 1em;
 	box-sizing: border-box;
 	position: relative;
@@ -65,12 +69,12 @@ body {
 	opacity: 1;
 }
 #grid {
-	height: calc(100vh - 6em);
+	flex-grow: 1;
+	overflow: hidden;
 	border: none;
 	outline: none;
 }
 #calendarbar {
-	height: 3em;
 }
 #settings {
 	padding-top: 1em;
