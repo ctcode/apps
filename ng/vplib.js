@@ -861,7 +861,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 	var view = vpSettings.getGridView();
 
 	function fCtl($scope) {
-		var box = document.getElementById("vpbox");
+		var box = document.getElementById("vpgridbox");
 		var ngbox = angular.element(box);
 		var gridui;
 
@@ -894,6 +894,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
 			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
 			$scope.vpgrid.multi_day_opacity = cfg.multi_day_opacity;
+			$scope.vpgrid.navbar = {year: 2020};
+			$scope.vpgrid.calbar = vpEvents.calendars;
 
 			$scope.vpgrid.cls = {};
 			if (cfg.fixed_row_height)
@@ -1076,22 +1078,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		controllerAs: "vpgrid",
 		link: fLink,
 		templateUrl: "vpgrid.htm",
-		restrict: 'E'
-	};
-});
-
-
-
-//////////////////////////////////////////////////////////////////////
-
-angular.module("vpApp").directive("vpCalbar", function() {
-	function fCtl($scope, vpEvents) {
-		$scope.vpevents = vpEvents;
-	}
-
-	return {
-		controller: fCtl,
-		templateUrl: "vpcalbar.htm",
 		restrict: 'E'
 	};
 });
