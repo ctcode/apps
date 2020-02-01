@@ -278,11 +278,11 @@
 }
 </style>
 
-<div id="vpbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
+<div id="vpbox">
 	<div id="vpnavbar" title="Go Here" ng-if="vpgrid.navbar">
 		<div>&#9679</div><div>{{vpgrid.navbar.year-2}}</div><div>&#9679</div><div>{{vpgrid.navbar.year-1}}</div><div>&#9679</div><div>{{vpgrid.navbar.year}}</div><div>&#9679</div><div>{{vpgrid.navbar.year+1}}</div><div>&#9679</div><div>{{vpgrid.navbar.year+2}}</div><div>&#9679</div>
 	</div>
-	<div id="vpgridbox">
+	<div id="vpgridbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
 		<div id="vpgrid" ng-class="vpgrid.cls">
 			<div ng-repeat="month in vpgrid.page" id="{{month.id}}" class="vpmonth" ng-class="month.cls">
 				<div class="vphdr vplink" ng-click="month.onclickHdr()">{{month.hdr}}</div>
