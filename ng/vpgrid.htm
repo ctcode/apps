@@ -110,10 +110,11 @@
 	-webkit-user-select: none;
 }
 #vpcalbar {
-	padding: 0.3em 0;
+	height: 3em;
 	background-color: gainsboro;
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	overflow: hidden;
 	font-size: 0.65em;
 	user-select: none;
@@ -303,7 +304,7 @@
 			</div>
 		</div>
 	</div>
-	<div id="vpcalbar" ng-if="vpgrid.calbar">
+	<div id="vpcalbar">
 		<div class="vpcalbtn" ng-repeat="cal in vpgrid.calbar | orderBy: 'name'" ng-class="cal.cls" ng-click="cal.toggle()">
 			<span class="vpcalmarker" style="background-color: {{cal.colour.background}}"></span>
 			<span>{{cal.name}}</span>
