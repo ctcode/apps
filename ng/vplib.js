@@ -864,6 +864,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		var box = document.getElementById("vpgridbox");
 		var ngbox = angular.element(box);
 		var gridui;
+		
+		showGrid(false);
 
 		function initUI() {
 			gridui = {};
