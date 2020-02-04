@@ -1,5 +1,5 @@
 # visual-planner
-A standalone Web App which provides a 'year-view wall planner' visualisation of Google Calendar events.
+This web app provides a 'year-view wall planner' visualisation of Google Calendar events.
 
 [Go to visual-planner](vp.htm)
 
