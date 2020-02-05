@@ -644,7 +644,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		if (vdt.isPastMonth())
 			this.cls.past = true;
 
-		var vdtDay = vdt.clone();
+		var vdtDay = new VpDate(vdt.ymd());
 		var m = vdtDay.getMonth();
 		while (m == vdtDay.getMonth()) {
 			var vpday = new VpDay(this, vdtDay);
@@ -1099,12 +1099,6 @@ function VpDate(ymd) {
 		var today = new Date();
 		this.dt = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 	}
-}
-
-VpDate.prototype.clone = function() {
-	var cln = new VpDate();
-	cln.dt = new Date(this.dt);
-	return cln;
 }
 
 VpDate.prototype.ym = function() {
