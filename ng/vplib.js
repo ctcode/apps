@@ -563,6 +563,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	var gridview = vpSettings.getGridView();
 	var vpmonths = [];
 	var vpdays = [];
+	var ymdFirst;
 	vpEvents.register(addEvent, removeEvent, updateEvents);
 
 	this.makePage = function(pageoffset, pagelength) {
@@ -573,6 +574,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		vdt.toStartOfMonth();
 		vdt.offsetMonth(pageoffset);
 		vpEvents.setStartDate(vdt);
+		ymdFirst = vdt.ymd();
 
 		vpmonths = [];
 		vpdays = [];
@@ -599,7 +601,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	function addEvent(evt) {
 		$timeout.cancel(tmo);
 
-		var d = VpDate.DaySpan(vpdays[0].ymd, evt.start);
+		var d = VpDate.DaySpan(ymdFirst, evt.start);
 		for (var c=0; c < evt.duration; c++) {
 			if (vpdays[d])
 				vpdays[d].addEvent(evt, c);
@@ -1099,9 +1101,9 @@ function VpDate(ymd) {
 	}
 }
 
-VpDate.prototype.clone = function(vdt) {
+VpDate.prototype.clone = function() {
 	var cln = new VpDate();
-	cln.dt = new Date(vdt.dt);
+	cln.dt = new Date(this.dt);
 	return cln;
 }
 
@@ -1114,11 +1116,7 @@ VpDate.prototype.ymd = function() {
 }
 
 VpDate.prototype.isToday = function() {
-	return (this.dt == VpDate.today);
-}
-
-VpDate.prototype.daysTo = function(vdt) {
-	return (vdt.dt - this.dt)/86400000;
+	return (this.dt.valueOf() == VpDate.today.dt.valueOf());
 }
 
 VpDate.prototype.getMonth = function() {
@@ -1185,12 +1183,11 @@ VpDate.ymdstr = ["-01", "-02", "-03", "-04", "-05", "-06", "-07", "-08", "-09", 
 
 VpDate.weekends = [0, 6];
 VpDate.localemonth = [];
+VpDate.today = new VpDate();
 
-VpDate.DaySpan = function(ymd1, ymd2)
-{
+VpDate.DaySpan = function(ymd1, ymd2) {
 	return (Date.parse(ymd2) - Date.parse(ymd1))/86400000;
 }
-VpDate.today = new VpDate().dt;
 
 
 
