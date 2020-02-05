@@ -1093,7 +1093,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 function VpDate(ymd) {
 	if (ymd) {
 		this.dt = new Date(parseInt(ymd.substr(0,4)), parseInt(ymd.substr(5,2))-1, parseInt(ymd.substr(8,2)));  // local
-		//this.dt = new Date(ymd);  // utc
+		//this.dt = new Date(ymd);  // iso
 	}
 	else {
 		var today = new Date();
