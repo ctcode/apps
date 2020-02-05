@@ -637,6 +637,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		this.id = "M-" + vdt.ym();
 		this.hdr = vdt.MonthTitle();
 		this.gcal = vdt.GCalURL();
+		this.year = vdt.dt.getFullYear();
 		this.days = [];
 		this.dayoffset = 0;
 		this.cls = {};
@@ -898,9 +899,11 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
 			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
 			$scope.vpgrid.multi_day_opacity = cfg.multi_day_opacity;
-			$scope.vpgrid.navbar = {year: 2020};
 			$scope.vpgrid.calbar = vpEvents.calendars;
 
+			var m = Math.floor(vpAlmanac.getPage().length / 2);
+			$scope.vpgrid.navbar = {year: vpAlmanac.getMonth(m).year};
+			
 			$scope.vpgrid.cls = {};
 			if (cfg.fixed_row_height)
 				$scope.vpgrid.cls.fixrow = true;
