@@ -529,9 +529,12 @@ angular.module("vpApp").service("vpEvents", function($window, $timeout, vpAccoun
 		fUpdate = update;
 	}
 
-	this.setDateSpan = function(span) {
-		isoSpan.start = new Date(span.start).toISOString();
-		isoSpan.end = new Date(span.end).toISOString();
+	this.setStartDate = function(vdt) {
+		isoSpan.start = vdt.dt.toISOString();
+	}
+
+	this.setEndDate = function(vdt) {
+		isoSpan.end = vdt.dt.toISOString();
 	}
 
 	this.load = function() {
@@ -560,7 +563,6 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	var gridview = vpSettings.getGridView();
 	var vpmonths = [];
 	var vpdays = [];
-	var datespan;
 	vpEvents.register(addEvent, removeEvent, updateEvents);
 
 	this.makePage = function(pageoffset, pagelength) {
@@ -570,20 +572,18 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		var vdt = new VpDate();
 		vdt.toStartOfMonth();
 		vdt.offsetMonth(pageoffset);
-		var isoStart = vdt.dt.toISOString();
-		datespan = {start: vdt.ymd()};
+		vpEvents.setStartDate(vdt);
 
 		vpmonths = [];
 		vpdays = [];
 		for (var i=0; i < pagelength; i++) {
-			var month = new VpMonth(vdt.ymd());
+			var month = new VpMonth(vdt);
 			month.index = vpmonths.length;
 			vpmonths.push(month);
 			vdt.offsetMonth(1);
-			datespan.end = vdt.ymd();
+			vpEvents.setEndDate(vdt);
 		}
 
-		vpEvents.setDateSpan(datespan);
 		vpEvents.load();
 	}
 
@@ -631,11 +631,10 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			month.updateLayout();
 	}
 
-	function VpMonth(ymd) {
-		var vdt = new VpDate(ymd);
-
-		this.id = vdt.MonthID();
+	function VpMonth(vdt) {
+		this.id = "M-" + vdt.ym();
 		this.hdr = vdt.MonthTitle();
+		this.gcal = vdt.GCalURL();
 		this.days = [];
 		this.dayoffset = 0;
 		this.cls = {};
@@ -643,14 +642,15 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		if (vdt.isPastMonth())
 			this.cls.past = true;
 
-		var m = vdt.getMonth();
-		while (m == vdt.getMonth()) {
-			var vpday = new VpDay(this, vdt);
+		var vdtDay = vdt.clone();
+		var m = vdtDay.getMonth();
+		while (m == vdtDay.getMonth()) {
+			var vpday = new VpDay(this, vdtDay);
 			vpday.index = this.days.length;
 
 			if (vpday.index == 0) {
 				if (cfg.align_weekends) {
-					this.dayoffset = vdt.DayOfWeek() - cfg.first_day_of_week;
+					this.dayoffset = vdtDay.DayOfWeek() - cfg.first_day_of_week;
 					
 					if (this.dayoffset < 0)
 						this.dayoffset += 7;
@@ -662,7 +662,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			this.days.push(vpday);
 			vpdays.push(vpday);
 
-			vdt.offsetDay(1);
+			vdtDay.offsetDay(1);
 		}
 	
 		this.addEvent = function(day, addevt, seq) {
@@ -703,19 +703,19 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	}
 	
 	VpMonth.prototype.onclickHdr = function() {
-		$window.open("https://www.google.com/calendar/r/month/" + new VpDate(this.days[0].ymd).GCalURL());
+		$window.open("https://www.google.com/calendar/r/month/" + this.gcal);
 	}
 
 	function VpDay(vpmonth, vdt) {
-		this.ymd = vdt.ymd();
 		this.num = vdt.DayOfMonth();
+		this.gcal = vdt.GCalURL();
 		this.month = vpmonth;
 		this.cls = {};
 
 		if (vdt.isWeekend())
 			this.cls.weekend = true;
 
-		if (VpDate.isToday(this.ymd))
+		if (vdt.isToday())
 			this.cls.today = true;
 	}
 	
@@ -755,7 +755,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	}
 	
 	VpDay.prototype.onclickNum = function() {
-		$window.open("https://www.google.com/calendar/r/week/" + new VpDate(this.ymd).GCalURL());
+		$window.open("https://www.google.com/calendar/r/week/" + this.gcal);
 	}
 
 	function VpLabel(vpevent) {
@@ -1088,76 +1088,78 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 //////////////////////////////////////////////////////////////////////
 
-function VpDate(ymd)
-{
-	this.dt = new Date();
-
-	this.dt.setHours(0,0,0,0);
-	
-	if (ymd)
-		this.dt.setFullYear(parseInt(ymd.substr(0,4)), parseInt(ymd.substr(5,2))-1, parseInt(ymd.substr(8,2)));  // local
+function VpDate(ymd) {
+	if (ymd) {
+		this.dt = new Date(parseInt(ymd.substr(0,4)), parseInt(ymd.substr(5,2))-1, parseInt(ymd.substr(8,2)));  // local
 		//this.dt = new Date(ymd);  // utc
+	}
+	else {
+		var today = new Date();
+		this.dt = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+	}
 }
 
-VpDate.prototype.ymd = function()
-{
-	return this.dt.getFullYear() + VpDate.ymdstr[this.dt.getMonth()] + VpDate.ymdstr[this.dt.getDate()-1];
+VpDate.prototype.clone = function(vdt) {
+	var cln = new VpDate();
+	cln.dt = new Date(vdt.dt);
+	return cln;
 }
 
-VpDate.prototype.ymdnum = function()
-{
-	return ((this.dt.getFullYear()*10000) + ((this.dt.getMonth()+1)*100) + this.dt.getDate());
+VpDate.prototype.ym = function() {
+	return this.dt.getFullYear() + VpDate.ymdstr[this.dt.getMonth()];
 }
 
-VpDate.prototype.getMonth = function()
-{
+VpDate.prototype.ymd = function() {
+	return this.ym() + VpDate.ymdstr[this.dt.getDate()-1];
+}
+
+VpDate.prototype.isToday = function() {
+	return (this.dt == VpDate.today);
+}
+
+VpDate.prototype.daysTo = function(vdt) {
+	return (vdt.dt - this.dt)/86400000;
+}
+
+VpDate.prototype.getMonth = function() {
 	return this.dt.getMonth()+1;
 }
 
-VpDate.prototype.offsetDay = function(off)
-{
+VpDate.prototype.offsetDay = function(off) {
 	this.dt.setDate(this.dt.getDate() + off);
 }
 
-VpDate.prototype.offsetMonth = function(off)
-{
+VpDate.prototype.offsetMonth = function(off) {
 	this.dt.setMonth(this.dt.getMonth() + off);
 }
 
-VpDate.prototype.toStartOfWeek = function(startday)
-{
+VpDate.prototype.toStartOfWeek = function(startday) {
 	while (this.dt.getDay() != startday)
 		this.dt.setDate(this.dt.getDate() - 1);
 }
 
-VpDate.prototype.toStartOfMonth = function()
-{
+VpDate.prototype.toStartOfMonth = function() {
 	this.dt.setDate(1);
 }
 
-VpDate.prototype.toStartOfYear = function()
-{
+VpDate.prototype.toStartOfYear = function() {
 	this.dt.setMonth(0);
 	this.dt.setDate(1);
 }
 
-VpDate.prototype.DayOfMonth = function()
-{
+VpDate.prototype.DayOfMonth = function() {
 	return this.dt.getDate();
 }
 
-VpDate.prototype.DayOfWeek = function()
-{
+VpDate.prototype.DayOfWeek = function() {
 	return this.dt.getDay();
 }
 
-VpDate.prototype.isWeekend = function()
-{
+VpDate.prototype.isWeekend = function() {
 	return (VpDate.weekends.includes(this.dt.getDay()));
 }
 
-VpDate.prototype.isPastMonth = function()
-{
+VpDate.prototype.isPastMonth = function() {
 	var today = new Date();
 	
 	if (this.dt.getYear() < today.getYear())
@@ -1169,18 +1171,11 @@ VpDate.prototype.isPastMonth = function()
 	return (this.dt.getMonth() < today.getMonth());
 }
 
-VpDate.prototype.MonthTitle = function()
-{
+VpDate.prototype.MonthTitle = function() {
 	return fmt("^ ^", VpDate.localemonth[this.dt.getMonth()], this.dt.getFullYear());
 }
 
-VpDate.prototype.MonthID = function()
-{
-	return "M-" + this.dt.getFullYear() + VpDate.ymdstr[this.dt.getMonth()];
-}
-
-VpDate.prototype.GCalURL = function()
-{
+VpDate.prototype.GCalURL = function() {
 	return fmt("^/^/^", this.dt.getFullYear(), this.dt.getMonth()+1, this.dt.getDate());
 }
 
@@ -1191,49 +1186,38 @@ VpDate.ymdstr = ["-01", "-02", "-03", "-04", "-05", "-06", "-07", "-08", "-09", 
 VpDate.weekends = [0, 6];
 VpDate.localemonth = [];
 
-VpDate.ymdtoday = new VpDate().ymd();
-
-VpDate.isToday = function(ymd)
-{
-	return (ymd == VpDate.ymdtoday);
-}
-
 VpDate.DaySpan = function(ymd1, ymd2)
 {
 	return (Date.parse(ymd2) - Date.parse(ymd1))/86400000;
 }
+VpDate.today = new VpDate().dt;
 
 
 
 
 /////////////////////////////////////////////////////////////////
 
-function VpDateTime(iso)
-{
+function VpDateTime(iso) {
 	this.dt = new Date(iso);
 }
 
 VpDateTime.prototype = new VpDate;
 
-VpDateTime.prototype.DayMinutes = function()
-{
+VpDateTime.prototype.DayMinutes = function() {
 	return ((this.dt.getHours()*60) + this.dt.getMinutes());
 }
 
-VpDateTime.prototype.TimeTitle = function()
-{
+VpDateTime.prototype.TimeTitle = function() {
 	var hh = this.dt.getHours();
 	var mm = this.dt.getMinutes();
 	var ss = this.dt.getSeconds();
 	
 	var minutes = fmt((mm < 10) ? "0^" : "^", mm);
 
-	if (VpDateTime.time24h)
-	{
+	if (VpDateTime.time24h) 	{
 		return fmt("^:^", hh, minutes);
 	}
-	else
-	{
+	else {
 		var hours = (hh > 12) ? (hh-12) : hh;
 		return fmt((hh < 12) ? "^:^am" : "^:^pm", hours, minutes);
 	}
