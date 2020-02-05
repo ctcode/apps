@@ -280,8 +280,8 @@
 </style>
 
 <div id="vpbox">
-	<div id="vpnavbar" title="Go Here" ng-if="vpgrid.navbar">
-		<div>&#9679</div><div>{{vpgrid.navbar.year-2}}</div><div>&#9679</div><div>{{vpgrid.navbar.year-1}}</div><div>&#9679</div><div>{{vpgrid.navbar.year}}</div><div>&#9679</div><div>{{vpgrid.navbar.year+1}}</div><div>&#9679</div><div>{{vpgrid.navbar.year+2}}</div><div>&#9679</div>
+	<div id="vpnavbar" title="Navigate here" ng-if="vpgrid.navbar" ng-click="vpgrid.onclickNavbar($event)">
+		<div>&#9679</div><div>{{vpgrid.navbar.year-2}}</div><div>&#9679</div><div>{{vpgrid.navbar.year-1}}</div><div>&#9679</div><div id="nav-year">{{vpgrid.navbar.year}}</div><div>&#9679</div><div id="nav-year-next">{{vpgrid.navbar.year+1}}</div><div>&#9679</div><div>{{vpgrid.navbar.year+2}}</div><div>&#9679</div>
 	</div>
 	<div id="vpgridbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
 		<div id="vpgrid" ng-class="vpgrid.cls">

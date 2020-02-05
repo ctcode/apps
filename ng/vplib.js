@@ -1055,6 +1055,23 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$window.open("vpprint.htm");
 		}
 
+		this.onclickNavbar = function(evt) {
+			var navdiv = document.getElementById("vpnavbar");
+			var yeardiv = document.getElementById("nav-year");
+			var nextdiv = document.getElementById("nav-year-next");
+			var year_pt = navdiv.offsetWidth / 2;
+			var year_px = nextdiv.offsetLeft - yeardiv.offsetLeft;
+			var click_off = evt.clientX - year_pt;
+			var month_off = Math.round((click_off / year_px) * 12);
+
+			showGrid(false);
+			$timeout(function() {
+				gridui.visid = null;
+				gridui.offset += month_off;
+				updateUI();
+			});
+		}
+
 		this.onkeydown = function(evt) {
 			if (!evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey)
 				return;
