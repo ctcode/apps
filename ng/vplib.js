@@ -1060,16 +1060,21 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			var yeardiv = document.getElementById("nav-year");
 			var nextdiv = document.getElementById("nav-year-next");
 			var year_pt = navdiv.offsetWidth / 2;
-			var year_px = nextdiv.offsetLeft - yeardiv.offsetLeft;
+			var day_px = (nextdiv.offsetLeft - yeardiv.offsetLeft) / 365;
 			var click_off = evt.clientX - year_pt;
-			var month_off = Math.round((click_off / year_px) * 12);
+			var day_off = Math.round(click_off / day_px);
 
+			var click_month = new Date($scope.vpgrid.navbar.year, 6, day_off);
+			alert(click_month.getFullYear() + "-" + (click_month.getMonth()+1));
+
+/*
 			showGrid(false);
 			$timeout(function() {
 				gridui.visid = null;
 				gridui.offset += month_off;
 				updateUI();
 			});
+*/			
 		}
 
 		this.onkeydown = function(evt) {
