@@ -603,8 +603,17 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 
 		var d = VpDate.DaySpan(ymdFirst, evt.start);
 		for (var c=0; c < evt.duration; c++) {
-			if (vpdays[d])
-				vpdays[d].addEvent(evt, c);
+			if (vpdays[d]) {
+				var border = {};
+
+				if (c == 0)
+					border.first = true;
+
+				if (c == evt.duration - 1)
+					border.last = true;
+
+				vpdays[d].addEvent(evt, border);
+			}
 
 			d++;
 		}
@@ -668,19 +677,20 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			vdtDay.offsetDay(1);
 		}
 	
-		this.addEvent = function(day, addevt, seq) {
+		this.addEvent = function(day, addevt, border) {
 			if (!this.labels)
 				this.labels = [];
 			
 			for (var lab of this.labels) {
 				if (lab.evt === addevt) {
-					lab.setCellEnd(day.index, seq);
+					lab.setCellEnd(day.index, border);
 					return;
 				}
 			}
 		
 			lab = new VpLabel(addevt);
-			lab.setCellStart(this, day.index, seq);
+			lab.setCellStart(this, day.index, border);
+			lab.setCellEnd(day.index, border);
 			this.labels.push(lab);
 		}
 		
@@ -722,9 +732,9 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 			this.cls.today = true;
 	}
 	
-	VpDay.prototype.addEvent = function(evt, seq) {
+	VpDay.prototype.addEvent = function(evt, border) {
 		if ((evt.duration > 1) || (cfg.single_day_as_multi_day && !evt.timed)) {
-			this.month.addEvent(this, evt, seq);
+			this.month.addEvent(this, evt, border);
 			return;
 		}
 		
@@ -763,6 +773,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 
 	function VpLabel(vpevent) {
 		this.evt = vpevent;
+		this.cls = {};
 		this.style = {};
 
 		var month;
@@ -775,30 +786,22 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		if (clr.background)
 			this.style["background-color"] = clr.background;
 		
-		this.setCellStart = function(vpmonth, iday, seq) {
+		this.setCellStart = function(vpmonth, iday, border) {
 			month = vpmonth;
 			day = iday;
 			span = 1;
 			
 			this.multiboxstyle = {};
-			this.updateBorderRadius(seq);
+
+			if (border.first)
+				this.cls.borderfirst = true;
 		}
 		
-		this.setCellEnd = function(iday, seq) {
+		this.setCellEnd = function(iday, border) {
 			span = (iday - day) + 1;
-			this.updateBorderRadius(seq);
-		}
-		
-		this.updateBorderRadius = function(seq) {
-			if (seq == 0) {
-				this.style["border-top-left-radius"] = "1em";
-				this.style[gridview.column ? "border-top-right-radius" : "border-bottom-left-radius"] = "1em";
-			}
-			
-			if (seq+1 == this.evt.duration) {
-				this.style["border-bottom-right-radius"] = "1em";
-				this.style[gridview.column ? "border-bottom-left-radius" : "border-top-right-radius"] = "1em";
-			}
+
+			if (border.last)
+				this.cls.borderlast = true;
 		}
 		
 		this.updateLayout = function(slots) {

@@ -110,7 +110,7 @@
 	-webkit-user-select: none;
 }
 #vpcalbar {
-	height: 3em;
+	min-height: 3em;
 	background-color: gainsboro;
 	display: flex;
 	justify-content: center;
@@ -185,6 +185,14 @@
 		padding: 0.5em 0;
 		writing-mode: vertical-rl;
 	}
+	.vplabel.multiday.borderfirst {
+		border-top-left-radius: 1em;
+		border-top-right-radius: 1em;
+	}
+	.vplabel.multiday.borderlast {
+		border-bottom-right-radius: 1em;
+		border-bottom-left-radius: 1em;
+	}
 	</style>
 
 	<span ng-if="vpgrid.view.collapse">
@@ -253,6 +261,14 @@
 		width: 100%;
 		padding: 0 0.5em;
 	}
+	.vplabel.multiday.borderfirst {
+		border-top-left-radius: 1em;
+		border-bottom-left-radius: 1em;
+	}
+	.vplabel.multiday.borderlast {
+		border-top-right-radius: 1em;
+		border-bottom-right-radius: 1em;
+	}
 	</style>
 
 	<span ng-if="vpgrid.view.collapse">
@@ -280,7 +296,7 @@
 </style>
 
 <div id="vpbox">
-	<div id="vpnavbar" ng-if="vpgrid.navbar" ng-click="vpgrid.onclickNavbar($event)">
+	<div id="vpnavbar" title="View" ng-if="vpgrid.navbar" ng-click="vpgrid.onclickNavbar($event)">
 		<div>&#9679</div><div>{{vpgrid.navbar.year-2}}</div><div>&#9679</div><div>{{vpgrid.navbar.year-1}}</div><div>&#9679</div><div id="nav-year">{{vpgrid.navbar.year}}</div><div>&#9679</div><div id="nav-year-next">{{vpgrid.navbar.year+1}}</div><div>&#9679</div><div>{{vpgrid.navbar.year+2}}</div><div>&#9679</div>
 	</div>
 	<div id="vpgridbox" tabindex="0" ng-keydown="vpgrid.onkeydown($event)">
@@ -297,7 +313,7 @@
 				</div>
 				<div class="vpftr"></div>
 				<div ng-repeat="label in month.labels" class="vpmultilabelbox" ng-style="label.multiboxstyle">
-					<div class="vplabel vplink multiday" title="{{label.evt.cal.name}} - {{label.evt.title}}" ng-style="label.style" ng-click="label.evt.edit()">
+					<div class="vplabel vplink multiday" title="{{label.evt.cal.name}} - {{label.evt.title}}" ng-class="label.cls" ng-style="label.style" ng-click="label.evt.edit()">
 						<span class="vplabeltext">{{label.evt.title}}</span>
 					</div>
 				</div>
