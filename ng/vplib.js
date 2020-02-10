@@ -676,6 +676,9 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 
 			vdtDay.offsetDay(1);
 		}
+		
+		if (vdt.isCurrentMonth())
+			this.days[new Date().getDate()-1].cls.today = true;
 	
 		this.addEvent = function(day, addevt, border) {
 			if (!this.labels)
@@ -727,9 +730,6 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 
 		if (vdt.isWeekend())
 			this.cls.weekend = true;
-
-		if (vdt.isToday())
-			this.cls.today = true;
 	}
 	
 	VpDay.prototype.addEvent = function(evt, border) {
@@ -1137,10 +1137,6 @@ VpDate.prototype.ymd = function() {
 	return this.ym() + VpDate.ymdstr[this.dt.getDate()-1];
 }
 
-VpDate.prototype.isToday = function() {
-	return (this.dt.valueOf() == VpDate.today.dt.valueOf());
-}
-
 VpDate.prototype.getMonth = function() {
 	return this.dt.getMonth()+1;
 }
@@ -1191,6 +1187,11 @@ VpDate.prototype.isPastMonth = function() {
 	return (this.dt.getMonth() < today.getMonth());
 }
 
+VpDate.prototype.isCurrentMonth = function() {
+	var today = new Date();
+	return (this.dt.getFullYear() == today.getFullYear() && this.dt.getMonth() == today.getMonth());
+}
+
 VpDate.prototype.MonthTitle = function() {
 	return fmt("^ ^", VpDate.localemonth[this.dt.getMonth()], this.dt.getFullYear());
 }
@@ -1205,11 +1206,27 @@ VpDate.ymdstr = ["-01", "-02", "-03", "-04", "-05", "-06", "-07", "-08", "-09", 
 
 VpDate.weekends = [0, 6];
 VpDate.localemonth = [];
-VpDate.today = new VpDate();
 
 VpDate.DaySpan = function(ymd1, ymd2) {
 	return (Date.parse(ymd2) - Date.parse(ymd1))/86400000;
 }
+
+
+
+
+/////////////////////////////////////////////////////////////////
+
+function VpDateMonth(yyyy, mm) {
+	if (yyyy && mm) {
+		this.dt = new Date(yyyy, mm-1);
+	}
+	else {
+		var today = new Date();
+		this.dt = new Date(today.getFullYear(), today.getMonth());
+	}
+}
+
+VpDateMonth.prototype = new VpDate;
 
 
 
