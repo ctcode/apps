@@ -904,9 +904,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
 			$scope.vpgrid.multi_day_opacity = cfg.multi_day_opacity;
 			$scope.vpgrid.calbar = vpEvents.calendars;
-
-			var m = Math.floor(vpAlmanac.getPage().length / 2);
-			$scope.vpgrid.navbar = {year: vpAlmanac.getMonth(m).year};
+			$scope.vpgrid.navbar = {year: vpAlmanac.getMonth(gridui.buffer).year};
 			
 			$scope.vpgrid.cls = {};
 			if (cfg.fixed_row_height)
