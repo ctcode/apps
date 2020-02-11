@@ -566,13 +566,10 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 	var ymdFirst;
 	vpEvents.register(addEvent, removeEvent, updateEvents);
 
-	this.makePage = function(pageoffset, pagelength) {
+	this.makePage = function(vdt, pagelength) {
 		VpDate.weekends = cfg.weekends.split(',').map(s => parseInt(s));
 		VpDate.localemonth = cfg.month_names.split('-');
 		
-		var vdt = new VpDate();
-		vdt.toStartOfMonth();
-		vdt.offsetMonth(pageoffset);
 		vpEvents.setStartDate(vdt);
 		ymdFirst = vdt.ymd();
 
@@ -875,25 +872,28 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 		function initUI() {
 			gridui = {};
+			gridui.vdt = new VpDateMonth();
 			gridui.buffer = cfg.disable_scroll ? 0 : 6;
 			gridui.vislength = cfg.month_count;
 			gridui.length = gridui.buffer + gridui.vislength + gridui.buffer;
 			
 			if (cfg.auto_scroll) {
-				gridui.offset = cfg.auto_scroll_offset - gridui.buffer;
+				gridui.vdt.offsetMonth(cfg.auto_scroll_offset);
 			}
 			else {
 				var off = ((cfg.first_month-1) - new Date().getMonth());
 				if (off > 0) off -= 12;
-				gridui.offset = off - gridui.buffer;
+				gridui.vdt.offsetMonth(off);
 			}
+
+			gridui.vdt.offsetMonth(-gridui.buffer);
 
 			if (cfg.hide_scrollbars)
 				ngbox.addClass("hidescroll");
 		}
 
 		function updateUI() {
-			vpAlmanac.makePage(gridui.offset, gridui.length);
+			vpAlmanac.makePage(new VpDate(gridui.vdt.ymd()), gridui.length);
 			$scope.vpgrid.page = vpAlmanac.getPage();
 			$scope.vpgrid.gridareas = getGridAreas(vpAlmanac.getPage());
 			$scope.vpgrid.view = view;
@@ -1034,7 +1034,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$timeout(function() {
 				var visinfo = getVisInfo();
 				gridui.visid = visinfo.months[0].id;
-				gridui.offset += (visinfo.index - gridui.buffer);
+				gridui.vdt.offsetMonth(visinfo.index - gridui.buffer);
 				updateUI();
 			});
 		}
@@ -1066,18 +1066,15 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			var day_px = (nextdiv.offsetLeft - yeardiv.offsetLeft) / 365;
 			var click_off = evt.clientX - year_pt;
 			var day_off = Math.round(click_off / day_px);
-
 			var click_month = new Date($scope.vpgrid.navbar.year, 6, day_off);
-			alert(click_month.getFullYear() + "-" + (click_month.getMonth()+1));
 
-/*
 			showGrid(false);
 			$timeout(function() {
 				gridui.visid = null;
-				gridui.offset += month_off;
+				gridui.vdt = new VpDateMonth(click_month.getFullYear(), click_month.getMonth()+1);
+				gridui.vdt.offsetMonth(-gridui.buffer);
 				updateUI();
 			});
-*/			
 		}
 
 		this.onkeydown = function(evt) {
