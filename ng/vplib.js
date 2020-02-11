@@ -575,12 +575,13 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 
 		vpmonths = [];
 		vpdays = [];
+		var vdtNext = new VpDate(vdt);
 		for (var i=0; i < pagelength; i++) {
-			var month = new VpMonth(vdt);
+			var month = new VpMonth(vdtNext);
 			month.index = vpmonths.length;
 			vpmonths.push(month);
-			vdt.offsetMonth(1);
-			vpEvents.setEndDate(vdt);
+			vdtNext.offsetMonth(1);
+			vpEvents.setEndDate(vdtNext);
 		}
 
 		vpEvents.load();
@@ -651,7 +652,7 @@ angular.module("vpApp").service("vpAlmanac", function($timeout, vpSettings, vpEv
 		if (vdt.isPastMonth())
 			this.cls.past = true;
 
-		var vdtDay = new VpDate(vdt.ymd());
+		var vdtDay = new VpDate(vdt);
 		var m = vdtDay.getMonth();
 		while (m == vdtDay.getMonth()) {
 			var vpday = new VpDay(this, vdtDay);
@@ -872,7 +873,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 		function initUI() {
 			gridui = {};
-			gridui.vdt = new VpDateMonth();
+			gridui.vdt = new VpDateMonth;
 			gridui.buffer = cfg.disable_scroll ? 0 : 6;
 			gridui.vislength = cfg.month_count;
 			gridui.length = gridui.buffer + gridui.vislength + gridui.buffer;
@@ -893,7 +894,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 		}
 
 		function updateUI() {
-			vpAlmanac.makePage(new VpDate(gridui.vdt.ymd()), gridui.length);
+			vpAlmanac.makePage(gridui.vdt, gridui.length);
 			$scope.vpgrid.page = vpAlmanac.getPage();
 			$scope.vpgrid.gridareas = getGridAreas(vpAlmanac.getPage());
 			$scope.vpgrid.view = view;
@@ -924,7 +925,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			if (show) {
 				box.style.visibility = "";
 				box.focus();
-				//ngbox.on("scroll", onScroll);
 			}
 			else {
 				box.style.visibility = "hidden";
@@ -1115,13 +1115,12 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 //////////////////////////////////////////////////////////////////////
 
-function VpDate(ymd) {
-	if (ymd) {
-		this.dt = new Date(parseInt(ymd.substr(0,4)), parseInt(ymd.substr(5,2))-1, parseInt(ymd.substr(8,2)));  // local
-		//this.dt = new Date(ymd);  // iso
+function VpDate(vdt) {
+	if (vdt instanceof VpDate) {
+		this.dt = new Date(vdt.dt);
 	}
 	else {
-		var today = new Date();
+		var today = new Date;
 		this.dt = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 	}
 }
@@ -1173,7 +1172,7 @@ VpDate.prototype.isWeekend = function() {
 }
 
 VpDate.prototype.isPastMonth = function() {
-	var today = new Date();
+	var today = new Date;
 	
 	if (this.dt.getYear() < today.getYear())
 		return true;
@@ -1185,7 +1184,7 @@ VpDate.prototype.isPastMonth = function() {
 }
 
 VpDate.prototype.isCurrentMonth = function() {
-	var today = new Date();
+	var today = new Date;
 	return (this.dt.getFullYear() == today.getFullYear() && this.dt.getMonth() == today.getMonth());
 }
 
@@ -1204,6 +1203,15 @@ VpDate.ymdstr = ["-01", "-02", "-03", "-04", "-05", "-06", "-07", "-08", "-09", 
 VpDate.weekends = [0, 6];
 VpDate.localemonth = [];
 
+/*
+VpDate.fromYMD = function(ymd) {
+	vdt = new VpDate;
+	vdt.dt = new Date(parseInt(ymd.substr(0,4)), parseInt(ymd.substr(5,2))-1, parseInt(ymd.substr(8,2)));  // local
+	//vdt.dt = new Date(ymd);  // iso
+	return vdt;
+}
+*/
+
 VpDate.DaySpan = function(ymd1, ymd2) {
 	return (Date.parse(ymd2) - Date.parse(ymd1))/86400000;
 }
@@ -1218,7 +1226,7 @@ function VpDateMonth(yyyy, mm) {
 		this.dt = new Date(yyyy, mm-1);
 	}
 	else {
-		var today = new Date();
+		var today = new Date;
 		this.dt = new Date(today.getFullYear(), today.getMonth());
 	}
 }
