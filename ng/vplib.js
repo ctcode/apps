@@ -98,7 +98,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 		first_month: 1,
 		hide_scrollbars: false,
 		disable_scroll: false,
-		fixed_row_height: false,
+		same_row_height: false,
 		align_weekends: true,
 		weekends: "6,0",
 		first_day_of_week: 1,
@@ -907,8 +907,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.navbar = {year: vpAlmanac.getMonth(gridui.buffer).year};
 			
 			$scope.vpgrid.cls = {};
-			if (cfg.fixed_row_height)
-				$scope.vpgrid.cls.fixrow = true;
+			if (!cfg.same_row_height)
+				$scope.vpgrid.cls.flexrow = true;
 
 			$timeout(function() {
 				if (!gridui.visid)

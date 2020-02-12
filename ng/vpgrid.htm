@@ -146,7 +146,6 @@
 <span ng-if="vpgrid.view.column">
 	<style>
 	#vpgrid {
-		height: 100%;
 		width: {{vpgrid.scroll_size}}%;
 		grid-auto-flow: column;
 		grid-template-rows: 3em repeat(37, 1fr) 1em;
@@ -198,6 +197,7 @@
 	<span ng-if="vpgrid.view.collapse">
 		<style>
 		#vpgrid {
+			height: 100%;
 			grid-auto-columns: minmax(10em, 1fr);
 		}
 		.vpdaylabels {
@@ -216,8 +216,8 @@
 		#vpgrid {
 			grid-auto-columns: 1fr;
 		}
-		#vpgrid.fixrow {
-			height: auto;
+		#vpgrid.flexrow {
+			height: 100%;
 		}
 		</style>
 	</span>
@@ -275,14 +275,6 @@
 		<style>
 		.vplabel {
 			white-space: nowrap;
-		}
-		</style>
-	</span>
-
-	<span ng-if="vpgrid.view.expand">
-		<style>
-		#vpgrid.fixrow {
-			height: auto;
 		}
 		</style>
 	</span>
