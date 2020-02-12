@@ -1261,24 +1261,17 @@ VpDateTime.time24h = true;
 
 /////////////////////////////////////////////////////////////////
 
-function fmt(fmtspec)
-// returns string consisting of format specification with '^' placeholders
-// replaced in sequence by any parameters supplied
-{
+function fmt(fmtspec) {
 	var str = "";
 	var arg=1;
-	for (var i in fmtspec)
-	{
-		if (fmtspec[i] == '^')
-		{
-			if (arg < arguments.length)
-			{
+	for (var i in fmtspec) {
+		if (fmtspec[i] == '^') {
+			if (arg < arguments.length) {
 				str += arguments[arg];
 				arg++;
 			}
 		}
-		else
-		{
+		else {
 			str += fmtspec[i];
 		}
 	}
