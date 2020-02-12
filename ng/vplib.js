@@ -867,54 +867,61 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 	function fCtl($scope) {
 		var box = document.getElementById("vpgridbox");
 		var ngbox = angular.element(box);
-		var gridui;
+		var vdt;
+		var buffer;
+		var pagelength;
+		var vislength;
 		
 		showGrid(false);
 
 		function initUI() {
-			gridui = {};
-			gridui.vdt = new VpDateMonth;
-			gridui.buffer = cfg.disable_scroll ? 0 : 6;
-			gridui.vislength = cfg.month_count;
-			gridui.length = gridui.buffer + gridui.vislength + gridui.buffer;
+			vdt = new VpDateMonth;
+			buffer = cfg.disable_scroll ? 0 : 6;
+			vislength = cfg.month_count;
+			pagelength = buffer + vislength + buffer;
 			
 			if (cfg.auto_scroll) {
-				gridui.vdt.offsetMonth(cfg.auto_scroll_offset);
+				vdt.offsetMonth(cfg.auto_scroll_offset);
 			}
 			else {
 				var off = ((cfg.first_month-1) - new Date().getMonth());
 				if (off > 0) off -= 12;
-				gridui.vdt.offsetMonth(off);
+				vdt.offsetMonth(off);
 			}
-
-			gridui.vdt.offsetMonth(-gridui.buffer);
 
 			if (cfg.hide_scrollbars)
 				ngbox.addClass("hidescroll");
 		}
 
 		function updateUI() {
-			vpAlmanac.makePage(gridui.vdt, gridui.length);
+			var vdtPage = new VpDate(vdt);
+			vdtPage.offsetMonth(-buffer);
+
+			vpAlmanac.makePage(vdtPage, pagelength);
 			$scope.vpgrid.page = vpAlmanac.getPage();
-			$scope.vpgrid.gridareas = getGridAreas(vpAlmanac.getPage());
+			$scope.vpgrid.gridareas = getGridAreas($scope.vpgrid.page);
 			$scope.vpgrid.view = view;
 			$scope.vpgrid.fontscale = cfg.font_scale_pc/100;
 			$scope.vpgrid.past_opacity = cfg.past_opacity;
-			$scope.vpgrid.scroll_size = (gridui.length / cfg.month_count)*100;
+			$scope.vpgrid.scroll_size = (pagelength / vislength)*100;
 			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
 			$scope.vpgrid.multi_day_opacity = cfg.multi_day_opacity;
 			$scope.vpgrid.calbar = vpEvents.calendars;
-			$scope.vpgrid.navbar = {year: vpAlmanac.getMonth(gridui.buffer).year};
+			$scope.vpgrid.navbar = {year: vdt.dt.getFullYear()};
 			
 			$scope.vpgrid.cls = {};
 			if (!cfg.same_row_height)
 				$scope.vpgrid.cls.flexrow = true;
 
 			$timeout(function() {
-				if (!gridui.visid)
-					gridui.visid = vpAlmanac.getMonth(gridui.buffer).id;
+				var monthdivs = box.querySelectorAll(".vpmonth");
 
-				setVisMonth(gridui.visid);
+				if (view.column)
+					box.scrollTo(monthdivs[buffer].firstElementChild.offsetLeft, 0);
+
+				if (view.list)
+					box.scrollTo(0, monthdivs[buffer].firstElementChild.offsetTop);
+
 				showGrid(true);
 			});
 		}
@@ -945,16 +952,6 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			return gridareas;
 		}
 
-		function setVisMonth(id) {
-			var monthdiv = document.getElementById(id);
-
-			if (view.column)
-				box.scrollTo(monthdiv.firstElementChild.offsetLeft, 0);
-
-			if (view.list)
-				box.scrollTo(0, monthdiv.firstElementChild.offsetTop);
-		}
-
 		function getVisInfo() {
 			var info = {months: [], index: null};
 			var boxpos = view.column ? box.scrollLeft : box.scrollTop;
@@ -971,7 +968,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				if (info.months.length == 1)
 					info.index = i;
 				
-				if (info.months.length == gridui.vislength)
+				if (info.months.length == vislength)
 					break;
 			}
 			
@@ -1031,15 +1028,13 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			showGrid(false);
 			$timeout(function() {
 				var visinfo = getVisInfo();
-				gridui.visid = visinfo.months[0].id;
-				gridui.vdt.offsetMonth(visinfo.index - gridui.buffer);
+				vdt.offsetMonth(visinfo.index - buffer);
 				updateUI();
 			});
 		}
 
 		this.onclickPrint = function() {
 			var visinfo = getVisInfo();
-			var boxpos = view.column ? box.scrollLeft : box.scrollTop;
 
 			$window.vpprintgrid = {
 				page: visinfo.months,
@@ -1068,9 +1063,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 			showGrid(false);
 			$timeout(function() {
-				gridui.visid = null;
-				gridui.vdt = new VpDateMonth(click_month.getFullYear(), click_month.getMonth()+1);
-				gridui.vdt.offsetMonth(-gridui.buffer);
+				vdt = new VpDateMonth(click_month.getFullYear(), click_month.getMonth()+1);
 				updateUI();
 			});
 		}
