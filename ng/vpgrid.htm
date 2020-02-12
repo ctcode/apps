@@ -312,7 +312,7 @@
 			</div>
 		</div>
 	</div>
-	<div id="vpcalbar">
+	<div id="vpcalbar" ng-if="vpgrid.calbar">
 		<div class="vpcalbtn" ng-repeat="cal in vpgrid.calbar | orderBy: 'name'" ng-class="cal.cls" ng-click="cal.toggle()">
 			<span class="vpcalmarker" style="background-color: {{cal.colour.background}}"></span>
 			<span>{{cal.name}}</span>
