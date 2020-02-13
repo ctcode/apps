@@ -77,7 +77,7 @@ body {
 #settings {
 	padding-top: 1em;
 	padding-bottom: 8em;
-	padding-left: 2em;
+	padding-left: 5em;
 	padding-right: 2em;
 }
 #settings #savebtns {
@@ -140,8 +140,11 @@ body {
 		<div class="sub"><input ng-model="vpconfig.title">
 			Planner title.
 		</div>
-		<div class="sub"><select ng-model="vpconfig.month_count"  ng-options="x for (x, y) in vp.month_count_options"></select>
+		<div class="sub"><select ng-model="vpconfig.month_count" ng-options="x for (x, y) in vp.month_count_options"></select>
 			Number of months to display.  More can be scrolled into view using the mouse wheel or cursor keys.
+		</div>
+		<div class="sub"><select ng-model="vpconfig.scroll_buffer" ng-options="x for (x, y) in vp.scroll_buffer_options"></select>
+			Scroll buffer.
 		</div>
 		<div class="sub"><input ng-model="vpconfig.auto_scroll" type="checkbox">
 			Auto-scroll to current month.  If not selected, the view will always start at the beginning of the year.
@@ -152,14 +155,14 @@ body {
 				First month of year.
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vpconfig.same_row_height" type="checkbox">
-			Make all rows the same height.
+		<div class="sub"><input ng-model="vpconfig.simple_year_view" type="checkbox">
+			Simple year view. 12 months. No scrolling.
 		</div>
 		<div class="sub"><input ng-model="vpconfig.hide_scrollbars" type="checkbox">
 			Hide scrollbars.
 		</div>
-		<div class="sub"><input ng-model="vpconfig.disable_scroll" type="checkbox">
-			Disable scrolling.
+		<div class="sub"><input ng-model="vpconfig.same_row_height" type="checkbox">
+			Make all rows the same height.
 		</div>
 		<div class="sub"><input ng-model="vpconfig.align_weekends" type="checkbox">
 			Align weekends.
@@ -190,14 +193,23 @@ body {
 				End hour of visible event range.
 			</div>
 		</div>
+		<div class="sub"><input ng-model="vpconfig.show_timed_events" type="checkbox">
+			Show 'timed' events.
+		</div>
 		<div class="sub"><input ng-model="vpconfig.show_all_day_events" type="checkbox">
 			Show 'all day' events.
 			<div class="sub"><input ng-model="vpconfig.single_day_as_multi_day" type="checkbox">
 				Single day as multi-day (vertical bar).
 			</div>
 		</div>
-		<div class="sub"><input ng-model="vpconfig.show_timed_events" type="checkbox">
-			Show 'timed' events.
+		<div class="sub"><input ng-model="vpconfig.text_on_singleday_events" type="checkbox">
+			Show text on single-day events.
+		</div>
+		<div class="sub"><input ng-model="vpconfig.text_on_multiday_events" type="checkbox">
+			Show text on multi-day events.
+		</div>
+		<div class="sub"><input ng-model="vpconfig.size_of_multiday_events" type="number">
+			Size of multi-day events.
 		</div>
 		<div class="sub"><select ng-model="vpconfig.event_background"  ng-options="x for (x, y) in vp.event_background_options"></select>
 			Event background.
@@ -231,7 +243,8 @@ angular.module("vpApp").controller("vpController", function(vpAccount, vpSetting
 	$scope.vpconfig = vpSettings.getConfig();
 	this.show = {planner: true};
 	this.busy = false;
-	this.month_count_options = {3: 3, 4: 4, 6: 6, 8: 8, 10: 10, 12: 12};
+	this.month_count_options = {"3": 3, "4": 4, "6": 6, "8": 8, "10": 10, "12": 12};
+	this.scroll_buffer_options = {"No scrolling": 0, " 3": 3, " 6": 6, " 12": 12};
 	this.event_background_options = {"Calendar": "cal", "Event": "evt", "White": "white", "Transparent": ""};
 	var gsignbtn = document.getElementById("g_signbtn");
 

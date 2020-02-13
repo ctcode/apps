@@ -93,11 +93,12 @@ angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 	var defaults = {
 		title: "visual-planner",
 		month_count: 6,
+		scroll_buffer: 6,
 		auto_scroll: true,
 		auto_scroll_offset: -1,
+		simple_year_view: false,
 		first_month: 1,
 		hide_scrollbars: false,
-		disable_scroll: false,
 		same_row_height: false,
 		align_weekends: true,
 		weekends: "6,0",
@@ -108,10 +109,13 @@ angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 		proportional_events: false,
 		proportional_start_hour: 8,
 		proportional_end_hour: 20,
-		event_background: 'cal',
+		show_timed_events: true,
 		show_all_day_events: true,
 		single_day_as_multi_day: false,
-		show_timed_events: true
+		text_on_singleday_events: true,
+		text_on_multiday_events: true,
+		size_of_multiday_events: 1.1,
+		event_background: 'cal'
 	};
 
 	var cfg = {};
