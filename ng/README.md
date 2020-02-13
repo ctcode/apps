@@ -3,8 +3,8 @@ This web app provides a 'year-view wall planner' visualisation of Google Calenda
 
 [Open visual-planner](vp.htm)
 
-### User Guide and Help
-Please visit the [discussion group.](https://groups.google.com/group/visual-planner-discuss)
+### User Guide
+For more information please visit the [discussion group.](https://groups.google.com/group/visual-planner-discuss)
 
 <a name="privacy"></a>
 ### Privacy Policy
