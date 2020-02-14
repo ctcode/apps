@@ -96,7 +96,6 @@ angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 		scroll_buffer: 6,
 		auto_scroll: true,
 		auto_scroll_offset: -1,
-		simple_year_view: false,
 		first_month: 1,
 		hide_scrollbars: false,
 		same_row_height: false,
@@ -880,7 +879,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 
 		function initUI() {
 			vdt = new VpDateMonth;
-			buffer = cfg.disable_scroll ? 0 : 6;
+			buffer = cfg.scroll_buffer;
 			vislength = cfg.month_count;
 			pagelength = buffer + vislength + buffer;
 			
