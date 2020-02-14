@@ -66,6 +66,8 @@
 	width: fit-content;
 	width: -moz-fit-content;
 	max-width: 100%;
+	min-height: 1em;
+	min-width: 1em;
 	box-sizing: border-box;
 	border-radius: 0.25em;
 	padding: 0.1em 0.2em;
@@ -88,6 +90,8 @@
 	position: absolute;
 	display: flex;
 	align-items: center;
+	min-height: 0.25em;
+	min-width: 0.25em;
 	margin: 0;
 	border-radius: 0;
 	white-space: nowrap;
@@ -301,14 +305,14 @@
 					<div class="vpnum vplink" ng-click="day.onclickNum()">{{day.num}}</div>
 					<div class="vpdaylabels" ng-if="day.labels" ng-style="day.labelboxstyle">
 						<div ng-repeat="label in day.labels | orderBy: ['evt.timestamp', 'evt.title']" class="vplabel vplink" title="{{label.evt.cal.name}} - {{label.evt.title}}" ng-style="label.style" ng-click="label.evt.edit()">
-							<span class="vplabeltext">{{label.evt.title}}</span>
+							<span class="vplabeltext" ng-if="vpgrid.singledaytext">{{label.evt.title}}</span>
 						</div>
 					</div>
 				</div>
 				<div class="vpftr"></div>
 				<div ng-repeat="label in month.labels" class="vpmultilabelbox" ng-style="label.multiboxstyle">
 					<div class="vplabel vplink multiday" title="{{label.evt.cal.name}} - {{label.evt.title}}" ng-class="label.cls" ng-style="label.style" ng-click="label.evt.edit()">
-						<span class="vplabeltext">{{label.evt.title}}</span>
+						<span class="vplabeltext" ng-if="vpgrid.multidaytext">{{label.evt.title}}</span>
 					</div>
 				</div>
 			</div>

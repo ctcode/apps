@@ -419,7 +419,16 @@ angular.module("vpApp").service("vpEvents", function($window, $timeout, vpAccoun
 				if (reqparams.syncToken)
 					fRemove(item.id);
 
-				fAdd(new VpEvent(cal, item));
+				var evt = new VpEvent(cal, item);
+
+				if (evt.timed) {
+					if (cfg.show_timed_events)
+						fAdd(evt);
+				}
+				else {
+					if (cfg.show_all_day_events)
+						fAdd(evt);
+				}
 			}
 		
 			function reqfail(reason) {
@@ -909,6 +918,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.scroll_size = (pagelength / vislength)*100;
 			$scope.vpgrid.scroll_size_portrait = $scope.vpgrid.scroll_size*2;
 			$scope.vpgrid.multi_day_opacity = cfg.multi_day_opacity;
+			$scope.vpgrid.singledaytext = cfg.text_on_singleday_events;
+			$scope.vpgrid.multidaytext = cfg.text_on_multiday_events;
 			$scope.vpgrid.calbar = vpEvents.calendars;
 			$scope.vpgrid.navbar = {year: vdt.dt.getFullYear()};
 			
@@ -1048,7 +1059,9 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				past_opacity: 1,
 				scroll_size: 100,
 				scroll_size_portrait: 100,
-				multi_day_opacity: 1
+				multi_day_opacity: 1,
+				singledaytext: $scope.vpgrid.singledaytext,
+				multidaytext: $scope.vpgrid.multidaytext
 			};
 
 			$window.open("vpprint.htm");
