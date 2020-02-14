@@ -185,7 +185,7 @@
 		margin: 0.1em 0.1em 0.1em 0.2em;
 	}
 	.vplabel.multiday {
-		width: 1.1em;
+		width: calc(1.1em * {{vpgrid.multidayscale}});
 		height: 100%;
 		padding: 0.5em 0;
 		writing-mode: vertical-rl;
@@ -263,7 +263,7 @@
 		pointer-events: none;
 	}
 	.vplabel.multiday {
-		height: 1.2em;
+		height: calc(1.2em * {{vpgrid.multidayscale}});
 		width: 100%;
 		padding: 0 0.5em;
 	}

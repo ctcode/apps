@@ -113,7 +113,7 @@ angular.module("vpApp").service("vpSettings", function($rootScope, $window) {
 		single_day_as_multi_day: false,
 		text_on_singleday_events: true,
 		text_on_multiday_events: true,
-		size_of_multiday_events: 1.1,
+		scale_of_multiday_events: 100,
 		event_background: 'cal'
 	};
 
@@ -920,6 +920,7 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 			$scope.vpgrid.multi_day_opacity = cfg.multi_day_opacity;
 			$scope.vpgrid.singledaytext = cfg.text_on_singleday_events;
 			$scope.vpgrid.multidaytext = cfg.text_on_multiday_events;
+			$scope.vpgrid.multidayscale = cfg.scale_of_multiday_events/100;
 			$scope.vpgrid.calbar = vpEvents.calendars;
 			$scope.vpgrid.navbar = {year: vdt.dt.getFullYear()};
 			
@@ -1061,7 +1062,8 @@ angular.module("vpApp").directive("vpGrid", function(vpSettings, vpAlmanac, vpEv
 				scroll_size_portrait: 100,
 				multi_day_opacity: 1,
 				singledaytext: $scope.vpgrid.singledaytext,
-				multidaytext: $scope.vpgrid.multidaytext
+				multidaytext: $scope.vpgrid.multidaytext,
+				multidayscale: $scope.vpgrid.multidayscale
 			};
 
 			$window.open("vpprint.htm");
