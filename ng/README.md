@@ -12,11 +12,11 @@ Open [visual-planner.](vp.htm)
 
 <img src="sync.png" style="vertical-align: text-bottom;"/> Sync events with Google Calendar.
 
-<img src="continue.png" style="vertical-align: text-bottom;"/> Continue scrolling by reloading the view at the current position.
+<img src="continue.png" style="vertical-align: text-bottom;"/> Continue scrolling by reloading at the current position.
 
 <img src="print.png" style="vertical-align: text-bottom;"/> Open print-friendly page.
 
-<img src="settings.png" style="vertical-align: text-bottom;"/> Open settings page.
+<img src="settings.png" style="vertical-align: text-bottom;"/> Application settings.
 
 For more information please visit the [discussion group.](https://groups.google.com/group/visual-planner-discuss)
 
