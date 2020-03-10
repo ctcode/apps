@@ -1,9 +1,12 @@
 # visual-planner
 This web app provides a 'year-view wall planner' visualisation of Google Calendar events.
 
-[Open visual-planner](vp.htm)
+Open [visual-planner](vp.htm)
 
-### User Guide
+### Help
+<p><img src="column.png"/> Displays the planner in Column layout.</p>
+<p><img src="list.png"/> Displays the planner in List layout.</p>
+
 For more information please visit the [discussion group.](https://groups.google.com/group/visual-planner-discuss)
 
 <a name="privacy"></a>
