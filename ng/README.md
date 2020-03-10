@@ -23,10 +23,10 @@ For more information please visit the [discussion group.](https://groups.google.
 ### Support
 This software project is funded by voluntary donation.
 
-[Donate here.](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=XP2TVRFHUYZQE&currency_code=GBP&source=url)
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_donations" />
 <input type="hidden" name="business" value="XP2TVRFHUYZQE" />
+<input type="hidden" name="item_name" value="visual-planner" />
 <input type="hidden" name="currency_code" value="GBP" />
 <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
