@@ -26,7 +26,7 @@ The app **DOES** store it's own settings data in your Google Drive.
 
 The app **DOES** use Google Analytics to monitor application usage statistics and server error messages.
 
-### Support
+###
 This software project is funded by voluntary donation.
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_donations" />
