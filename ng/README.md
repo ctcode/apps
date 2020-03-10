@@ -1,7 +1,6 @@
 # [visual-planner](vp.htm)
 This web app provides a 'year-view wall planner' visualisation of Google Calendar events.
 
-### User Guide
 <img src="column.png" style="vertical-align: text-bottom;"/> Display the planner in Column layout.
 
 <img src="list.png" style="vertical-align: text-bottom;"/> Display the planner in List layout.
