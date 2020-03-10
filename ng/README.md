@@ -4,8 +4,8 @@ This web app provides a 'year-view wall planner' visualisation of Google Calenda
 Open [visual-planner](vp.htm)
 
 ### Help
-<p><img src="column.png"/> Displays the planner in Column layout.</p>
-<p><img src="list.png"/> Displays the planner in List layout.</p>
+<p><img src="column.png" style="vertical-align: text-bottom;"/> Displays the planner in Column layout.</p>
+<p><img src="list.png" style="vertical-align: text-bottom;"/> Displays the planner in List layout.</p>
 
 For more information please visit the [discussion group.](https://groups.google.com/group/visual-planner-discuss)
 
