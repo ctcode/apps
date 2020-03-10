@@ -22,6 +22,7 @@ For more information please visit the [discussion group.](https://groups.google.
 
 ### Support
 This software project is funded by voluntary donation.
+
 [Donate here.](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=XP2TVRFHUYZQE&currency_code=GBP&source=url)
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_donations" />
