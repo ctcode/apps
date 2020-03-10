@@ -20,6 +20,15 @@ Open [visual-planner.](vp.htm)
 
 For more information please visit the [discussion group.](https://groups.google.com/group/visual-planner-discuss)
 
+### Privacy Policy
+This app reads your email address, calendar and event data so that the information can be displayed in your browser.
+
+The app **DOES NOT** transfer, store or share any of this data or any other personal information.
+
+The app **DOES** store it's own settings data in your Google Drive.
+
+The app **DOES** use Google Analytics to monitor application usage statistics and server error messages.
+
 ### Support
 This software project is funded by voluntary donation.
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -30,14 +39,3 @@ This software project is funded by voluntary donation.
 <input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
 </form>
-
-
-
-### Privacy Policy
-This app reads your email address, calendar and event data so that the information can be displayed in your browser.
-
-The app **DOES NOT** transfer, store or share any of this data or any other personal information.
-
-The app **DOES** store it's own settings data in your Google Drive.
-
-The app **DOES** use Google Analytics to monitor application usage statistics and server error messages.
