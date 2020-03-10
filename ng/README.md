@@ -22,7 +22,6 @@ For more information please visit the [discussion group.](https://groups.google.
 
 ### Support
 This software project is funded by voluntary donation.
-
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_donations" />
 <input type="hidden" name="business" value="XP2TVRFHUYZQE" />
