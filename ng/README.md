@@ -13,7 +13,7 @@ This web app provides a 'year-view wall planner' visualisation of Google Calenda
 
 <img src="print.png" style="vertical-align: text-bottom;"/> Open print-friendly page.
 
-<img src="settings.png" style="vertical-align: text-bottom;"/> Application settings.
+<img src="settings.png" style="vertical-align: text-bottom;"/> Application settings and account sign-in.
 
 For more information please visit the [discussion group.](https://groups.google.com/group/visual-planner-discuss)
 
