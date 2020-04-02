@@ -1,12 +1,14 @@
 
-int repmode;
 int wakestate;
+int repmode;
+int repfail;
 
 enum {
-	WS_GSM=0x0001,
-	WS_GPRS=0x0002,
-	WS_PWR_GPS=0x0004,
-	WS_FIX_GPS=0x0008
+	WS_FAIL=0x0001,
+	WS_GSM=0x0002,
+	WS_GPRS=0x0004,
+	WS_PWR_GPS=0x0008,
+	WS_FIX_GPS=0x0010
 };
 
 bool checkstate(int ws)
@@ -77,6 +79,9 @@ struct hhmm
 
 struct hhmm getTime()
 {
+	if (!checkstate(WS_GSM))
+		return {0,0};
+
 	// AT+CLTS=1 local time from network
 	// AT&W save setting
 	// +CCLK: "18/10/18,00:34:37+04"
@@ -113,7 +118,7 @@ void wakeGPRS()
 
 	for (int c=0; c < 10; c++)
 	{
-		cmd("AT+SAPBR=1,1", 3000);
+		cmd("AT+SAPBR=1,1", 10000);
 		cmd("AT+SAPBR=2,1");
 		if (Serial.find("SAPBR: 1,1"))
 		{
@@ -196,7 +201,10 @@ void report()
 	wakeGPRS();
 
 	if (!checkstate(WS_GPRS))
+	{
+		repfail = wakestate | WS_FAIL;
 		return;
+	}
 
 	led(true);
 
@@ -222,6 +230,15 @@ void report()
 	body += "REPMODE:";
 	body += repmode;
 	body += "\n\n";
+
+	if (repfail)
+	{
+		body += "REPFAIL:";
+		body += repfail;
+		body += "\n\n";
+
+		repfail=0;
+	}
 
 	if (checkstate(WS_FIX_GPS))
 	{
@@ -272,8 +289,9 @@ void setup()
 		wait(1);
 	}
 
-	repmode=2;
 	wakestate=0;
+	repmode=2;
+	repfail=0;
 
 	wakeGSM();
 	setReportModeFromSMS();
@@ -286,13 +304,19 @@ void loop()
 	wakeGSM();
 	setReportModeFromSMS();
 
+	if (repfail)
+	{
+		report();
+		return;
+	}
+
 	switch (repmode)
 	{
 		case 1:
 		{
 			switch (getTime().hour)
 			{
-				case 0:
+				case 22:
 					report();
 			}
 			
