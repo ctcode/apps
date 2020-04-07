@@ -8,7 +8,10 @@ enum {
 	WS_GSM=0x0002,
 	WS_GPRS=0x0004,
 	WS_PWR_GPS=0x0008,
-	WS_FIX_GPS=0x0010
+	WS_FIX_GPS=0x0010,
+	WS_FAIL_DOWNLOAD=0x0020,
+	WS_FAIL_OK=0x0040,
+	WS_FAIL_SMTPSEND=0x0080
 };
 
 bool checkstate(int ws)
@@ -236,8 +239,6 @@ void report()
 		body += "REPFAIL:";
 		body += repfail;
 		body += "\n\n";
-
-		repfail=0;
 	}
 
 	if (checkstate(WS_FIX_GPS))
@@ -248,6 +249,7 @@ void report()
 	}
 
 	// email
+	int failsend=0;
 	cmd("AT+EMAILCID=1");
 	cmd("AT+EMAILSSL=1");
 	cmd("AT+SMTPSRV=smtp.gmail.com,465");
@@ -258,16 +260,24 @@ void report()
 	String cmdtxt = "AT+SMTPBODY=";
 	cmdtxt += body.length();
 	cmd(cmdtxt.c_str());
-	Serial.find("DOWNLOAD");
+	if (!Serial.find("DOWNLOAD"))
+		failsend |= WS_FAIL_DOWNLOAD;
 	Serial.write(body.c_str());
 	Serial.flush();
-	Serial.find("OK");
+	if (!Serial.find("OK"))
+		failsend |= WS_FAIL_OK;
 	cmd("AT+SMTPSEND");
 	Serial.setTimeout(60000);
-	Serial.find("SMTPSEND:");
+	if (!Serial.find("SMTPSEND:"))
+		failsend |= WS_FAIL_SMTPSEND;
 	Serial.setTimeout(3000);
 
 	led(false);
+	
+	if (failsend)
+		repfail = failsend | wakestate | WS_FAIL;
+	else
+		repfail=0;
 }
 
 void setup()
