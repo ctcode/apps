@@ -26,7 +26,7 @@ function map_init()
 	osMap = new OpenSpace.Map('map');
 
 	var xhttp = new XMLHttpRequest();
-	xhttp.open("GET", "http://localhost/files/canals.gpx", false);
+	xhttp.open("GET", "http://localhost:8080/files/canals.gpx", false);
 	xhttp.send();
 
 	var parser = new DOMParser();
@@ -194,7 +194,7 @@ function marktrkseg(showseg)
 	if (seglist == null)
 	{
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("GET", "http://localhost/files/canals.gpx", false);
+		xhttp.open("GET", "http://localhost:8080/files/canals.gpx", false);
 		xhttp.send();
 
 		var parser = new DOMParser();
