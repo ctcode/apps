@@ -18,7 +18,7 @@ This web app provides a 'year-view wall planner' visualisation of Google Calenda
 For more information please visit the [discussion group.](https://groups.google.com/group/visual-planner-discuss)
 
 ### Privacy Policy
-This app reads your email address, calendar and event data so that the information can be displayed in your browser.
+This app will request permission to read your email address, calendar and event data from your Google account. This information is needed so that your calendar events can be displayed in a year-view format that provides a much wider and more flexible overview of your future and past events than is available with Google Calendar.
 
 The app **DOES NOT** transfer, store or share any of this data or any other personal information.
 
