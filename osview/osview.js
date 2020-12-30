@@ -1,4 +1,5 @@
 var osMap;
+// ssh
 
 function init_map(os_map_point, zoom)
 {
