@@ -74,7 +74,7 @@
 
     var map = L.map('map', mapOptions);
 	
-	map.on('moveend', function(evt) {
+	map.on('moveend', function() {
 		localStorage.osviewLat = map.getCenter().lat;
 		localStorage.osviewLng = map.getCenter().lng;
 		localStorage.osviewZoom = map.getZoom();
