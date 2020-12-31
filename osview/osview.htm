@@ -75,13 +75,9 @@
     var map = L.map('map', mapOptions);
 	
 	map.on('moveend', function(evt) {
-		console.log(evt.target._lastCenter);
-		console.log(evt.target._zoom);
-		if (evt.target._lastCenter && evt.target._zoom) {
-			localStorage.osviewLat = evt.target._lastCenter.lat;
-			localStorage.osviewLng = evt.target._lastCenter.lng;
-			localStorage.osviewZoom = evt.target._zoom;
-		}
+		localStorage.osviewLat = map.getCenter().lat;
+		localStorage.osviewLng = map.getCenter().lng;
+		localStorage.osviewZoom = map.getZoom();
 	});
 
     // Load and display WMTS tile layer on the map.
