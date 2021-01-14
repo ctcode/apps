@@ -24,7 +24,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
 <script>
 
-	var apiKey = window.location.hash.substr(1);
+	if (!localStorage.osKey)
+		localStorage.osKey = prompt("API Key") + "M9p4cJwEuF7ooC7IrmS8Nn0iAY1Ix";
 
     var serviceUrl = 'https://api.os.uk/maps/raster/v1/wmts';
 
@@ -36,7 +37,7 @@
 
     // Define parameters object.
     var params = {
-        key: apiKey,
+        key: localStorage.osKey,
         service: 'WMTS',
         request: 'GetTile',
         version: '2.0.0',
@@ -87,4 +88,3 @@
 
 </body>
 </html>
-
