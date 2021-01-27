@@ -1,11 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>ostrkino</title>
-<link rel="icon" href="satos.png">
-<script type="text/javascript" src="https://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=2F6DEC09B8A25C07E0530B6CA40AD1A2"></script>
-<script type="text/javascript" src="ostrkino.js"></script>
+    <title>ostrkino</title>
+	<link rel="icon" href="satos.png">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="https://labs.os.uk/public/os-api-branding/v0.2.0/os-api-branding.css" />
+    <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        :focus { outline: none; }
+    </style>
 </head>
-<body onload="init_map();">
+<body>
+
+<div id="map"></div>
+
+<script src="https://labs.os.uk/public/os-api-branding/v0.2.0/os-api-branding.js"></script>
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
+<script>
+
+	if (!localStorage.osKey)
+		localStorage.osKey = prompt("API Key") + "M9p4cJwEuF7ooC7IrmS8Nn0iAY1Ix";
+
+	var loctext = decodeURI(window.location.hash.slice(1));
+	var locinfo = parseNMEA(loctext);
+	if (!locinfo)
+		alert("Invalid GPS location:  " + loctext);
+
+    var serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+
+    // Create a map style object using the ZXY service.
+    var style = {
+        'version': 8,
+        'sources': {
+            'raster-tiles': {
+                'type': 'raster',
+                'tiles': [ serviceUrl + '/Light_3857/{z}/{x}/{y}.png?key=' + localStorage.osKey ],
+                'tileSize': 256,
+                'maxzoom': 20
+            }
+        },
+        'layers': [{
+            'id': 'os-maps-zxy',
+            'type': 'raster',
+            'source': 'raster-tiles'
+        }]
+    };
+
+    // Initialize the map object.
+    var map = new mapboxgl.Map({
+        container: 'map',
+        minZoom: 6,
+        maxZoom: 19,
+        style: style,
+        center: locinfo,
+        zoom: 14
+    });
+
+    // Add navigation control (excluding compass button) to the map.
+    map.addControl(new mapboxgl.NavigationControl({
+        showCompass: false
+    }));
+
+	map.on('load', function() {
+		var marker = new mapboxgl.Marker({color: '#38f'})
+			.setLngLat(locinfo)
+			.addTo(map);
+
+		//var popup = new mapboxgl.Popup({ offset: 25 })
+			//.setHTML('location');
+
+		//marker.setPopup(popup);
+	});
+
+	function parseNMEA(txt) {
+		// #2,223056.000,0053.4246,N,-0002.3142,W,
+		var csv = txt.split(',');
+		if (csv.length < 5) return null;
+		
+		return [parseFloat(csv[4]), parseFloat(csv[2])];
+	}
+
+</script>
+
 </body>
 </html>
+
