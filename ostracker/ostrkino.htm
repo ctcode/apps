@@ -37,7 +37,7 @@
         'sources': {
             'raster-tiles': {
                 'type': 'raster',
-                'tiles': [ serviceUrl + '/Light_3857/{z}/{x}/{y}.png?key=' + localStorage.osKey ],
+                'tiles': [ serviceUrl + '/Outdoor_3857/{z}/{x}/{y}.png?key=' + localStorage.osKey ],
                 'tileSize': 256,
                 'maxzoom': 20
             }
@@ -79,7 +79,7 @@
 		// #2,223056.000,0053.4246,N,-0002.3142,W,
 		var csv = txt.split(',');
 		if (csv.length < 5) return null;
-		
+
 		return [parseFloat(csv[4]), parseFloat(csv[2])];
 	}
 
@@ -87,4 +87,3 @@
 
 </body>
 </html>
-
