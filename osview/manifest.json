@@ -1,0 +1,8 @@
+{
+	"name": "OS Map",
+	"icons": [
+		{"src": "os_128.png", "sizes": "128x128"}
+	],
+	"start_url": "osview.htm",
+	"display": "standalone"
+}
