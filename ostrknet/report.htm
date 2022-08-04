@@ -85,7 +85,7 @@ body {
 
 	function onclickMapBtn() {
 		if (latest_report.gps) {
-			window.location = "map.htm#" + latest_report.seq + ",lat=" + latest_report.gps.lat + ",lng=" + latest_report.gps.lng;
+			window.location = "map.htm" + latest_report.desc + ",lat=" + latest_report.gps.lat + ",lng=" + latest_report.gps.lng;
 			window.localStorage.trknetprevious = latest_report.src;
 		}
 	}
@@ -113,8 +113,7 @@ body {
 		if (csv[19] == 'X')
 			repinfo.seq = parseInt(csv[18]);
 
-		//repinfo.desc = "#" + repinfo.seq + "  " + repinfo.day + "  " + repinfo.hour + ":00h";
-		repinfo.desc = "#" + repinfo.seq + " " + repinfo.hour + ":00h";
+		repinfo.desc = "#" + repinfo.day + "-" + repinfo.hour;
 		
 		return repinfo;
 	}
