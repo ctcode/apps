@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ostrknet</title>
+	<link rel="icon" href="satos.png">
+
+<style>
+body {
+	background-color: darkolivegreen;
+}
+#previousreportbox {
+	background-color: hsl(0,0%,80%);
+	padding: 1em;
+	margin: 0.5em;
+	border-radius: 0.5em;
+}
+#previousreportdesc {
+	font-size: 2em;
+}
+#previousreporttext {
+	margin-top: 0.5em;
+	font: status-bar;
+}
+#latestreportbox {
+	background-color: hsl(42.3, 67%, 57.3%);
+	padding: 1em;
+	margin: 0.5em;
+	border-radius: 0.5em;
+}
+#latestreportdesc {
+	margin-top: 0.5em;
+	font-size: 2em;
+}
+#latestreporttext {
+	margin-top: 0.5em;
+	margin-bottom: 1em;
+	font: status-bar;
+}
+</style>
+</head>
+
+<body>
+<div id="previousreportbox">
+	<div id="previousreportdesc">--</div>
+	<div id="previousreporttext"></div>
+</div>
+<div id="latestreportbox">
+	<button id="trknetbtn" onclick="onclickTrknet();"></button>
+	<div id="latestreportdesc">--</div>
+	<div id="latestreporttext"></div>
+	<button id="mapbtn" onclick="onclickMapBtn();">Map</button>
+</div>
+
+<script>
+	if (!localStorage.trkneturl)
+		localStorage.trkneturl = prompt("trknet url");
+
+	document.getElementById("trknetbtn").textContent = localStorage.trkneturl;
+
+	var latest_report = {};
+	document.getElementById("mapbtn").disabled = true;
+	
+	if (localStorage.trknetprevious) {
+		var repinfo = parseReport(localStorage.trknetprevious);
+		document.getElementById("previousreportdesc").textContent = repinfo.desc;
+		document.getElementById("previousreporttext").textContent = repinfo.src;
+	}
+
+	function onclickTrknet() {
+		xhr = new XMLHttpRequest();
+		xhr.open("GET", localStorage.trkneturl, false);
+		xhr.send();
+
+		if (xhr.status == 200) {
+			latest_report = parseReport(xhr.response);
+			document.getElementById("latestreportdesc").textContent = latest_report.desc;
+			document.getElementById("latestreporttext").textContent = latest_report.src;
+		}
+		
+		if (latest_report.gps)
+			document.getElementById("mapbtn").disabled = false;
+	}
+
+	function onclickMapBtn() {
+		if (latest_report.gps) {
+			window.location = "map.htm#" + latest_report.seq + ",lat=" + latest_report.gps.lat + ",lng=" + latest_report.gps.lng;
+			window.localStorage.trknetprevious = latest_report.src;
+		}
+	}
+
+	function parseReport(reptext) {
+		var repinfo = {src: reptext};
+		
+		var csv = reptext.split(',');
+
+		if (csv.length >= 6)
+		if (csv[3] == 'N')
+		if (csv[5] == 'W') {
+			repinfo.gps = {};
+			repinfo.gps.lat = parseFloat(csv[2])
+			repinfo.gps.lng = parseFloat(csv[4])
+		}
+
+		if (csv.length >= 18)
+		if (csv[17] == 'T') {
+			repinfo.day = csv[15];
+			repinfo.hour = csv[16];
+		}
+
+		if (csv.length >= 20)
+		if (csv[19] == 'X')
+			repinfo.seq = parseInt(csv[18]);
+
+		//repinfo.desc = "#" + repinfo.seq + "  " + repinfo.day + "  " + repinfo.hour + ":00h";
+		repinfo.desc = "#" + repinfo.seq + " " + repinfo.hour + ":00h";
+		
+		return repinfo;
+	}
+</script>
+</body>
+</html>
+

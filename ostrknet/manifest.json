@@ -1,0 +1,8 @@
+{
+	"name": "ostrknet",
+	"icons": [
+		{"src": "satos.png", "sizes": "192x192"}
+	],
+	"start_url": "report.htm",
+	"display": "standalone"
+}
