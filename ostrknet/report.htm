@@ -19,10 +19,6 @@ body {
 #previousreportdesc {
 	font-size: 2em;
 }
-#previousreporttext {
-	margin-top: 0.5em;
-	font: status-bar;
-}
 #latestreportbox {
 	background-color: hsl(42.3, 67%, 57.3%);
 	padding: 1em;
@@ -37,6 +33,7 @@ body {
 	margin-top: 0.5em;
 	margin-bottom: 1em;
 	font: status-bar;
+	white-space: pre;
 }
 </style>
 </head>
@@ -44,7 +41,6 @@ body {
 <body>
 <div id="previousreportbox">
 	<div id="previousreportdesc">--</div>
-	<div id="previousreporttext"></div>
 </div>
 <div id="latestreportbox">
 	<button id="trknetbtn" onclick="onclickTrknet();"></button>
@@ -60,13 +56,8 @@ body {
 	document.getElementById("trknetbtn").textContent = localStorage.trkneturl;
 
 	var latest_report = {};
+	document.getElementById("previousreportdesc").textContent = localStorage.trknetprevious;
 	document.getElementById("mapbtn").disabled = true;
-	
-	if (localStorage.trknetprevious) {
-		var repinfo = parseReport(localStorage.trknetprevious);
-		document.getElementById("previousreportdesc").textContent = repinfo.desc;
-		document.getElementById("previousreporttext").textContent = repinfo.src;
-	}
 
 	function onclickTrknet() {
 		xhr = new XMLHttpRequest();
@@ -86,7 +77,7 @@ body {
 	function onclickMapBtn() {
 		if (latest_report.gps) {
 			window.location = "map.htm" + latest_report.desc + ",lat=" + latest_report.gps.lat + ",lng=" + latest_report.gps.lng;
-			window.localStorage.trknetprevious = latest_report.src;
+			window.localStorage.trknetprevious = latest_report.desc;
 		}
 	}
 
@@ -113,11 +104,10 @@ body {
 		if (csv[19] == 'X')
 			repinfo.seq = parseInt(csv[18]);
 
-		repinfo.desc = "#" + repinfo.day + "-" + repinfo.hour;
+		repinfo.desc = "#" + repinfo.seq + " : " + repinfo.day + "-" + repinfo.hour;
 		
 		return repinfo;
 	}
 </script>
 </body>
 </html>
-
