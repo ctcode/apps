@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>osview</title>
+	<link rel="icon" href="os_128.png">
+	<link rel="manifest" href="manifest.json">	<meta charset="utf-8" />
+    <meta charset="utf-8" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="https://labs.os.uk/public/os-api-branding/v0.2.0/os-api-branding.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://labs.os.uk/public/os-api-branding/v0.2.0/os-api-branding.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.5.0/proj4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+<script>
+
+	if (!localStorage.osKey)
+		localStorage.osKey = prompt("API Key") + "M9p4cJwEuF7ooC7IrmS8Nn0iAY1Ix";
+
+    var serviceUrl = 'https://api.os.uk/maps/raster/v1/wmts';
+
+    // Setup the EPSG:27700 (British National Grid) projection.
+    var crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', {
+        resolutions: [ 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75 ],
+        origin: [ -238375.0, 1376256.0 ]
+    });
+
+    // Define parameters object.
+    var params = {
+        key: localStorage.osKey,
+        service: 'WMTS',
+        request: 'GetTile',
+        version: '2.0.0',
+        height: 256,
+        width: 256,
+        outputFormat: 'image/png',
+        style: 'default',
+        layer: 'Leisure_27700',
+        tileMatrixSet: 'EPSG:27700',
+        tileMatrix: '{z}',
+        tileRow: '{y}',
+        tileCol: '{x}'
+    };
+
+    // Construct query string parameters from object.
+    var queryString = Object.keys(params).map(function(key) {
+        return key + '=' + params[key];
+    }).join('&');
+
+    // Initialize the map.
+    var mapOptions = {
+        crs: crs,
+        minZoom: 0,
+        maxZoom: 9,
+        //center: proj4('EPSG:27700', 'EPSG:4326', [ 337297, 503695 ]).reverse(),
+        center: { lat: 53.392132136526726, lng: -2.2766565770198652 },
+        zoom: 4,
+        attributionControl: false
+    };
+
+/*
+	if (localStorage.osviewLat && localStorage.osviewLng && localStorage.osviewZoom) {
+		mapOptions.center = { lat: localStorage.osviewLat, lng: localStorage.osviewLng };
+		mapOptions.zoom = localStorage.osviewZoom;
+	}
+*/
+
+    var map = L.map('map', mapOptions);
+	
+	map.on('moveend', function() {
+		localStorage.osviewLat = map.getCenter().lat;
+		localStorage.osviewLng = map.getCenter().lng;
+		localStorage.osviewZoom = map.getZoom();
+	});
+
+    // Load and display WMTS tile layer on the map.
+    var basemap = L.tileLayer(serviceUrl + '?' + queryString).addTo(map);
+
+</script>
+
+</body>
+</html>
